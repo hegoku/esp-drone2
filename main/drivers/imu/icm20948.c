@@ -1,39 +1,38 @@
+#include <freertos/FreeRTOS.h>
 #include "icm20948.h"
 #include "sensors/imu.h"
-#include "bus/bus.h"
-#include "bus/spi.h"
-#include <driver/gpio.h>
-#include <freertos/FreeRTOS.h>
+#include "flight/flight.h"
+#include "misc/util.h"
 
-int icm20948_write_reg_byte(struct bus_device *dev, unsigned char reg, unsigned char byte)
+int icm20948_write_reg_byte(struct bus_dev *dev, unsigned char reg, unsigned char byte)
 {
 	unsigned char buf = byte;
-	return spi_write(dev, reg, &buf, 1);
+	return dev->bus->write(dev, reg, &buf, 1);
 }
 
-int icm20948_read_reg(struct bus_device *dev, unsigned char reg, unsigned char *buf, int bytes)
+int icm20948_read_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
 {
-	return spi_read(dev, ICM20948_READ_REG(reg), buf, bytes);
+	return dev->bus->write(dev, ICM20948_READ_REG(reg), buf, bytes);
 }
 
-int icm20948_write_reg(struct bus_device *dev, unsigned char reg, unsigned char *buf, int bytes)
+int icm20948_write_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
 {
-	return spi_write(dev, reg, buf, bytes);
+	return dev->bus->write(dev, reg, buf, bytes);
 }
 
-int icm20948_set_bank(struct bus_device *dev, unsigned char bank)
+int icm20948_set_bank(struct bus_dev *dev, unsigned char bank)
 {
 	return icm20948_write_reg_byte(dev, ICM20948_REG_REG_BANK_SEL, bank);
 }
 
-int icm20948_get_data_bulk(struct bus_device *dev, unsigned char buf[14])
+int icm20948_get_data_bulk(struct bus_dev *dev, unsigned char buf[14])
 {
 	icm20948_set_bank(dev, ICM20948_BANK_0);
 	icm20948_read_reg(dev, ICM20948_REG_ACCEL_XOUT_H, buf, 14);
 	return 0;
 }
 
-unsigned char icm20948_who_am_i(struct bus_device *dev)
+unsigned char icm20948_who_am_i(struct bus_dev *dev)
 {
 	unsigned char buf;
 	icm20948_set_bank(dev, ICM20948_BANK_0);
@@ -66,15 +65,13 @@ int icm20948_sensor_read(struct imu_sensor *sensor)
 	return 0;
 }
 
-int init_icm20948(struct bus_device *dev)
+int icm20948_prob(struct bus_dev *dev)
 {
-	spi_register_dev(dev);
-	unsigned char id = icm20948_who_am_i(dev);
-	if (id!=ICM20948_WHOAMI_VALUE)
+	if (icm20948_who_am_i(dev)!=ICM20948_WHOAMI_VALUE)
 		return -1;
 
 	icm20948_write_reg_byte(dev, ICM20948_REG_PWR_MGMT_1, 0x80); //reset
-	esp_rom_delay_us(50000);
+	delay_ms(50);
 	icm20948_write_reg_byte(dev, ICM20948_REG_PWR_MGMT_1, 0x1); //clock source
 	icm20948_write_reg_byte(dev, ICM20948_REG_USER_CTRL, 0x30);	 // I2C master mode and set I2C_IF_DIS
 	icm20948_write_reg_byte(dev, ICM20948_REG_INT_PIN_CFG, 0xC0); //INT1 pin is active low
@@ -93,17 +90,9 @@ int init_icm20948(struct bus_device *dev)
 	icm20948_set_bank(dev, ICM20948_BANK_0);
 	icm20948_write_reg_byte(dev, ICM20948_REG_INT_ENABLE_1, 1);
 
+	flight.imu.name = "ICM20948";
+	flight.imu.dev = dev;
+	flight.imu.read = icm20948_sensor_read;
+
 	return 0;
 }
-
-struct bus_device icm20948_dev = {
-	.name="ICM20948",
-	.address=GPIO_NUM_5,
-	.init=init_icm20948
-};
-
-struct imu_sensor icm20948 = {
-	.name = "ICM20948",
-	.dev = &icm20948_dev,
-	.read = icm20948_sensor_read
-};

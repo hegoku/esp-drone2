@@ -4,7 +4,7 @@
 #include "sensors/imu.h"
 
 struct flight {
-	struct imu_sensor *imu;
+	struct imu_sensor imu;
 };
 
 extern struct flight flight;

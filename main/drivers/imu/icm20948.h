@@ -1,6 +1,8 @@
 #ifndef DRIVERS_IMU_ICM20948_H
 #define DRIVERS_IMU_ICM20948_H
 
+#include "bus/bus.h"
+
 #define ICM20948_WHOAMI_VALUE 0xEA
 
 #define ICM20948_READ_REG(x) (x|0x80)
@@ -121,4 +123,6 @@
 
 #define ICM20948_ACCEL_RESOLUTION 16384.0f
 #define ICM20948_GYRO_RESOLUTION 16.4f
+
+int icm20948_prob(struct bus_dev *dev);
 #endif

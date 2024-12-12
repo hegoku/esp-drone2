@@ -9,7 +9,7 @@ struct barometer_sensor {
 	short temperature;
 	void *priv;
 
-	struct bus_device *dev;
+	struct bus_dev *dev;
 	int(*read)(struct barometer_sensor *sensor);
 };
 

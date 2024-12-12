@@ -1,24 +1,21 @@
 #ifndef BUS_BUS_H
 #define BUS_BUS_H
 
-#include "uart.h"
-#include "spi.h"
-
-struct bus_driver {
+struct bus {
 	char *name;
-	char type;
-	union
-	{
-		struct uart_priv uart;
-		struct spi_priv spi;
-	} priv;
+	void *priv;
+	int (*init)(struct bus *bus);
+	int (*(*probs)[10])(struct bus *bus);
+	int (*read)(struct bus_dev *dev, unsigned char *buf, int bytes);
+	int (*write)(struct bus_dev *dev, unsigned char *buf, int bytes);
 };
 
-struct bus_device
-{
-	char *name;
-	unsigned int address;
-	int (*init)(struct bus_device *dev);
+struct bus_dev {
+	struct bus *bus;
+	int address;
+	void *priv;
 };
+
+void bus_init(struct bus *bus_list, int len);
 
 #endif

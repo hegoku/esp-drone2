@@ -39,7 +39,7 @@ struct imu_sensor {
 	} temperature;
 	void *priv;
 
-	struct bus_device *dev;
+	struct bus_dev *dev;
 	int(*read)(struct imu_sensor *sensor);
 };
 
