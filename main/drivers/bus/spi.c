@@ -3,7 +3,7 @@
 void init_spi(struct bus *bus)
 {
 	struct spi_priv *priv = SPI_GET_PRIV(bus->priv);
-	struct dev_priv *dev_priv;
+	struct spi_dev_priv *dev_priv;
 	int (*spi_dev_probs)(struct bus_dev *dev);
 
 	esp_err_t ret;
@@ -22,15 +22,15 @@ void init_spi(struct bus *bus)
 		priv->dev_list[i].bus = bus;
 		priv->dev_list[i].priv = malloc(sizeof(struct spi_dev_priv));
 		dev_priv = SPI_DEV_GET_PRIV(&priv->dev_list[i].priv);
-		dev_priv->devcfg.clock_speed_hz = priv->speed; //Clock out at 7 MHz
+		dev_priv->devcfg.clock_speed_hz = priv->speed;
 		dev_priv->devcfg.mode = 3;							// SPI mode 3
 		dev_priv->devcfg.spics_io_num = (gpio_num_t)priv->dev_list[i].address;				// CS pin
 		dev_priv->devcfg.queue_size = 7;					// We want to be able to queue 7 transactions at a time
 		dev_priv->devcfg.address_bits = 8;
 		spi_bus_add_device(HSPI_HOST, &dev_priv->devcfg, &dev_priv->handle);
-		for (int j=0;j<10;j++) {
-			if (!bus->probs[i]) continue;
-			spi_dev_probs = bus->probs[i];
+		for (int j=0;j<BUS_MAX_PROBS_NR;j++) {
+			if (!(*bus->probs)[j]) continue;
+			spi_dev_probs = (*bus->probs)[j];
 			if (spi_dev_probs(&priv->dev_list[i])==0) {
 				break;
 			}

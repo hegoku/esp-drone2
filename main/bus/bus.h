@@ -1,13 +1,15 @@
 #ifndef BUS_BUS_H
 #define BUS_BUS_H
 
+#define BUS_MAX_PROBS_NR 10
+
+struct bus_dev;
+
 struct bus {
 	char *name;
 	void *priv;
-	int (*init)(struct bus *bus);
-	int (*(*probs)[10])(struct bus *bus);
-	int (*read)(struct bus_dev *dev, unsigned char *buf, int bytes);
-	int (*write)(struct bus_dev *dev, unsigned char *buf, int bytes);
+	void (*init)(struct bus *bus);
+	int (*(*probs)[BUS_MAX_PROBS_NR])(struct bus_dev *dev);
 };
 
 struct bus_dev {

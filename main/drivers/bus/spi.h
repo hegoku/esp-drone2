@@ -8,6 +8,7 @@
 struct spi_dev_priv {
 	spi_device_handle_t handle;
 	spi_device_interface_config_t devcfg;
+	unsigned char reg_addr;
 };
 
 struct spi_priv {

@@ -1,23 +1,23 @@
-#include <freertos/FreeRTOS.h>
 #include "icm20948.h"
 #include "sensors/imu.h"
 #include "flight/flight.h"
 #include "misc/util.h"
+#include "drivers/bus/spi.h"
 
 int icm20948_write_reg_byte(struct bus_dev *dev, unsigned char reg, unsigned char byte)
 {
 	unsigned char buf = byte;
-	return dev->bus->write(dev, reg, &buf, 1);
+	return spi_write(dev, reg, &buf, 1);
 }
 
 int icm20948_read_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
 {
-	return dev->bus->write(dev, ICM20948_READ_REG(reg), buf, bytes);
+	return spi_read(dev, ICM20948_READ_REG(reg), buf, bytes);
 }
 
 int icm20948_write_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
 {
-	return dev->bus->write(dev, reg, buf, bytes);
+	return spi_write(dev, reg, buf, bytes);
 }
 
 int icm20948_set_bank(struct bus_dev *dev, unsigned char bank)

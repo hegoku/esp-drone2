@@ -36,9 +36,7 @@ struct bus bus_tree[] = {
 		.name="spi1",
 		.priv=&spi1_config,
 		.probs=&spi_dev_probs,
-		.init=init_spi,
-		.read=spi_read,
-		.write=spi_write
+		.init=init_spi
 	}
 };
 

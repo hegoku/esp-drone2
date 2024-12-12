@@ -2,7 +2,7 @@
 
 void init_uart(struct bus *bus)
 {
-	struct spi_priv *priv = UART_GET_PRIV(bus->priv);
+	struct uart_priv *priv = UART_GET_PRIV(bus->priv);
 
 	uart_config_t uart_config = {
 		.baud_rate = priv->baud_rate,

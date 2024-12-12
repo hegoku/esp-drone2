@@ -43,5 +43,4 @@ struct imu_sensor {
 	int(*read)(struct imu_sensor *sensor);
 };
 
-void init_imu();
 #endif
