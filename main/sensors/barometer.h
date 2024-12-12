@@ -3,8 +3,14 @@
 
 #include "bus/bus.h"
 
+enum baro_status {
+	BARO_STATUS_OFF,
+	BARO_STATUS_ON
+};
+
 struct barometer_sensor {
 	char *name;
+	enum baro_status status;
 	short pressure;
 	short temperature;
 	void *priv;

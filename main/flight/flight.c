@@ -1,5 +1,3 @@
 #include "flight.h"
 
-struct flight flight = {
-
-};
+struct flight flight = {0};
