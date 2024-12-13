@@ -2,7 +2,7 @@
 #include "sensors/imu.h"
 #include "flight/flight.h"
 #include "misc/util.h"
-#include "drivers/bus/spi.h"
+#include "bus/spi.h"
 
 int icm20948_write_reg_byte(struct bus_dev *dev, unsigned char reg, unsigned char byte)
 {

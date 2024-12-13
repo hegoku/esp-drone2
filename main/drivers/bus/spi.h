@@ -4,6 +4,7 @@
 #include <driver/gpio.h>
 #include <driver/spi_master.h>
 #include "bus/bus.h"
+#include "bus/spi.h"
 
 struct spi_dev_priv {
 	spi_device_handle_t handle;
@@ -22,7 +23,4 @@ struct spi_priv {
 #define SPI_GET_PRIV(x) ((struct spi_priv*)x)
 #define SPI_DEV_GET_PRIV(x) ((struct spi_dev_priv*)x)
 
-void init_spi(struct bus *bus);
-int spi_read(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, int len);
-int spi_write(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, int len);
 #endif

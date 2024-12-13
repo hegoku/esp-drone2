@@ -3,6 +3,7 @@
 #include <driver/gpio.h>
 #include <driver/uart.h>
 #include "bus/bus.h"
+#include "bus/uart.h"
 
 struct uart_priv {
 	uart_port_t port;
@@ -13,5 +14,4 @@ struct uart_priv {
 
 #define UART_GET_PRIV(x) ((struct uart_priv*)x)
 
-void init_uart(struct bus *bus);
 #endif

@@ -1,13 +1,25 @@
 #include <stdio.h>
 #include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <sys/time.h>
 #include "drivers/bus/bus_tree.h"
+#include "clocksource/clocksource.h"
+#include "clocksource/default_source.h"
+
+QueueHandle_t sys_timer_queue;
+struct timeval sys_timer_time;
 
 void app_main(void)
 {
+	sys_timer_set(default_timer);
+	
 	init_bus_tree();
 	printf("init bus done\n");
 
-	for(;;) {
-		esp_rom_delay_us(100000);
+	sys_timer_queue = xQueueCreate(5, sizeof( struct timeval ));
+	sys_timer_start();
+	for (;;) {
+		if (xQueueReceive(sys_timer_queue, &(sys_timer_time), portMAX_DELAY)){
+		}
 	}
 }
