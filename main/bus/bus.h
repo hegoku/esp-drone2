@@ -1,24 +1,23 @@
 #ifndef BUS_BUS_H
 #define BUS_BUS_H
 
-#include "uart.h"
-#include "spi.h"
+#define BUS_MAX_PROBS_NR 10
 
-struct bus_driver {
+struct bus_dev;
+
+struct bus {
 	char *name;
-	char type;
-	union
-	{
-		struct uart_priv uart;
-		struct spi_priv spi;
-	} priv;
+	void *priv;
+	void (*init)(struct bus *bus);
+	int (*(*probs)[BUS_MAX_PROBS_NR])(struct bus_dev *dev);
 };
 
-struct bus_device
-{
-	char *name;
-	unsigned int address;
-	int (*init)(struct bus_device *dev);
+struct bus_dev {
+	struct bus *bus;
+	int address;
+	void *priv;
 };
+
+void bus_init(struct bus *bus_list, int len);
 
 #endif

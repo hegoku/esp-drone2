@@ -1,15 +1,25 @@
 #include <stdio.h>
-#include "sensors/imu.h"
-#include "bus/bus_tree.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <sys/time.h>
+#include "drivers/bus/bus_tree.h"
+#include "clocksource/clocksource.h"
+#include "clocksource/default_source.h"
 
-#define PIN_NUM_MISO GPIO_NUM_16
-#define PIN_NUM_MOSI GPIO_NUM_18
-#define PIN_NUM_CLK GPIO_NUM_19
+QueueHandle_t sys_timer_queue;
+struct timeval sys_timer_time;
 
 void app_main(void)
 {
-	init_bus();
-	// init_spi(PIN_NUM_MISO, PIN_NUM_MOSI, PIN_NUM_CLK);
+	sys_timer_set(default_timer);
+	
+	init_bus_tree();
+	printf("init bus done\n");
 
-	init_imu();
+	sys_timer_queue = xQueueCreate(5, sizeof( struct timeval ));
+	sys_timer_start();
+	for (;;) {
+		if (xQueueReceive(sys_timer_queue, &(sys_timer_time), portMAX_DELAY)){
+		}
+	}
 }

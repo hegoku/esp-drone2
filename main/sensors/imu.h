@@ -3,6 +3,11 @@
 
 #include "bus/bus.h"
 
+enum imu_status {
+	IMU_STATUS_OFF,
+	IMU_STATUS_ON
+};
+
 struct imu_data {
 	struct {
 		unsigned short x;
@@ -13,7 +18,7 @@ struct imu_data {
 		float x;
 		float y;
 		float z;
-	} unfiltered;
+	} filtered;
 	struct {
 		float x;
 		float y;
@@ -31,6 +36,7 @@ struct imu_data {
 
 struct imu_sensor {
 	char *name;
+	enum imu_status status;
 	struct imu_data accel;
 	struct imu_data gyro;
 	struct {
@@ -39,9 +45,9 @@ struct imu_sensor {
 	} temperature;
 	void *priv;
 
-	struct bus_device *dev;
+	struct bus_dev *dev;
 	int(*read)(struct imu_sensor *sensor);
+	int(*convert_data)(struct imu_sensor *sensor);
 };
 
-void init_imu();
 #endif
