@@ -5,6 +5,7 @@
 void app_main(void)
 {
 	init_bus_tree();
+	printf("init bus done\n");
 
 	for(;;) {
 		esp_rom_delay_us(100000);

@@ -3,5 +3,5 @@
 #include "drivers/imu/icm20948.h"
 
 int (*spi_dev_probs[BUS_MAX_PROBS_NR])(struct bus_dev *dev) = {
-	icm20948_prob
+	icm20948_prob,
 };

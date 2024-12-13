@@ -17,11 +17,10 @@ void init_spi(struct bus *bus)
     };
 	ret=spi_bus_initialize(HSPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
     ESP_ERROR_CHECK(ret);
-
 	for (int i=0;i<priv->dev_count;i++) {
 		priv->dev_list[i].bus = bus;
 		priv->dev_list[i].priv = malloc(sizeof(struct spi_dev_priv));
-		dev_priv = SPI_DEV_GET_PRIV(&priv->dev_list[i].priv);
+		dev_priv = SPI_DEV_GET_PRIV(priv->dev_list[i].priv);
 		dev_priv->devcfg.clock_speed_hz = priv->speed;
 		dev_priv->devcfg.mode = 3;							// SPI mode 3
 		dev_priv->devcfg.spics_io_num = (gpio_num_t)priv->dev_list[i].address;				// CS pin
@@ -42,7 +41,7 @@ int spi_write(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, 
 {
 	int ret;
 	static struct spi_transaction_t trans;
-	struct spi_dev_priv *dev_priv = SPI_DEV_GET_PRIV(dev);
+	struct spi_dev_priv *dev_priv = SPI_DEV_GET_PRIV(dev->priv);
 
 	trans.tx_buffer = data;
 	trans.flags = 0;
@@ -60,7 +59,7 @@ int spi_write(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, 
 int spi_read(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, int len) {
 	int ret;
 	static struct spi_transaction_t trans;
-	struct spi_dev_priv *dev_priv = SPI_DEV_GET_PRIV(dev);
+	struct spi_dev_priv *dev_priv = SPI_DEV_GET_PRIV(dev->priv);
 
 	trans.flags = 0;
 	trans.addr = reg_addr;
