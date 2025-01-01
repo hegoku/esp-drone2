@@ -7,8 +7,8 @@
 #include "drivers/barometer/bmp280.h"
 #include "flight/flight.h"
 
-static int st_check_boundaries(int utemperature, int upressure);
-static int parse_sensor_data(const unsigned char *reg_data, int *temperature, unsigned int *pressure);
+static int _st_check_boundaries(int utemperature, int upressure);
+static int _parse_sensor_data(const unsigned char *reg_data, int *temperature, unsigned int *pressure);
 
 // Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
 int bmp280_compensate_T_int32(int adc_T, int *t_fine, struct bmp2_calib_param *calib_param)
@@ -88,7 +88,7 @@ int bmp280_get_sensor_data(struct barometer_sensor *sensor)
 	struct bmp280_baro_priv *priv = BMP280_GET_PRIV(sensor->priv);
 
 	bmp280_read(sensor->dev, BMP280_REG_PRESS_MSB, temp, 6);
-	if (parse_sensor_data(temp, &sensor->temperature.raw, &sensor->pressure.raw)==0) {
+	if (_parse_sensor_data(temp, &sensor->temperature.raw, &sensor->pressure.raw)==0) {
 		priv->compensated_temperature = bmp280_compensate_T_int32(sensor->temperature.raw, &priv->t_fine, &priv->calib_param);
 		sensor->temperature.value = ((float)priv->compensated_temperature) / 100.0;
 		priv->compensated_pressure = bmp280_compensate_P_int64(sensor->pressure.raw, priv->t_fine, &priv->calib_param);
@@ -108,7 +108,7 @@ int bmp280_get_sensor_data(struct barometer_sensor *sensor)
  *  @brief This internal API is used to parse the pressure and temperature
  *  data and store it in the bmp2_uncomp_data structure instance.
  */
-static int parse_sensor_data(const unsigned char *reg_data, int *temperature, unsigned int *pressure)
+static int _parse_sensor_data(const unsigned char *reg_data, int *temperature, unsigned int *pressure)
 {
     int rslt;
 
@@ -129,7 +129,7 @@ static int parse_sensor_data(const unsigned char *reg_data, int *temperature, un
     data_xlsb = (int)reg_data[5] >> 4;
     *temperature = (int)(data_msb | data_lsb | data_xlsb);
 
-    rslt = st_check_boundaries((int)*temperature, (int)*pressure);
+    rslt = _st_check_boundaries((int)*temperature, (int)*pressure);
 
     return rslt;
 }
@@ -138,7 +138,7 @@ static int parse_sensor_data(const unsigned char *reg_data, int *temperature, un
  * @This internal API checks whether the uncompensated temperature and
  * uncompensated pressure are within the range
  */
-static int st_check_boundaries(int utemperature, int upressure)
+static int _st_check_boundaries(int utemperature, int upressure)
 {
     int rslt;
 
