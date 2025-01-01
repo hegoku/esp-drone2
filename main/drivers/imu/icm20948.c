@@ -25,13 +25,6 @@ int icm20948_set_bank(struct bus_dev *dev, unsigned char bank)
 	return icm20948_write_reg_byte(dev, ICM20948_REG_REG_BANK_SEL, bank);
 }
 
-int icm20948_get_data_bulk(struct bus_dev *dev, unsigned char buf[14])
-{
-	icm20948_set_bank(dev, ICM20948_BANK_0);
-	icm20948_read_reg(dev, ICM20948_REG_ACCEL_XOUT_H, buf, 14);
-	return 0;
-}
-
 unsigned char icm20948_who_am_i(struct bus_dev *dev)
 {
 	unsigned char buf;
@@ -43,7 +36,7 @@ unsigned char icm20948_who_am_i(struct bus_dev *dev)
 int icm20948_sensor_read(struct imu_sensor *sensor)
 {
 	unsigned char buf[14];
-	icm20948_get_data_bulk(sensor->dev, buf);
+	icm20948_read_reg(sensor->dev, ICM20948_REG_ACCEL_XOUT_H, buf, 14);
 	sensor->accel.raw.x = (((unsigned short)buf[0] << 8) | buf[1]);
 	sensor->accel.raw.y = (((unsigned short)buf[2] << 8) | buf[3]);
 	sensor->accel.raw.z = (((unsigned short)buf[4] << 8) | buf[5]);
@@ -74,6 +67,8 @@ int icm20948_prob(struct bus_dev *dev)
 {
 	if (icm20948_who_am_i(dev)!=ICM20948_WHOAMI_VALUE)
 		return -1;
+
+	dev->name = "ICM20948";
 
 	icm20948_write_reg_byte(dev, ICM20948_REG_PWR_MGMT_1, 0x80); //reset
 	delay_ms(50);

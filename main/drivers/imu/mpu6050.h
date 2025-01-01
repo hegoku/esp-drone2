@@ -1,0 +1,42 @@
+#ifndef DRIVERS_IMU_MPU6050_H
+#define DRIVERS_IMU_MPU6050_H
+
+#include "bus/bus.h"
+
+#define MPU6050_I2C_ADDRESS1 (0x68<<1)
+#define MPU6050_I2C_ADDRESS2 (0x69<<1)
+
+#define MPU6050_WHOAMI_VALUE 0x68
+#define MPU6500_WHOAMI_VALUE 0x70
+
+#define MPU6050_REG_SMPLRT_DIV 0x19    //陀螺仪采样率，典型值：0x07(125Hz)
+#define MPU6050_REG_CONFIG 0x1A    //低通滤波频率，典型值：0x06(5Hz)
+#define MPU6050_REG_GYRO_CONFIG 0x1B    //陀螺仪自检及测量范围，典型值：0x18(不自检，2000deg/s)
+#define MPU6050_REG_ACCEL_CONFIG 0x1C    //加速计自检、测量范围及高通滤波频率，典型值：0x01(不自检，2G，5Hz)
+#define MPU6050_REG_INT_PIN_CFG 0x37 //中断/旁路设置寄存器
+#define MPU6050_REG_INT_ENABLE 0x38 //中断
+#define MPU6050_REG_INT_STATUS 0x3A
+#define MPU6050_REG_ACCEL_XOUT_H 0x3B
+#define MPU6050_REG_ACCEL_XOUT_L 0x3C
+#define MPU6050_REG_ACCEL_YOUT_H 0x3D
+#define MPU6050_REG_ACCEL_YOUT_L 0x3E
+#define MPU6050_REG_ACCEL_ZOUT_H 0x3F
+#define MPU6050_REG_ACCEL_ZOUT_L 0x40
+#define MPU6050_REG_TEMP_OUT_H 0x41
+#define MPU6050_REG_TEMP_OUT_L 0x42
+#define MPU6050_REG_GYRO_XOUT_H 0x43
+#define MPU6050_REG_GYRO_XOUT_L 0x44   
+#define MPU6050_REG_GYRO_YOUT_H 0x45
+#define MPU6050_REG_GYRO_YOUT_L 0x46
+#define MPU6050_REG_GYRO_ZOUT_H 0x47
+#define MPU6050_REG_GYRO_ZOUT_L 0x48
+#define MPU6050_REG_PWR_MGMT_1 0x6B    //电源管理，典型值：0x00(正常启用)
+#define MPU6050_REG_PWR_MGMT_2 0x6C    //电源管理2
+#define MPU6050_REG_WHO_AM_I 0x75
+
+#define MPU6050_ACCEL_RESOLUTION 16384.0f
+#define MPU6050_GYRO_RESOLUTION 16.4f
+
+int mpu6050_prob(struct bus_dev *dev);
+
+#endif
