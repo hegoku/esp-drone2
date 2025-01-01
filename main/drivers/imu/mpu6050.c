@@ -41,30 +41,26 @@ int mpu6050_sensor_read(struct imu_sensor *sensor)
 	sensor->gyro.raw.x = (((unsigned short)buf[12] << 8) | buf[13]);
 
 	sensor->temperature.raw = (((unsigned short)buf[6] << 8) | buf[7]);
-	return 0;
-}
 
-int mpu6050_sensor_convert_data(struct imu_sensor *sensor)
-{
-	sensor->accel.value.x = sensor->accel.filtered.x / MPU6050_ACCEL_RESOLUTION;
-	sensor->accel.value.y = sensor->accel.filtered.y / MPU6050_ACCEL_RESOLUTION;
-	sensor->accel.value.z = sensor->accel.filtered.z / MPU6050_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / MPU6050_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / MPU6050_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / MPU6050_ACCEL_RESOLUTION;
 
-	sensor->gyro.value.x = sensor->gyro.filtered.x / MPU6050_GYRO_RESOLUTION;
-	sensor->gyro.value.y = sensor->gyro.filtered.y / MPU6050_GYRO_RESOLUTION;
-	sensor->gyro.value.z = sensor->gyro.filtered.z / MPU6050_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / MPU6050_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6050_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6050_GYRO_RESOLUTION;
 
 	if (strcmp(sensor->name, "MPU6050")==0) {
-		sensor->temperature.value = 36.53 + (float)sensor->temperature.raw / 340.0;
+		sensor->temperature.value = 36.53 + ((float)sensor->temperature.raw) / 340.0;
 	} else {
-		sensor->temperature.value = 21.0 + (float)sensor->temperature.raw / 333.87;
+		sensor->temperature.value = 21.0 + ((float)sensor->temperature.raw) / 333.87;
 	}
 	return 0;
 }
 
 int mpu6050_prob(struct bus_dev *dev)
 {
-	unsigned char id = 0;
+	unsigned char id;
 	for (int i = MPU6050_I2C_ADDRESS1; i <= MPU6050_I2C_ADDRESS2; i++)
 	{
 		dev->address = i;
@@ -91,7 +87,6 @@ int mpu6050_prob(struct bus_dev *dev)
 		flight.imu.dev = dev;
 		flight.imu.read = mpu6050_sensor_read;
 
-		flight.imu.convert_data = mpu6050_sensor_convert_data;
 		flight.imu.status = IMU_STATUS_ON;
 		mpu6050_write_reg_byte(dev, MPU6050_REG_INT_ENABLE, 0x01);	// 开中断
 		return 0;

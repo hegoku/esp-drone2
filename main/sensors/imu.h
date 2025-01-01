@@ -18,7 +18,7 @@ struct imu_data {
 		float x;
 		float y;
 		float z;
-	} filtered;
+	} unfiltered;
 	struct {
 		float x;
 		float y;
@@ -47,7 +47,6 @@ struct imu_sensor {
 
 	struct bus_dev *dev;
 	int(*read)(struct imu_sensor *sensor);
-	int(*convert_data)(struct imu_sensor *sensor);
 };
 
 #endif

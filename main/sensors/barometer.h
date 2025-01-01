@@ -11,8 +11,15 @@ enum baro_status {
 struct barometer_sensor {
 	char *name;
 	enum baro_status status;
-	short pressure;
-	short temperature;
+	struct {
+		unsigned int raw;
+		float value;
+	} pressure;
+	struct {
+		int raw;
+		float value;
+	} temperature;
+	float altitude;
 	void *priv;
 
 	struct bus_dev *dev;
