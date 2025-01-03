@@ -3,9 +3,11 @@
 enum anotc_decode_status
 {
 	HEAD,
+	SRC_ADDR,
 	DST_ADDR,
 	FUNC,
-	LEN,
+	LEN1,
+	LEN2,
 	READ_DATA,
 	SUM_CHECK,
 	ADD_CHECK
@@ -14,19 +16,18 @@ enum anotc_decode_status
 struct anotc_decode_data
 {
 	enum anotc_decode_status status;
-	unsigned char frame_index;
-	unsigned char frame_read_count;
+	unsigned short frame_index;
+	unsigned short frame_read_count;
+	unsigned char sum_check;
+	unsigned char add_check;
+	union _un_anotc_v8_frame frame;
 };
 
 static struct anotc_decode_data _decode_data = {0};
 
 struct anotc_cb *anotc_callback = 0;
-static unsigned char frame[23] = {0};
-unsigned char func = 0;
-unsigned char sum_check = 0;
-unsigned char add_check = 0;
 
-static inline int _sum_check(unsigned char *data, unsigned char len, unsigned char sum_check, unsigned char add_check);
+static inline int _sum_check(struct anotc_frame *frame, unsigned char sum_check, unsigned char add_check);
 
 void register_anotc_cb(struct anotc_cb *cb)
 {
@@ -39,36 +40,41 @@ void anotc_decode(unsigned char *data, int count)
 	for (int i = 0; i < count; i++)
 	{
 		if (_decode_data.status==HEAD) {
-			if (data[i]!=0xAA) continue; //找帧头
-			frame[_decode_data.frame_index++] = 0xAA;
+			if (data[i]!=ANOTC_V8_HEAD) continue; //找帧头
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = ANOTC_V8_HEAD;
+			_decode_data.status = SRC_ADDR;
+		} else if (_decode_data.status==SRC_ADDR) { //源地址
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
 			_decode_data.status = DST_ADDR;
 		} else if (_decode_data.status==DST_ADDR) { //目标地址
-			frame[_decode_data.frame_index++] = data[i];
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
 			_decode_data.status = FUNC;
 		} else if (_decode_data.status == FUNC) { //func
-			frame[_decode_data.frame_index++] = data[i];
-			func = data[i];
-			_decode_data.status = LEN;
-		} else if (_decode_data.status == LEN) { //len
-			frame[_decode_data.frame_index++] = data[i];
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
+			_decode_data.status = LEN1;
+		} else if (_decode_data.status == LEN1) {
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
+			_decode_data.status = LEN2;
+		} else if (_decode_data.status == LEN2) {
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
 			_decode_data.status = READ_DATA;
 		} else if (_decode_data.status == READ_DATA) { //read data
-			frame[_decode_data.frame_index++] = data[i];
+			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
 			_decode_data.frame_read_count++;
-			if (_decode_data.frame_read_count==frame[3]) {
+			if (_decode_data.frame_read_count==_decode_data.frame.frame.len) {
 				_decode_data.status = SUM_CHECK;
 			}
 		} else if (_decode_data.status==SUM_CHECK) { //sc
-			sum_check = data[i];
+			_decode_data.sum_check = data[i];
 			_decode_data.status = ADD_CHECK;
 		} else if (_decode_data.status==ADD_CHECK) { //ac
-			add_check = data[i];
+			_decode_data.add_check = data[i];
 
 			//handle data
-			real_data = &frame[4];
-			if (_sum_check(frame, frame[3] + 4, sum_check, add_check))
+			real_data = &_decode_data.frame.rawBytes[ANOTC_V8_HEAD_SIZE];
+			if (_sum_check(&_decode_data.frame.frame, _decode_data.sum_check, _decode_data.add_check))
 			{
-				switch (func)
+				switch (_decode_data.frame.frame.fun)
 				{
 				case 0x40: //遥控器
 				{
@@ -80,7 +86,7 @@ void anotc_decode(unsigned char *data, int count)
 				case 0xE0:
 				{
 					if (anotc_callback!=0 && anotc_callback->cmd_handle!=0) {
-						anotc_callback->cmd_handle(real_data[0], &real_data[1], sum_check, add_check);
+						anotc_callback->cmd_handle(real_data[0], &real_data[1], _decode_data.sum_check, _decode_data.add_check);
 					}
 					break;
 				}
@@ -101,14 +107,14 @@ void anotc_decode(unsigned char *data, int count)
 					val = (real_data[5]<<24) | (real_data[4]<<16) | (real_data[3]<<8) | real_data[2];
 					if (anotc_callback != 0 && anotc_callback->write_config_handle != 0)
 					{
-						anotc_callback->write_config_handle(par_id, val, sum_check, add_check);
+						anotc_callback->write_config_handle(par_id, val, _decode_data.sum_check, _decode_data.add_check);
 					}
 					break;
                 }
 				case 0xE3: //custom cmd
 				{
 					if (anotc_callback!=0 && anotc_callback->cmd_handle!=0) {
-						anotc_callback->custom_cmd_handle(real_data[0], &real_data[1], sum_check, add_check);
+						anotc_callback->custom_cmd_handle(real_data[0], &real_data[1], _decode_data.sum_check, _decode_data.add_check);
 					}
 					break;
 				}
@@ -124,12 +130,12 @@ void anotc_decode(unsigned char *data, int count)
 	}
 }
 
-static inline int _sum_check(unsigned char *data, unsigned char len, unsigned char sum_check, unsigned char add_check)
+static inline int _sum_check(struct anotc_frame *frame, unsigned char sum_check, unsigned char add_check)
 {
     unsigned char s = 0;
     unsigned char a = 0;
-    for (unsigned char i=0; i<len; i++) {
-        s+=data[i];
+    for (int i=0; i<ANOTC_V8_HEAD_SIZE+frame->len; i++) {
+        s+=((unsigned char *)frame)[i];
         a+=s;
     }
 	if (s == sum_check && a == add_check)
