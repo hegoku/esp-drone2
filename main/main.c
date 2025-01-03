@@ -15,6 +15,7 @@ void app_main(void)
 	
 	init_bus_tree();
 	printf("init bus done\n");
+	print_bus_tree();
 
 	sys_timer_queue = xQueueCreate(5, sizeof( struct timeval ));
 	sys_timer_start();

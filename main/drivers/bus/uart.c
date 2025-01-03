@@ -16,3 +16,9 @@ void init_uart(struct bus *bus)
 	ESP_ERROR_CHECK(uart_param_config(priv->port, &uart_config));
 	uart_set_pin(priv->port, priv->tx, priv->rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 }
+
+int uart_write(struct bus_dev *dev, unsigned char *data, int len)
+{
+	struct uart_priv *priv = UART_GET_PRIV(dev->bus->priv);
+	return uart_write_bytes(priv->port, (const void*)data, len);
+}

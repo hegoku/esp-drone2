@@ -25,13 +25,6 @@ int icm20948_set_bank(struct bus_dev *dev, unsigned char bank)
 	return icm20948_write_reg_byte(dev, ICM20948_REG_REG_BANK_SEL, bank);
 }
 
-int icm20948_get_data_bulk(struct bus_dev *dev, unsigned char buf[14])
-{
-	icm20948_set_bank(dev, ICM20948_BANK_0);
-	icm20948_read_reg(dev, ICM20948_REG_ACCEL_XOUT_H, buf, 14);
-	return 0;
-}
-
 unsigned char icm20948_who_am_i(struct bus_dev *dev)
 {
 	unsigned char buf;
@@ -43,7 +36,7 @@ unsigned char icm20948_who_am_i(struct bus_dev *dev)
 int icm20948_sensor_read(struct imu_sensor *sensor)
 {
 	unsigned char buf[14];
-	icm20948_get_data_bulk(sensor->dev, buf);
+	icm20948_read_reg(sensor->dev, ICM20948_REG_ACCEL_XOUT_H, buf, 14);
 	sensor->accel.raw.x = (((unsigned short)buf[0] << 8) | buf[1]);
 	sensor->accel.raw.y = (((unsigned short)buf[2] << 8) | buf[3]);
 	sensor->accel.raw.z = (((unsigned short)buf[4] << 8) | buf[5]);
@@ -53,18 +46,14 @@ int icm20948_sensor_read(struct imu_sensor *sensor)
 	sensor->gyro.raw.x = (((unsigned short)buf[10] << 8) | buf[11]);
 
 	sensor->temperature.raw = (((unsigned short)buf[12] << 8) | buf[13]);
-	return 0;
-}
 
-int icm20948_sensor_convert_data(struct imu_sensor *sensor)
-{
-	sensor->accel.value.x = sensor->accel.filtered.x / ICM20948_ACCEL_RESOLUTION;
-	sensor->accel.value.y = sensor->accel.filtered.y / ICM20948_ACCEL_RESOLUTION;
-	sensor->accel.value.z = sensor->accel.filtered.z / ICM20948_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / ICM20948_GYRO_RESOLUTION;
+	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / ICM20948_GYRO_RESOLUTION;
+	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / ICM20948_GYRO_RESOLUTION;
 
-	sensor->gyro.value.x = sensor->gyro.filtered.x / ICM20948_GYRO_RESOLUTION;
-	sensor->gyro.value.y = sensor->gyro.filtered.y / ICM20948_GYRO_RESOLUTION;
-	sensor->gyro.value.z = sensor->gyro.filtered.z / ICM20948_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / ICM20948_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / ICM20948_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / ICM20948_GYRO_RESOLUTION;
 
 	sensor->temperature.value = 21.0 + (float)sensor->temperature.raw / 333.87;
 	return 0;
@@ -74,6 +63,8 @@ int icm20948_prob(struct bus_dev *dev)
 {
 	if (icm20948_who_am_i(dev)!=ICM20948_WHOAMI_VALUE)
 		return -1;
+
+	dev->name = "ICM20948";
 
 	icm20948_write_reg_byte(dev, ICM20948_REG_PWR_MGMT_1, 0x80); //reset
 	delay_ms(50);
@@ -98,7 +89,6 @@ int icm20948_prob(struct bus_dev *dev)
 	flight.imu.name = "ICM20948";
 	flight.imu.dev = dev;
 	flight.imu.read = icm20948_sensor_read;
-	flight.imu.convert_data = icm20948_sensor_convert_data;
 	flight.imu.status = IMU_STATUS_ON;
 
 	return 0;

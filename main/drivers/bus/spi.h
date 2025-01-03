@@ -15,6 +15,7 @@ struct spi_priv {
 	gpio_num_t miso;
 	gpio_num_t mosi;
 	gpio_num_t clk;
+	spi_host_device_t host_id;
 	int speed;
 	struct bus_dev dev_list[3];
 	char dev_count;

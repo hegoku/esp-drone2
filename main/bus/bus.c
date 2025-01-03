@@ -8,3 +8,8 @@ void bus_init(struct bus *bus_list, int len)
 		bus_list[i].init(&bus_list[i]);
 	}
 }
+
+void bus_add_dev(struct bus *bus, struct bus_dev *dev)
+{
+	bus->dev_list = dev;
+}
