@@ -10,4 +10,6 @@ struct flight {
 };
 
 extern struct flight flight;
+
+void init_flight();
 #endif

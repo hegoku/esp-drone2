@@ -90,6 +90,7 @@ int icm20948_prob(struct bus_dev *dev)
 	flight.imu.dev = dev;
 	flight.imu.read = icm20948_sensor_read;
 	flight.imu.status = IMU_STATUS_ON;
+	flight.imu.freq = 1125;
 
 	return 0;
 }
