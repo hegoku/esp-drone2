@@ -4,6 +4,7 @@
 #include <freertos/queue.h>
 #include <esp_timer.h>
 #include "clocksource/clocksource.h"
+#include "clocksource/default_source.h"
 
 extern QueueHandle_t sys_timer_queue;
 

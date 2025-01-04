@@ -47,6 +47,9 @@ struct imu_sensor {
 
 	struct bus_dev *dev;
 	int(*read)(struct imu_sensor *sensor);
+	unsigned short freq;
 };
 
+void init_imu(struct imu_sensor *sensor);
+void imu_filter(struct imu_sensor *sensor);
 #endif

@@ -1,3 +1,8 @@
-#include "flight.h"
+#include "flight/flight.h"
 
-struct flight flight = {0};
+struct flight flight;
+
+void init_flight()
+{
+	init_imu(&flight.imu);
+}

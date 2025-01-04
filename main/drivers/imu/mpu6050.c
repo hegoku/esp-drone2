@@ -88,6 +88,7 @@ int mpu6050_prob(struct bus_dev *dev)
 		flight.imu.read = mpu6050_sensor_read;
 
 		flight.imu.status = IMU_STATUS_ON;
+		flight.imu.freq = 1000;
 		mpu6050_write_reg_byte(dev, MPU6050_REG_INT_ENABLE, 0x01);	// 开中断
 		return 0;
 	}
