@@ -2,7 +2,7 @@
 #define ANOTC_H
 
 #define ANOTC_DATA_MAX_SIZE 512
-#define ANOTC_V8_HEAD_SIZE 7
+#define ANOTC_V8_HEAD_SIZE 6
 #define ANOTC_V8_HEAD 0xAB
 
 struct anotc_frame {
