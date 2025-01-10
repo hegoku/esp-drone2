@@ -63,7 +63,7 @@ int spi_read(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, i
 	struct spi_dev_priv *dev_priv = SPI_DEV_GET_PRIV(dev->priv);
 
 	trans.flags = 0;
-	trans.addr = reg_addr;
+	trans.addr = reg_addr | 0x80;
 	trans.length = len * 8;
 	trans.rxlength = len * 8;
 	trans.rx_buffer = data;

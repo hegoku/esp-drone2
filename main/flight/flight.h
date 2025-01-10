@@ -3,10 +3,12 @@
 
 #include "sensors/imu.h"
 #include "sensors/barometer.h"
+#include "sensors/compass.h"
 
 struct flight {
 	struct imu_sensor imu;
 	struct barometer_sensor baro;
+	struct compass_sensor compass;
 };
 
 extern struct flight flight;
