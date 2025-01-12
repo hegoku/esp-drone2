@@ -14,4 +14,5 @@ struct flight {
 extern struct flight flight;
 
 void init_flight();
+void flight_read_data();
 #endif

@@ -10,9 +10,9 @@ enum imu_status {
 
 struct imu_data {
 	struct {
-		unsigned short x;
-		unsigned short y;
-		unsigned short z;
+		short x;
+		short y;
+		short z;
 	} raw;
 	struct {
 		float x;
@@ -40,7 +40,7 @@ struct imu_sensor {
 	struct imu_data accel;
 	struct imu_data gyro;
 	struct {
-		unsigned short raw;
+		short raw;
 		float value;
 	} temperature;
 	void *priv;

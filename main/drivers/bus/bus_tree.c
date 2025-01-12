@@ -4,6 +4,8 @@
 #include "drivers/bus/uart.h"
 #include "drivers/bus/i2c.h"
 
+#include "drivers/anotc_uart.h"
+
 extern int (*spi_dev_probs[])(struct bus_dev *dev);
 extern int (*uart_dev_probs[])(struct bus_dev *dev);
 extern int (*i2c_dev_probs[])(struct bus_dev *dev);
@@ -24,9 +26,12 @@ struct spi_priv spi1_config = {
 
 struct uart_priv uart1_config = {
 	.baud_rate = 115200,
-	.tx=GPIO_NUM_1,
-	.rx=GPIO_NUM_3,
-	.port=UART_NUM_0
+	.tx_pin=GPIO_NUM_1,
+	.rx_pin=GPIO_NUM_3,
+	.port=UART_NUM_0,
+	.rx_buffer_size=1024,
+	.tx_buffer_size=1024,
+	.dev_init=anotc_uart_init
 };
 
 struct i2c_priv i2c1_config = {
