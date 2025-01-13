@@ -27,7 +27,8 @@ static unsigned int log_task_timer = 0;
 
 void log_task()
 {
-	for (int i = 0; i < sizeof(log_task_list) / sizeof(struct s_log_task);i++) {
+	for (int i = 0; i < sizeof(log_task_list) / sizeof(struct s_log_task); i++)
+	{
 		if (log_task_timer%log_task_list[i].time==0) {
 			log_task_list[i].func();
 		}
