@@ -6,6 +6,7 @@
 #include "clocksource/clocksource.h"
 #include "clocksource/default_source.h"
 #include "flight/flight.h"
+#include "task/task.h"
 
 QueueHandle_t sys_timer_queue;
 struct timeval sys_timer_time;
@@ -25,6 +26,8 @@ void app_main(void)
 	sys_timer_start();
 	for (;;) {
 		if (xQueueReceive(sys_timer_queue, &(sys_timer_time), portMAX_DELAY)){
+			flight_read_data();
+			log_task();
 		}
 	} 
 }

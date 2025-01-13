@@ -32,15 +32,15 @@ int icm20948_sensor_read(struct imu_sensor *sensor)
 {
 	unsigned char buf[14];
 	icm20948_read_reg(sensor->dev, ICM20948_REG_ACCEL_XOUT_H, buf, 14);
-	sensor->accel.raw.x = (((unsigned short)buf[0] << 8) | buf[1]);
-	sensor->accel.raw.y = (((unsigned short)buf[2] << 8) | buf[3]);
-	sensor->accel.raw.z = (((unsigned short)buf[4] << 8) | buf[5]);
+	sensor->accel.raw.x = (((short)buf[0] << 8) | buf[1]);
+	sensor->accel.raw.y = (((short)buf[2] << 8) | buf[3]);
+	sensor->accel.raw.z = (((short)buf[4] << 8) | buf[5]);
 
-	sensor->gyro.raw.x = (((unsigned short)buf[6] << 8) | buf[7]);
-	sensor->gyro.raw.x = (((unsigned short)buf[8] << 8) | buf[9]);
-	sensor->gyro.raw.x = (((unsigned short)buf[10] << 8) | buf[11]);
+	sensor->gyro.raw.x = (((short)buf[6] << 8) | buf[7]);
+	sensor->gyro.raw.x = (((short)buf[8] << 8) | buf[9]);
+	sensor->gyro.raw.x = (((short)buf[10] << 8) | buf[11]);
 
-	sensor->temperature.raw = (((unsigned short)buf[12] << 8) | buf[13]);
+	sensor->temperature.raw = (((short)buf[12] << 8) | buf[13]);
 
 	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / ICM20948_GYRO_RESOLUTION;
 	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / ICM20948_GYRO_RESOLUTION;
