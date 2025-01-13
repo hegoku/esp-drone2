@@ -18,18 +18,16 @@ void anotc_send_imu(short acc_x, short acc_y, short acc_z, short gyr_x, short gy
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }
 
-void anotc_send_mag_baro_temp(short mag_x, short mag_y, short mag_z, int alt_bar, float temp, unsigned char bar_sta, unsigned char mag_sta)
+void anotc_send_mag(short mag_x, short mag_y, short mag_z, float temp, unsigned char mag_sta)
 {
 	struct anotc_frame frame;
 	PREPARE_ANOTC_FRAME(frame);
-	frame.fun = ANOTC_FRAME_MAG_BAR_TEMP;
+	frame.fun = ANOTC_FRAME_MAG;
 
 	anotc_add_short(&frame, mag_x);
 	anotc_add_short(&frame, mag_y);
 	anotc_add_short(&frame, mag_z);
-	anotc_add_int(&frame, alt_bar);
 	anotc_add_short(&frame, (short)(temp*10));
-	frame.data[frame.len++] = bar_sta;
 	frame.data[frame.len++] = mag_sta;
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
@@ -53,7 +51,7 @@ void anotc_send_quaternion(float q1, float q2, float q3, float q4, unsigned char
 {
 	struct anotc_frame frame;
 	PREPARE_ANOTC_FRAME(frame);
-	frame.fun = ANOTC_FRAME_EULER;
+	frame.fun = ANOTC_FRAME_QUAT;
 
 	anotc_add_short(&frame, (short)(q1 * 10000));
 	anotc_add_short(&frame, (short)(q2*10000));
@@ -64,14 +62,15 @@ void anotc_send_quaternion(float q1, float q2, float q3, float q4, unsigned char
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }
 
-void anotc_send_alt(int alt_fu, int alt_add, unsigned char sta)
+void anotc_send_alt(int alt_baro, int alt_add, int alt_fu, unsigned char sta)
 {
 	struct anotc_frame frame;
 	PREPARE_ANOTC_FRAME(frame);
 	frame.fun = ANOTC_FRAME_ALT;
 
-	anotc_add_int(&frame, alt_fu);
+	anotc_add_int(&frame, alt_baro);
 	anotc_add_int(&frame, alt_add);
+	anotc_add_int(&frame, alt_fu);
 	frame.data[frame.len++] = sta;
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
