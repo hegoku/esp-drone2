@@ -1,4 +1,5 @@
 #include "anotc/anotc.h"
+#include "anotc/anotc_config_frame.h"
 
 enum anotc_decode_status
 {
@@ -76,46 +77,9 @@ void anotc_decode(unsigned char *data, int count)
 			{
 				switch (_decode_data.frame.frame.fun)
 				{
-				case 0x40: //遥控器
+				case ANOTC_FRAME_CONFIG_CMD: //遥控器
 				{
-					if (anotc_callback!=0 && anotc_callback->func_0x40_handle!=0) {
-						anotc_callback->func_0x40_handle(real_data);
-					}
-					break;
-				}
-				case 0xE0:
-				{
-					if (anotc_callback!=0 && anotc_callback->cmd_handle!=0) {
-						anotc_callback->cmd_handle(real_data[0], &real_data[1], _decode_data.sum_check, _decode_data.add_check);
-					}
-					break;
-				}
-                case 0xE1:
-                {
-					unsigned short int par_id;
-					par_id = (real_data[1]<<8) | real_data[0];
-					if (anotc_callback!=0 && anotc_callback->read_config_handle!=0) {
-						anotc_callback->read_config_handle(par_id);
-					}
-					break;
-                }
-                case 0xE2:
-                {
-                    unsigned short int par_id;
-					int val;
-					par_id = (real_data[1]<<8) | real_data[0];
-					val = (real_data[5]<<24) | (real_data[4]<<16) | (real_data[3]<<8) | real_data[2];
-					if (anotc_callback != 0 && anotc_callback->write_config_handle != 0)
-					{
-						anotc_callback->write_config_handle(par_id, val, _decode_data.sum_check, _decode_data.add_check);
-					}
-					break;
-                }
-				case 0xE3: //custom cmd
-				{
-					if (anotc_callback!=0 && anotc_callback->cmd_handle!=0) {
-						anotc_callback->custom_cmd_handle(real_data[0], &real_data[1], _decode_data.sum_check, _decode_data.add_check);
-					}
+					anotc_config_frame_cmd_handler(real_data);
 					break;
 				}
                 default:

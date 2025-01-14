@@ -9,7 +9,7 @@ idf_component_register(SRCS "main.c"
 	"flight/flight.c"
 	"misc/util.c"  "misc/iir_filter.c"
 	"clocksource/clocksource.c" "clocksource/default_source.c" "clocksource/imu_source.c"
-	"anotc/anotc.c" "anotc/anotc_other_frame.c" "anotc/anotc_rec_frame.c" "anotc/anotc_decode.c" "anotc/anotc_flight_frame.c" "anotc/anotc_rec_cmd_frame.c"
+	"anotc/anotc.c" "anotc/anotc_other_frame.c" "anotc/anotc_rec_frame.c" "anotc/anotc_decode.c" "anotc/anotc_flight_frame.c" "anotc/anotc_rec_cmd_frame.c" "anotc/anotc_config_frame.c"
 	"task/log.c"
 	REQUIRES "driver" "esp_timer" "esp_wifi"
                     INCLUDE_DIRS ".")
