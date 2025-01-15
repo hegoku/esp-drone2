@@ -10,7 +10,7 @@ void uart_read_task(void *param)
 	struct uart_priv *priv = UART_GET_PRIV(dev->bus->priv);
 	unsigned char* data = (unsigned char*) malloc(128);
     while (1) {
-        const int len = uart_read_bytes(UART_NUM_1, data, 128, 10);
+        const int len = uart_read_bytes(priv->port, data, 128, 10);
         if (len > 0) {
 			priv->read_handler(data, len);
 		}

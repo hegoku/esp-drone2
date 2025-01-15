@@ -1,9 +1,13 @@
 #ifndef ANOTC_H
 #define ANOTC_H
 
+#include <string.h>
+
 #define ANOTC_DATA_MAX_SIZE 512
 #define ANOTC_V8_HEAD_SIZE 6
 #define ANOTC_V8_HEAD 0xAB
+
+#define ANOTC_DEVICE_ID 0x1
 
 struct anotc_frame {
 	unsigned char head;
@@ -22,7 +26,7 @@ union _un_anotc_v8_frame{
 #define PREPARE_ANOTC_FRAME(frame) { \
 frame.head = ANOTC_V8_HEAD;\
 frame.s_addr = 0xAF;\
-frame.d_addr = 0x01;\
+frame.d_addr = ANOTC_DEVICE_ID;\
 frame.len = 0;\
 }
 
@@ -54,6 +58,12 @@ static inline void anotc_add_uint(struct anotc_frame *frame, unsigned int data)
 {
 	*(unsigned int*)(&(frame->data[frame->len])) = data;
 	frame->len += sizeof(unsigned int);
+}
+
+static inline void anotc_add_string(struct anotc_frame *frame, char *data)
+{
+	strncpy((char *)&(frame->data[frame->len]), data, strlen(data));
+	frame->len += strlen(data);
 }
 
 static inline void anotc_add_checksum(struct anotc_frame *frame)
