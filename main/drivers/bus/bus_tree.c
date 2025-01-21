@@ -15,11 +15,14 @@ struct spi_priv spi1_config = {
 	.mosi=GPIO_NUM_18,
 	.clk=GPIO_NUM_19,
 	.host_id=HSPI_HOST,
-	.speed=7*1000*1000,
-	.dev_count=1,
+	.speed=1000*1000,
+	.dev_count=2,
 	.dev_list={
 		{
 			.address=GPIO_NUM_5
+		},
+		{
+			.address=GPIO_NUM_17
 		}
 	}
 };
@@ -44,18 +47,18 @@ struct i2c_priv i2c1_config = {
 
 struct bus bus_tree[] = {
 	{
-		.name="uart1",
+		.name="UART1",
 		.priv=&uart1_config,
 		.init=init_uart
 	},
 	{
-		.name="spi1",
+		.name="SPI1",
 		.priv=&spi1_config,
 		.probs=&spi_dev_probs,
 		.init=init_spi
 	},
 	{
-		.name="i2c1",
+		.name="I2C1",
 		.priv=&i2c1_config,
 		.probs=&i2c_dev_probs,
 		.init=init_i2c

@@ -1,7 +1,7 @@
 idf_component_register(SRCS "main.c"
 	"bus/bus.c" "bus/spi_dev.c" "bus/i2c_dev.c"
 	"drivers/bus/bus_tree.c" "drivers/bus/spi.c" "drivers/bus/uart.c" "drivers/bus/i2c.c"
-	"drivers/imu/icm20948.c" "drivers/imu/mpu6050.c"
+	"drivers/imu/icm20948.c" "drivers/imu/mpu6050.c" "drivers/imu/mpu6500.c"
 	"drivers/barometer/bmp280.c"
 	"drivers/compass/lis3mdl.c"
 	"drivers/anotc_uart.c"

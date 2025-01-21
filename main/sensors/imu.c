@@ -23,7 +23,7 @@ void init_imu(struct imu_sensor *sensor)
 		iir_filter_init(&gyr_iir[i]);
 	}
 
-	sys_timer_set(imu_timer);
+	// sys_timer_set(imu_timer);
 }
 
 void imu_filter(struct imu_sensor *sensor)

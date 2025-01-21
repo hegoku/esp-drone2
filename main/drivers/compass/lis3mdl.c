@@ -2,6 +2,7 @@
 #include "sensors/compass.h"
 #include "bus/spi.h"
 #include "flight/flight.h"
+#include <stdio.h>
 
 int lis3mdl_read_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
 {
@@ -40,6 +41,7 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 
 int lis3mdl_prob(struct bus_dev *dev)
 {
+	printf("ca:%d\n", lis3mdl_who_am_i(dev));
 	if (lis3mdl_who_am_i(dev)!=LIS3MDL_WHOAMI_VALUE)
 		return -1;
 

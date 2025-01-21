@@ -77,7 +77,7 @@ void anotc_decode(unsigned char *data, int count)
 			{
 				switch (_decode_data.frame.frame.fun)
 				{
-				case ANOTC_FRAME_CONFIG_CMD: //遥控器
+				case ANOTC_FRAME_CONFIG_CMD:
 				{
 					anotc_config_frame_cmd_handler(real_data);
 					break;
