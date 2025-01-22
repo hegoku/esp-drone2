@@ -3,14 +3,12 @@
 
 #include "bus/bus.h"
 
-enum compass_status {
-	COMPASS_STATUS_OFF,
-	COMPASS_STATUS_ON
-};
+#define COMPASS_STATUS_ON 0x1
+#define COMPASS_STATUS_DTRY 0x02
 
 struct compass_sensor {
 	char *name;
-	enum compass_status status;
+	unsigned char status;
 	struct {
 		short x;
 		short y;
@@ -30,5 +28,8 @@ struct compass_sensor {
 	struct bus_dev *dev;
 	int(*read)(struct compass_sensor *sensor);
 };
+
+#define IS_COMPASS_ON(sensor) ((sensor).status & COMPASS_STATUS_ON)
+#define IS_COMPASS_DTRY(sensor) ((sensor).status & COMPASS_STATUS_DTRY)
 
 #endif

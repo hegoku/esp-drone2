@@ -1,10 +1,15 @@
+#include <string.h>
 #include "flight/flight.h"
+#include "flight/attitude.h"
 
 struct flight flight;
 
 void init_flight()
 {
+	memset((void*)&flight, 0, sizeof(struct flight));
+
 	init_imu(&flight.imu);
+	init_attitude();
 }
 
 void flight_read_data()
@@ -13,10 +18,15 @@ void flight_read_data()
 		flight.imu.read(&flight.imu);
 		imu_filter(&flight.imu);
 	}
-	if (flight.compass.status==COMPASS_STATUS_ON) {
+	if (IS_COMPASS_ON(flight.compass)) {
 		flight.compass.read(&flight.compass);
 	}
 	if (flight.baro.status==BARO_STATUS_ON) {
 		flight.baro.read(&flight.baro);
 	}
+}
+
+void flight_update()
+{
+	calculate_attitude();
 }

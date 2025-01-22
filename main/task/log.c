@@ -18,9 +18,15 @@ void send_flight_compass()
 	anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, flight.compass.status);
 }
 
+void send_flight_attitude()
+{
+	anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
+}
+
 static struct s_log_task log_task_list[] = {
 	{.time=10, .func=send_flight_imu},
-	{.time=13, .func=send_flight_compass}
+	{.time=13, .func=send_flight_compass},
+	{.time=10, .func=send_flight_attitude},
 };
 
 static unsigned int log_task_timer = 0;

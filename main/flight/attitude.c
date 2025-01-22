@@ -1,0 +1,32 @@
+#include "flight/flight.h"
+#include "attitude/MahonyAHRS.h"
+
+static struct mahony_ahrs mahony;
+
+void init_attitude()
+{
+	if (flight.imu.status!=IMU_STATUS_ON)
+		return;
+	mahony.q0 = 1.0;
+	mahony.q1 = 0.0;
+	mahony.q2 = 0.0;
+	mahony.q3 = 0.0;
+	mahony.twoKp = 100.0;
+	mahony.twoKi = 10.0;
+	mahony.sampleFreq = (float)flight.imu.freq;
+	mahony.integralFBx = 0.0;
+	mahony.integralFBy = 0.0;
+	mahony.integralFBz = 0.0;
+}
+
+void calculate_attitude()
+{
+	if (flight.imu.status!=IMU_STATUS_ON)
+		return;
+	MahonyAHRSupdate(flight.imu.accel.value.x, flight.imu.accel.value.y, flight.imu.accel.value.z, flight.imu.gyro.value.x, flight.imu.gyro.value.y, flight.imu.gyro.value.z, flight.compass.value.x, flight.compass.value.y, flight.compass.value.z, &mahony);
+
+	flight.attitude.q0 = mahony.q0;
+	flight.attitude.q1 = mahony.q1;
+	flight.attitude.q2 = mahony.q2;
+	flight.attitude.q3 = mahony.q3;
+}

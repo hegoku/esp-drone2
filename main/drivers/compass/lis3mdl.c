@@ -24,17 +24,25 @@ unsigned char lis3mdl_who_am_i(struct bus_dev *dev)
 int lis3mdl_sensor_read(struct compass_sensor *sensor)
 {
 	unsigned char buf[8];
-	lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_OUT_X_L, buf, 8);
-	sensor->raw.x = (((short)buf[1] << 8) | buf[0]);
-	sensor->raw.y = (((short)buf[3] << 8) | buf[2]);
-	sensor->raw.z = (((short)buf[5] << 8) | buf[4]);
+	lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_STATUS_REG, &buf[0], 1);
+	if (buf[0] & 0x8) {
+		lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_OUT_X_L, buf, 8);
+		sensor->raw.x = (((short)buf[1] << 8) | buf[0]);
+		sensor->raw.y = (((short)buf[3] << 8) | buf[2]);
+		sensor->raw.z = (((short)buf[5] << 8) | buf[4]);
 
-	sensor->value.x = ((float)sensor->raw.x) / LIS3MDL_RESOLUTION_4;
-	sensor->value.y = ((float)sensor->raw.y) / LIS3MDL_RESOLUTION_4;
-	sensor->value.z = ((float)sensor->raw.z) / LIS3MDL_RESOLUTION_4;
+		sensor->value.x = ((float)sensor->raw.x) / LIS3MDL_RESOLUTION_4;
+		sensor->value.y = ((float)sensor->raw.y) / LIS3MDL_RESOLUTION_4;
+		sensor->value.z = ((float)sensor->raw.z) / LIS3MDL_RESOLUTION_4;
 
-	sensor->temperature.raw = (((short)buf[13] << 8) | buf[12]);
-	sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0;
+		sensor->temperature.raw = (((short)buf[13] << 8) | buf[12]);
+		sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0;
+
+		sensor->status |= COMPASS_STATUS_DTRY;
+	} else {
+		sensor->status &= (~COMPASS_STATUS_DTRY);
+	}
+	
 	return 0;
 }
 
@@ -54,7 +62,7 @@ int lis3mdl_prob(struct bus_dev *dev)
 	flight.compass.name = "LIS3MDL";
 	flight.compass.dev = dev;
 	flight.compass.read = lis3mdl_sensor_read;
-	flight.compass.status = COMPASS_STATUS_ON;
+	flight.compass.status |= COMPASS_STATUS_ON;
 
 	return 0;
 }

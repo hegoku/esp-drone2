@@ -27,6 +27,7 @@ void app_main(void)
 	for (;;) {
 		if (xQueueReceive(sys_timer_queue, &(sys_timer_time), portMAX_DELAY)){
 			flight_read_data();
+			flight_update();
 			log_task();
 		}
 	} 
