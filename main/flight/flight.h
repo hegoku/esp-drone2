@@ -11,6 +11,11 @@ struct flight {
 	struct barometer_sensor baro;
 	struct compass_sensor compass;
 
+	struct {
+		float voltage;
+		float current;
+	} battery;
+
 	struct flight_attitude attitude;
 };
 

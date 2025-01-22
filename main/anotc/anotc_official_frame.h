@@ -27,6 +27,7 @@ void anotc_send_mag(short mag_x, short mag_y, short mag_z, float temp, unsigned 
 void anotc_send_euler(float roll, float pitch, float yaw, unsigned char fusion);
 void anotc_send_quaternion(float q1, float q2, float q3, float q4, unsigned char fusion);
 void anotc_send_alt(int alt_baro, int alt_add, int alt_fu, unsigned char sta);
+void anotc_send_battery(float voltage, float current);
 
 void anotc_send_rc(short channel[14]);
 

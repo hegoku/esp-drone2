@@ -8,25 +8,28 @@ struct s_log_task {
 	void (*func)();
 };
 
-void send_flight_imu()
+void send_flight_attitude()
 {
 	anotc_send_imu(flight.imu.accel.raw.x, flight.imu.accel.raw.y, flight.imu.accel.raw.z, flight.imu.gyro.raw.x, flight.imu.gyro.raw.y, flight.imu.gyro.raw.z, 0);
+	anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
 }
 
 void send_flight_compass()
 {
-	anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, flight.compass.status);
+	if (IS_COMPASS_DTRY(flight.compass)) {
+		anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, flight.compass.status);
+	}
 }
 
-void send_flight_attitude()
+void send_system_info()
 {
-	anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
+	anotc_send_battery(flight.battery.voltage, flight.battery.current);
 }
 
 static struct s_log_task log_task_list[] = {
-	{.time=10, .func=send_flight_imu},
-	{.time=13, .func=send_flight_compass},
+	{.time=1, .func=send_flight_compass},
 	{.time=10, .func=send_flight_attitude},
+	{.time=100, .func=send_system_info},
 };
 
 static unsigned int log_task_timer = 0;
