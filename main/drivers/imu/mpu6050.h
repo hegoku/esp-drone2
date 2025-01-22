@@ -3,8 +3,8 @@
 
 #include "bus/bus.h"
 
-#define MPU6050_I2C_ADDRESS1 (0x68<<1)
-#define MPU6050_I2C_ADDRESS2 (0x69<<1)
+#define MPU6050_I2C_ADDRESS1 0x68
+#define MPU6050_I2C_ADDRESS2 0x69
 
 #define MPU6050_WHOAMI_VALUE 0x68
 #define MPU6500_WHOAMI_VALUE 0x70
@@ -37,6 +37,7 @@
 #define MPU6050_ACCEL_RESOLUTION 16384.0f
 #define MPU6050_GYRO_RESOLUTION 16.4f
 
-int mpu6050_prob(struct bus_dev *dev);
+int mpu6050_i2c_prob(struct bus_dev *dev);
+int mpu6050_spi_prob(struct bus_dev *dev);
 
 #endif
