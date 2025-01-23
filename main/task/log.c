@@ -11,13 +11,14 @@ struct s_log_task {
 void send_flight_attitude()
 {
 	anotc_send_imu(flight.imu.accel.raw.x, flight.imu.accel.raw.y, flight.imu.accel.raw.z, flight.imu.gyro.raw.x, flight.imu.gyro.raw.y, flight.imu.gyro.raw.z, 0);
-	anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
+	// anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
+	anotc_send_euler(flight.attitude.roll, flight.attitude.pitch, flight.attitude.yaw, 0);
 }
 
 void send_flight_compass()
 {
 	if (IS_COMPASS_DTRY(flight.compass)) {
-		anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, flight.compass.status);
+		anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, IS_COMPASS_ON(flight.compass));
 	}
 }
 
