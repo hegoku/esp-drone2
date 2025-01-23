@@ -71,13 +71,8 @@ void mpu6500_init(struct bus_dev *dev, unsigned int id)
 	mpu6500_write_reg_byte(dev, MPU6050_REG_GYRO_CONFIG, 0x18);	// 陀螺椅传感器 2000deg/s
 	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_2, 0x00);	// xyz不进入待机
 	mpu6500_write_reg_byte(dev, MPU6050_REG_INT_PIN_CFG, 0x92);	// 低电平触发
-	if (id==MPU6050_WHOAMI_VALUE) {
-		flight.imu.name = "MPU6050";
-		dev->name = "MPU6050";
-	} else {
-		flight.imu.name = "MPU6500";
-		dev->name = "MPU6500";
-	}
+	flight.imu.name = "MPU6500";
+	dev->name = "MPU6500";
 	flight.imu.dev = dev;
 	flight.imu.read = mpu6500_sensor_read;
 
@@ -90,7 +85,7 @@ int mpu6500_spi_prob(struct bus_dev *dev)
 {
 	unsigned char id = mpu6500_who_am_i(dev);
 	printf("6500:%d\n", id);
-	if (id != MPU6050_WHOAMI_VALUE && id != MPU6500_WHOAMI_VALUE) {
+	if (id != MPU6500_WHOAMI_VALUE) {
 		return -1;
 	}
 

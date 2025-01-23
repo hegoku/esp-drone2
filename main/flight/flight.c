@@ -1,4 +1,3 @@
-#include <string.h>
 #include "flight/flight.h"
 #include "flight/attitude.h"
 
@@ -6,8 +5,6 @@ struct flight flight;
 
 void init_flight()
 {
-	memset((void*)&flight, 0, sizeof(struct flight));
-
 	init_imu(&flight.imu);
 	init_attitude();
 }

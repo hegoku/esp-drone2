@@ -11,5 +11,6 @@ void bus_init(struct bus *bus_list, int len)
 
 void bus_add_dev(struct bus *bus, struct bus_dev *dev)
 {
+	dev->next = bus->dev_list;
 	bus->dev_list = dev;
 }
