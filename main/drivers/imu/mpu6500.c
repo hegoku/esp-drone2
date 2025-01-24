@@ -52,11 +52,7 @@ int mpu6500_sensor_read(struct imu_sensor *sensor)
 	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6050_GYRO_RESOLUTION;
 	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6050_GYRO_RESOLUTION;
 
-	if (strcmp(sensor->name, "MPU6050")==0) {
-		sensor->temperature.value = 36.53 + ((float)sensor->temperature.raw) / 340.0;
-	} else {
-		sensor->temperature.value = 21.0 + ((float)sensor->temperature.raw) / 333.87;
-	}
+	sensor->temperature.value = 21.0 + ((float)sensor->temperature.raw) / 333.87;
 	return 0;
 }
 
