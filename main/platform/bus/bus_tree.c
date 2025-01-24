@@ -16,13 +16,16 @@ struct spi_priv spi1_config = {
 	.clk=GPIO_NUM_19,
 	.host_id=HSPI_HOST,
 	.speed=1000*1000,
-	.dev_count=2,
+	.dev_count=3,
 	.dev_list={
 		{
 			.address=GPIO_NUM_5
 		},
 		{
 			.address=GPIO_NUM_17
+		},
+		{
+			.address=GPIO_NUM_21
 		}
 	}
 };

@@ -31,5 +31,5 @@ void anotc_send_battery(float voltage, float current);
 
 void anotc_send_rc(short channel[14]);
 
-void anotc_send_log_string(enum anotc_log_string_color color, unsigned char *buf, int len);
+void anotc_send_log_string(enum anotc_log_string_color color, char *buf, int len);
 #endif

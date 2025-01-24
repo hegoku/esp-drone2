@@ -2,7 +2,7 @@
 #include "anotc/anotc.h"
 #include "anotc/anotc_official_frame.h"
 
-void anotc_send_log_string(enum anotc_log_string_color color, unsigned char *buf, int len)
+void anotc_send_log_string(enum anotc_log_string_color color, char *buf, int len)
 {
 	struct anotc_frame frame;
 	int send_len = 0;
