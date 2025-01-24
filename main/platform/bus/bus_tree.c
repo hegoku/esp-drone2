@@ -1,8 +1,8 @@
 #include <driver/gpio.h>
 #include <stdio.h>
-#include "drivers/bus/spi.h"
-#include "drivers/bus/uart.h"
-#include "drivers/bus/i2c.h"
+#include "platform/bus/spi.h"
+#include "platform/bus/uart.h"
+#include "platform/bus/i2c.h"
 
 #include "drivers/anotc_uart.h"
 

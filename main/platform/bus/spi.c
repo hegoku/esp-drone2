@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
-#include "drivers/bus/spi.h"
+#include "platform/bus/spi.h"
 
 void init_spi(struct bus *bus)
 {

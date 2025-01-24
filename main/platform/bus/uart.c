@@ -2,7 +2,7 @@
 #include <string.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include "drivers/bus/uart.h"
+#include "platform/bus/uart.h"
 
 void uart_read_task(void *param)
 {

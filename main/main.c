@@ -2,7 +2,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <sys/time.h>
-#include "drivers/bus/bus_tree.h"
+#include "platform/bus/bus_tree.h"
 #include "clocksource/clocksource.h"
 #include "clocksource/default_source.h"
 #include "flight/flight.h"

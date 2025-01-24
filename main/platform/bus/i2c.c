@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <driver/i2c.h>
-#include "drivers/bus/i2c.h"
+#include "platform/bus/i2c.h"
 
 void init_i2c(struct bus *bus)
 {

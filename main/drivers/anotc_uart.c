@@ -1,5 +1,4 @@
-#include "bus/uart.h"
-#include "drivers/bus/uart.h"
+#include "platform/bus/uart.h"
 #include "anotc/anotc.h"
 #include "drivers/anotc_uart.h"
 
