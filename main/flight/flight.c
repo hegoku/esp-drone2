@@ -6,6 +6,7 @@ struct flight flight;
 void init_flight()
 {
 	init_imu(&flight.imu);
+	init_baro(&flight.baro);
 	init_attitude();
 }
 
@@ -20,6 +21,8 @@ void flight_read_data()
 	}
 	if (IS_BARO_ON(flight.baro)) {
 		flight.baro.read(&flight.baro);
+		baro_pressure2altitude(&flight.baro);
+		baro_calcuate_altitude(&flight.baro);
 	}
 }
 

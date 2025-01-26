@@ -17,6 +17,7 @@ struct flight {
 	} battery;
 
 	struct flight_attitude attitude;
+	float altitude;
 };
 
 extern struct flight flight;

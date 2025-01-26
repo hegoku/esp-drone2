@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 #include <stdlib.h>
 #include "misc/util.h"
 #include "bus/spi.h"
@@ -108,8 +107,8 @@ int bmp280_get_sensor_data(struct barometer_sensor *sensor)
 			priv->compensated_pressure = bmp280_compensate_P_int64(sensor->pressure.raw, priv->t_fine, &priv->calib_param);
 			sensor->pressure.value = ((float)priv->compensated_pressure) / 256.0;
 			// bmp280_data.altitude = 44330.0 * (1.0-pow(bmp280_data.pressure/100.0/1018.7, 1.0f/5.255f)) * 100.0;
-			sensor->altitude = 44330.0 * (1.0-pow(sensor->pressure.value/100.0/1013.25, 1.0f/5.255f)) * 100.0;
-			// bmp280_data.altitude = ((powf(101325.0 / bmp280_data.pressure, 1.0 / 5.257) - 1) * (bmp280_data.temperature + 273.15)) / 0.000065;
+			// sensor->altitude = 44330.0 * (1.0-pow(sensor->pressure.value/100.0/1013.25, 1.0f/5.255f)) * 100.0;
+			// sensor->altitude = ((powf(101325.0 / sensor->pressure.value, 1.0 / 5.257) - 1) * (sensor->temperature.value + 273.15)) / 0.000065;
 			sensor->status |= BARO_STATUS_DTRY;
 			return 0;
 		}
