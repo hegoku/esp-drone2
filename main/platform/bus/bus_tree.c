@@ -11,10 +11,10 @@ extern int (*uart_dev_probs[])(struct bus_dev *dev);
 extern int (*i2c_dev_probs[])(struct bus_dev *dev);
 
 struct spi_priv spi1_config = {
-	.miso=GPIO_NUM_16,
-	.mosi=GPIO_NUM_18,
-	.clk=GPIO_NUM_19,
-	.host_id=HSPI_HOST,
+	.miso=GPIO_NUM_19,
+	.mosi=GPIO_NUM_23,
+	.clk=GPIO_NUM_18,
+	.host_id=VSPI_HOST,
 	.speed=1000*1000,
 	.dev_count=3,
 	.dev_list={

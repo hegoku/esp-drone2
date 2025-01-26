@@ -20,6 +20,9 @@ void send_flight_compass()
 	if (IS_COMPASS_DTRY(flight.compass)) {
 		anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, IS_COMPASS_ON(flight.compass));
 	}
+	if (IS_BARO_DTRY(flight.baro)) {
+		anotc_send_alt((int)flight.baro.altitude, 0, 0, 0);
+	}
 }
 
 void send_system_info()
