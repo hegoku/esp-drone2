@@ -58,7 +58,14 @@ int mpu6500_sensor_read(struct imu_sensor *sensor)
 
 void mpu6500_init(struct bus_dev *dev, unsigned int id)
 {
-	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0x00);
+	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0x80);
+	delay_ms(100);
+	mpu6500_write_reg_byte(dev, MPU6050_REG_SIGNAL_PATH_RESET, 0x7);
+	delay_ms(100);
+	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0);
+	delay_ms(100);
+	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0x1);
+	delay_ms(15);
 	// mpu6500_write_reg_byte(dev, MPU6050_REG_SMPLRT_DIV, 0x07); //陀螺采样, 200Hz 125HZ
 	// mpu6500_write_reg_byte(dev, MPU6050_REG_SMPLRT_DIV, 0x01); //陀螺采样, 500HZ
 	mpu6500_write_reg_byte(dev, MPU6050_REG_SMPLRT_DIV, 0x00);	// 陀螺采样, 1000HZ MPU6050_SAMPLE_RATE

@@ -3,14 +3,12 @@
 
 #include "bus/bus.h"
 
-enum baro_status {
-	BARO_STATUS_OFF,
-	BARO_STATUS_ON
-};
+#define BARO_STATUS_ON 0x1
+#define BARO_STATUS_DTRY 0x2
 
 struct barometer_sensor {
 	char *name;
-	enum baro_status status;
+	unsigned char status;
 	struct {
 		unsigned int raw;
 		float value;
@@ -25,5 +23,8 @@ struct barometer_sensor {
 	struct bus_dev *dev;
 	int(*read)(struct barometer_sensor *sensor);
 };
+
+#define IS_BARO_ON(sensor) ((sensor).status & BARO_STATUS_ON)
+#define IS_BARO_DTRY(sensor) ((sensor).status & BARO_STATUS_DTRY)
 
 #endif

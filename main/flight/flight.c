@@ -18,7 +18,7 @@ void flight_read_data()
 	if (IS_COMPASS_ON(flight.compass)) {
 		flight.compass.read(&flight.compass);
 	}
-	if (flight.baro.status==BARO_STATUS_ON) {
+	if (IS_BARO_ON(flight.baro)) {
 		flight.baro.read(&flight.baro);
 	}
 }

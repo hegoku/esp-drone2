@@ -178,13 +178,22 @@ struct bmp2_calib_param
     int t_fine;
 };
 
-struct bmp280_baro_priv {
+enum BMP280_STATUS
+{
+	BMP280_STATUS_MEASURE,
+	BMP280_STATUS_DATA
+};
+
+struct bmp280_baro_priv
+{
 	//t_fine carries fine temperature as global value
 	int t_fine;
 	int compensated_temperature;
 	unsigned int compensated_pressure;
 
 	struct bmp2_calib_param calib_param;
+
+	enum BMP280_STATUS status;
 };
 
 #define BMP280_GET_PRIV(x) ((struct bmp280_baro_priv*)x)

@@ -12,8 +12,8 @@ void init_attitude()
 	mahony.q1 = 0.0;
 	mahony.q2 = 0.0;
 	mahony.q3 = 0.0;
-	mahony.twoKp = 409.5;
-	mahony.twoKi = 0.002;
+	mahony.twoKp = 409.5 * 2.0;
+	mahony.twoKi = 0.002 * 2.0;
 	mahony.sampleFreq = (float)flight.imu.freq;
 	mahony.integralFBx = 0.0;
 	mahony.integralFBy = 0.0;
@@ -33,7 +33,7 @@ void calculate_attitude()
 
 	flight.attitude.roll = atan2f(2.0f*(flight.attitude.q0*flight.attitude.q1+ flight.attitude.q2*flight.attitude.q3), flight.attitude.q0*flight.attitude.q0 - flight.attitude.q1*flight.attitude.q1 - flight.attitude.q2*flight.attitude.q2 + flight.attitude.q3*flight.attitude.q3)* 57.2958;
 	flight.attitude.pitch = asinf(2.0f*(flight.attitude.q1*flight.attitude.q3 - flight.attitude.q0*flight.attitude.q2))* 57.2958;
-	if (IS_COMPASS_ON(flight.compass)) {
+	if (IS_COMPASS_DTRY(flight.compass)) {
 		flight.attitude.yaw = -atan2f(2.0f*(flight.attitude.q1*flight.attitude.q2 + flight.attitude.q0*flight.attitude.q3), flight.attitude.q0*flight.attitude.q0 + flight.attitude.q1*flight.attitude.q1 - flight.attitude.q2*flight.attitude.q2 - flight.attitude.q3*flight.attitude.q3)* 57.2958;
 	}
 }

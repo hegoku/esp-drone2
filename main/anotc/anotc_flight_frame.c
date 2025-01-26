@@ -1,5 +1,6 @@
 #include "anotc/anotc.h"
 #include "anotc/anotc_official_frame.h"
+#include <stdio.h>
 
 void anotc_send_imu(short acc_x, short acc_y, short acc_z, short gyr_x, short gyr_y, short gry_z, unsigned char shock)
 {

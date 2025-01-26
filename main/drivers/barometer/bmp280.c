@@ -87,21 +87,39 @@ int bmp280_get_sensor_data(struct barometer_sensor *sensor)
 	unsigned char temp[6];
 	struct bmp280_baro_priv *priv = BMP280_GET_PRIV(sensor->priv);
 
-	bmp280_read(sensor->dev, BMP280_REG_PRESS_MSB, temp, 6);
-	if (_parse_sensor_data(temp, &sensor->temperature.raw, &sensor->pressure.raw)==0) {
-		priv->compensated_temperature = bmp280_compensate_T_int32(sensor->temperature.raw, &priv->t_fine, &priv->calib_param);
-		sensor->temperature.value = ((float)priv->compensated_temperature) / 100.0;
-		priv->compensated_pressure = bmp280_compensate_P_int64(sensor->pressure.raw, priv->t_fine, &priv->calib_param);
-		sensor->pressure.value = ((float)priv->compensated_pressure) / 256.0;
-		// bmp280_data.altitude = 44330.0 * (1.0-pow(bmp280_data.pressure/100.0/1018.7, 1.0f/5.255f)) * 100.0;
-	// sensor->altitude = 44330.0 * (1.0-pow(sensor->pressure.value/100.0/1013.25, 1.0f/5.255f)) * 100.0;
-		// bmp280_data.altitude = ((powf(101325.0 / bmp280_data.pressure, 1.0 / 5.257) - 1) * (bmp280_data.temperature + 273.15)) / 0.000065;
-		return 0;
+	if (priv->status==BMP280_STATUS_MEASURE) {
+		sensor->status &= ~BARO_STATUS_DTRY;
+		bmp280_write_byte(sensor->dev, BMP280_REG_CTRL_MEAS ^ BMP2_SPI_RD_MASK, (BMP280_OSRS_2X<<5)| (BMP280_OSRS_16X<<2) | BMP280_MODE_FORCED0);
+		priv->status = BMP280_STATUS_DATA;
 	}
 	else
 	{
-		return -1;
+		bmp280_read(sensor->dev, BMP280_REG_STATUS, temp, 1);
+		
+		if (temp[0] & 0x8) {
+			return 0;
+		}
+
+		priv->status = BMP280_STATUS_MEASURE;
+		bmp280_read(sensor->dev, BMP280_REG_PRESS_MSB, temp, 6);
+		if (_parse_sensor_data(temp, &sensor->temperature.raw, &sensor->pressure.raw)==0) {
+			priv->compensated_temperature = bmp280_compensate_T_int32(sensor->temperature.raw, &priv->t_fine, &priv->calib_param);
+			sensor->temperature.value = ((float)priv->compensated_temperature) / 100.0;
+			priv->compensated_pressure = bmp280_compensate_P_int64(sensor->pressure.raw, priv->t_fine, &priv->calib_param);
+			sensor->pressure.value = ((float)priv->compensated_pressure) / 256.0;
+			// bmp280_data.altitude = 44330.0 * (1.0-pow(bmp280_data.pressure/100.0/1018.7, 1.0f/5.255f)) * 100.0;
+			sensor->altitude = 44330.0 * (1.0-pow(sensor->pressure.value/100.0/1013.25, 1.0f/5.255f)) * 100.0;
+			// bmp280_data.altitude = ((powf(101325.0 / bmp280_data.pressure, 1.0 / 5.257) - 1) * (bmp280_data.temperature + 273.15)) / 0.000065;
+			sensor->status |= BARO_STATUS_DTRY;
+			return 0;
+		}
+		else
+		{
+			sensor->status &= ~BARO_STATUS_DTRY;
+			return -1;
+		}
 	}
+	return 0;
 }
 
 /*!
@@ -183,6 +201,7 @@ int bmp280_prob(struct bus_dev *dev)
 	flight.baro.status = BARO_STATUS_ON;
 	flight.baro.read = bmp280_get_sensor_data;
 	flight.baro.priv = malloc(sizeof(struct bmp280_baro_priv));
+	memset(flight.baro.priv, 0, sizeof(struct bmp280_baro_priv));
 
 	get_calib_param(dev, &(BMP280_GET_PRIV(flight.baro.priv)->calib_param));
 	bmp280_write_byte(dev, BMP280_REG_CONFIG ^ BMP2_SPI_RD_MASK, (BMP280_STANDBY_0_5MS << 5) | (BMP2_FILTER_COEFF_16 << 2) | BMP2_SPI3_WIRE_DISABLE);
