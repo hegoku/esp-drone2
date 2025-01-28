@@ -32,7 +32,7 @@ void send_system_info()
 
 static struct s_log_task log_task_list[] = {
 	{.time=1, .func=send_flight_compass},
-	{.time=10, .func=send_flight_attitude},
+	{.time=1, .func=send_flight_attitude},
 	{.time=100, .func=send_system_info},
 };
 

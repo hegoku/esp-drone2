@@ -31,7 +31,7 @@ struct spi_priv spi1_config = {
 };
 
 struct uart_priv uart1_config = {
-	.baud_rate = 115200,
+	.baud_rate = 460800,
 	.tx_pin=GPIO_NUM_1,
 	.rx_pin=GPIO_NUM_3,
 	.port=UART_NUM_0,
