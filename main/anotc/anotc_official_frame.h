@@ -1,6 +1,7 @@
 #ifndef ANOTC_OFFICIAL_FRAME_H_
 #define ANOTC_OFFICIAL_FRAME_H_
 
+#define ANOTC_FRAME_FRAME_CHECK 0x0
 #define ANOTC_FRAME_IMU 0x1
 #define ANOTC_FRAME_MAG 0x2
 #define ANOTC_FRAME_EULER 0x3
@@ -22,6 +23,7 @@ enum anotc_log_string_color{
 	GREEN
 };
 
+void anotc_send_frame_check(unsigned char id, unsigned char sc, unsigned char ac);
 void anotc_send_imu(short acc_x, short acc_y, short acc_z, short gyr_x, short gyr_y, short gry_z, unsigned char shock);
 void anotc_send_mag(short mag_x, short mag_y, short mag_z, float temp, unsigned char mag_sta);
 void anotc_send_euler(float roll, float pitch, float yaw, unsigned char fusion);

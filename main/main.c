@@ -7,16 +7,19 @@
 #include "clocksource/default_source.h"
 #include "flight/flight.h"
 #include "task/task.h"
+#include "misc/config.h"
+#include "drivers/wifi.h"
 
 QueueHandle_t sys_timer_queue;
 struct timeval sys_timer_time;
 
 void app_main(void)
 {
+	init_config();
+	init_wifi();
 	sys_timer_set(default_timer);
 	
 	init_bus_tree();
-	printf("init bus done\n");
 	print_bus_tree();
 
 	init_flight();

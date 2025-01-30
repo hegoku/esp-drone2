@@ -37,7 +37,6 @@ void register_anotc_cb(struct anotc_cb *cb)
 
 void anotc_decode(unsigned char *data, int count)
 {
-	unsigned char *real_data = 0;
 	for (int i = 0; i < count; i++)
 	{
 		if (_decode_data.status==HEAD) {
@@ -72,16 +71,15 @@ void anotc_decode(unsigned char *data, int count)
 			_decode_data.add_check = data[i];
 
 			//handle data
-			real_data = &_decode_data.frame.rawBytes[ANOTC_V8_HEAD_SIZE];
 			if (_sum_check(&_decode_data.frame.frame, _decode_data.sum_check, _decode_data.add_check))
 			{
 				switch (_decode_data.frame.frame.fun)
 				{
 				case ANOTC_FRAME_CONFIG_CMD:
-				{
-					anotc_config_frame_cmd_handler(real_data);
+					anotc_config_frame_read_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
 					break;
-				}
+				case ANOTC_FRAME_CONFIG_READ_WRITE:
+					anotc_config_frame_write_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
                 default:
                     break;
 				}
