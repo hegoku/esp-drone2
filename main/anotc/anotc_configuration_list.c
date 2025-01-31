@@ -1,6 +1,6 @@
 #include "misc/config.h"
 
-#include "drivers/wifi.h"
+#include "platform/drivers/wifi.h"
 #include "flight/flight.h"
 
 enum ANOTC_CONFIG_INFO_PAR_ID {
