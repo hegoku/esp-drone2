@@ -1,5 +1,5 @@
-#ifndef DRIVERS_WIFI_H
-#define DRIVERS_WIFI_H
+#ifndef PLATFORM_DRIVERS_WIFI_H
+#define PLATFORM_DRIVERS_WIFI_H
 
 void wifi_set_name(char *name);
 char* wifi_get_name();
