@@ -30,10 +30,8 @@ void config_begin_transaction()
 
 void config_commit()
 {
-    if (is_in_transaction==1) {
-        nvs_commit(my_handle);
-        is_in_transaction = 0;
-    }
+    nvs_commit(my_handle);
+    is_in_transaction = 0;
 }
 
 void config_write_uchar(char *key, unsigned char value)
