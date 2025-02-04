@@ -59,7 +59,9 @@ void anotc_decode(unsigned char *data, int count)
 			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
 			_decode_data.status = READ_DATA;
 		} else if (_decode_data.status == READ_DATA) { //read data
-			_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
+			if (_decode_data.frame_read_count<ANOTC_DATA_MAX_SIZE) {
+				_decode_data.frame.rawBytes[_decode_data.frame_index++] = data[i];
+			}
 			_decode_data.frame_read_count++;
 			if (_decode_data.frame_read_count==_decode_data.frame.frame.len) {
 				_decode_data.status = SUM_CHECK;
@@ -70,18 +72,20 @@ void anotc_decode(unsigned char *data, int count)
 		} else if (_decode_data.status==ADD_CHECK) { //ac
 			_decode_data.add_check = data[i];
 
-			//handle data
-			if (_sum_check(&_decode_data.frame.frame, _decode_data.sum_check, _decode_data.add_check))
-			{
-				switch (_decode_data.frame.frame.fun)
+			if (_decode_data.frame_read_count<=ANOTC_DATA_MAX_SIZE) {
+				//handle data
+				if (_sum_check(&_decode_data.frame.frame, _decode_data.sum_check, _decode_data.add_check))
 				{
-				case ANOTC_FRAME_CONFIG_CMD:
-					anotc_config_frame_read_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
-					break;
-				case ANOTC_FRAME_CONFIG_READ_WRITE:
-					anotc_config_frame_write_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
-                default:
-                    break;
+					switch (_decode_data.frame.frame.fun)
+					{
+					case ANOTC_FRAME_CONFIG_CMD:
+						anotc_config_frame_read_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
+						break;
+					case ANOTC_FRAME_CONFIG_READ_WRITE:
+						anotc_config_frame_write_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
+					default:
+						break;
+					}
 				}
 			}
 
