@@ -14,6 +14,7 @@
 
 QueueHandle_t sys_timer_queue;
 struct timeval sys_timer_time;
+struct timeval finish_loop;
 
 int anotc_log(const char * format, va_list arg)
 {
@@ -30,7 +31,7 @@ void app_main(void)
 {
 	init_config();
 	init_wifi();
-	sys_timer_set(default_timer);
+	sys_timer_set(&default_timer);
 	
 	init_bus_tree();
 	print_bus_tree();
@@ -46,6 +47,8 @@ void app_main(void)
 		if (xQueueReceive(sys_timer_queue, &(sys_timer_time), portMAX_DELAY)){
 			flight_read_data();
 			flight_update();
+			gettimeofday(&finish_loop, NULL);
+			flight.system_info.cpu_load = (((float)finish_loop.tv_sec) + ((float)finish_loop.tv_usec) / 1000000.0 - ((float)sys_timer_time.tv_sec) + ((float)sys_timer_time.tv_usec) / 1000000.0) * (float)(sys_timer_get()->freq);
 			log_task();
 		}
 	} 

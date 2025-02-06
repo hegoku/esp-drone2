@@ -17,7 +17,7 @@ static void default_sys_timer(void *arg)
 	xQueueSend(sys_timer_queue, &tv, 0);
 }
 
-void default_timer()
+void default_timer_start()
 {
 	esp_timer_create_args_t periodic_timer_args = {
             .callback = &default_sys_timer,
@@ -27,3 +27,9 @@ void default_timer()
     ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
 	ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 1000));
 }
+
+struct clocksource default_timer = {
+	.name = "default",
+	.freq = 1000,
+	.start = default_timer_start
+};

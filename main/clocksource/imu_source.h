@@ -3,6 +3,6 @@
 
 #include "clocksource/clocksource.h"
 
-void imu_timer();
+extern struct clocksource imu_timer;
 
 #endif

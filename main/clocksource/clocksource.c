@@ -1,13 +1,18 @@
 #include "clocksource/clocksource.h"
 
-static void (*_start_sys_timer)();
+static struct clocksource *_sys_timer;
 
-void sys_timer_set(void (*start_func)())
+void sys_timer_set(struct clocksource *source)
 {
-	_start_sys_timer = start_func;
+	_sys_timer = source;
 }
 
 void sys_timer_start()
 {
-	_start_sys_timer();
+	_sys_timer->start();
+}
+
+struct clocksource* sys_timer_get()
+{
+	return _sys_timer;
 }

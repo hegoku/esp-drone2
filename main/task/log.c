@@ -21,7 +21,7 @@ void send_flight_compass()
 		anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, IS_COMPASS_ON(flight.compass));
 	}
 	if (IS_BARO_READYTOUSE(flight.baro)) {
-		anotc_send_alt((int)flight.baro.altitude, 0, 0, 0);
+		anotc_send_alt((int)flight.baro.altitude, 0, (int)flight.altitude, 0);
 	}
 }
 

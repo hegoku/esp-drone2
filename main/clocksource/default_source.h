@@ -3,6 +3,6 @@
 
 #include "clocksource/clocksource.h"
 
-void default_timer();
+extern struct clocksource default_timer;
 
 #endif

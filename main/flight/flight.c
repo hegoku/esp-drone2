@@ -1,10 +1,12 @@
 #include "flight/flight.h"
 #include "flight/attitude.h"
+#include "flight/altitude.h"
 
 struct flight flight;
 
 void init_flight()
 {
+	flight.status = FLIGHT_STATUS_READY;
 	init_imu(&flight.imu);
 	init_baro(&flight.baro);
 	init_attitude();
@@ -14,6 +16,7 @@ void flight_read_data()
 {
 	if (flight.imu.status==IMU_STATUS_ON) {
 		flight.imu.read(&flight.imu);
+		imu_calibration(&flight.imu);
 		imu_filter(&flight.imu);
 	}
 	if (IS_COMPASS_ON(flight.compass)) {
@@ -29,4 +32,5 @@ void flight_read_data()
 void flight_update()
 {
 	calculate_attitude();
+	calculate_altitude();
 }

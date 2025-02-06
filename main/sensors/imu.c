@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "sensors/imu.h"
 #include "flight/flight.h"
 #include "misc/iir_filter.h"
@@ -40,7 +39,8 @@ void init_imu(struct imu_sensor *sensor)
 	config_read_float("gyro_offset.y", &(sensor->gyro.calibration.y_offset));
 	config_read_float("gyro_offset.z", &(sensor->gyro.calibration.z_offset));
 
-	// sys_timer_set(imu_timer);
+	imu_timer.freq = sensor->freq;
+	sys_timer_set(&imu_timer);
 }
 
 void imu_filter(struct imu_sensor *sensor)
@@ -58,4 +58,13 @@ void imu_filter(struct imu_sensor *sensor)
 	sensor->gyro.value.x = iir_filter(&gyr_iir[0], sensor->gyro.unfiltered.x);
 	sensor->gyro.value.y = iir_filter(&gyr_iir[1], sensor->gyro.unfiltered.y);
 	sensor->gyro.value.z = iir_filter(&gyr_iir[2], sensor->gyro.unfiltered.z);
+}
+
+void imu_calibration(struct imu_sensor *sensor)
+{
+	if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL) {
+			
+	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_GYRO) {
+		
+	}
 }

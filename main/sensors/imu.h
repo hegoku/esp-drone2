@@ -52,4 +52,5 @@ struct imu_sensor {
 
 void init_imu(struct imu_sensor *sensor);
 void imu_filter(struct imu_sensor *sensor);
+void imu_calibration(struct imu_sensor *sensor);
 #endif
