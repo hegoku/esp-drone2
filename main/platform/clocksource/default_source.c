@@ -12,9 +12,8 @@ esp_timer_handle_t periodic_timer;
 
 static void default_sys_timer(void *arg)
 {
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	xQueueSend(sys_timer_queue, &tv, 0);
+	int a = 0;
+	xQueueSend(sys_timer_queue, &a, 0);
 }
 
 void default_timer_start()

@@ -1,5 +1,6 @@
 #include "anotc/anotc.h"
 #include "anotc/anotc_config_frame.h"
+#include "anotc/anotc_cmd_frame.h"
 
 enum anotc_decode_status
 {
@@ -83,6 +84,10 @@ void anotc_decode(unsigned char *data, int count)
 						break;
 					case ANOTC_FRAME_CONFIG_READ_WRITE:
 						anotc_config_frame_write_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
+						break;
+					case ANOTC_FRAME_CMD_SEND:
+						anotc_cmd_frame_send_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
+						break;
 					default:
 						break;
 					}

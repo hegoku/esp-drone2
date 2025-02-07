@@ -5,6 +5,7 @@
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
 #include "flight/attitude.h"
+#include "mixer/mixer.h"
 
 enum flight_status {
 	FLIGHT_STATUS_READY,
@@ -30,10 +31,13 @@ struct flight {
 	float altitude;
 
 	struct {
+		unsigned char drone_center_connect;
 		float cpu_load;
 	} system_info;
 
 	enum flight_status status;
+
+	struct mixer *mixer;
 };
 
 extern struct flight flight;
@@ -43,4 +47,5 @@ extern struct flight flight;
 void init_flight();
 void flight_read_data();
 void flight_update();
+void flight_control();
 #endif

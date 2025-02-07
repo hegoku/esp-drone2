@@ -17,94 +17,122 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Z
 };
 
+char* set_wifi_name(void *value)
+{
+	if (strlen(value)>32) {
+		return "Wifi name must less than 32 characters";
+	}
+	wifi_set_name(value);
+	return 0;
+}
+
+char* set_wifi_pwd(void *value)
+{
+	if (strlen(value)>64) {
+		return "Wifi pwd must less than 32 characters";
+	}
+	wifi_set_password(value);
+	return 0;
+}
+
+
 void* get_accel_calibration_x_k()
 {
 	return (void*)&(flight.imu.accel.calibration.x_k);
 }
-void set_accel_calibration_x_k(void *value)
+char* set_accel_calibration_x_k(void *value)
 {
 	flight.imu.accel.calibration.x_k = *((float*)value);
 	config_write_float("accel_k.x", flight.imu.accel.calibration.x_k);
+	return 0;
 }
 
 void* get_accel_calibration_y_k()
 {
 	return (void*)&(flight.imu.accel.calibration.y_k);
 }
-void set_accel_calibration_y_k(void *value)
+char* set_accel_calibration_y_k(void *value)
 {
 	flight.imu.accel.calibration.y_k = *((float*)value);
 	config_write_float("accel_k.y", flight.imu.accel.calibration.y_k);
+	return 0;
 }
 
 void* get_accel_calibration_z_k()
 {
 	return (void*)&(flight.imu.accel.calibration.z_k);
 }
-void set_accel_calibration_z_k(void *value)
+char* set_accel_calibration_z_k(void *value)
 {
 	flight.imu.accel.calibration.z_k = *((float*)value);
 	config_write_float("accel_k.z", flight.imu.accel.calibration.z_k);
+	return 0;
 }
 
 void* get_accel_calibration_x_offset()
 {
 	return (void*)&(flight.imu.accel.calibration.x_offset);
 }
-void set_accel_calibration_x_offset(void *value)
+char* set_accel_calibration_x_offset(void *value)
 {
 	flight.imu.accel.calibration.x_offset = *((float*)value);
 	config_write_float("accel_offset.x", flight.imu.accel.calibration.x_offset);
+	return 0;
 }
 
 void* get_accel_calibration_y_offset()
 {
 	return (void*)&(flight.imu.accel.calibration.y_offset);
 }
-void set_accel_calibration_y_offset(void *value)
+char* set_accel_calibration_y_offset(void *value)
 {
 	flight.imu.accel.calibration.y_offset = *((float*)value);
 	config_write_float("accel_offset.y", flight.imu.accel.calibration.y_offset);
+	return 0;
 }
 
 void* get_accel_calibration_z_offset()
 {
 	return (void*)&(flight.imu.accel.calibration.z_offset);
 }
-void set_accel_calibration_z_offset(void *value)
+char* set_accel_calibration_z_offset(void *value)
 {
 	flight.imu.accel.calibration.z_offset = *((float*)value);
 	config_write_float("accel_offset.z", flight.imu.accel.calibration.z_offset);
+	return 0;
 }
 
 void* get_gyro_calibration_x_offset()
 {
 	return (void*)&(flight.imu.gyro.calibration.x_offset);
 }
-void set_gyro_calibration_x_offset(void *value)
+char* set_gyro_calibration_x_offset(void *value)
 {
 	flight.imu.gyro.calibration.x_offset = *((float*)value);
 	config_write_float("gyro_offset.x", flight.imu.gyro.calibration.x_offset);
+	return 0;
 }
 
 void* get_gyro_calibration_y_offset()
 {
 	return (void*)&(flight.imu.gyro.calibration.y_offset);
 }
-void set_gyro_calibration_y_offset(void *value)
+char* set_gyro_calibration_y_offset(void *value)
 {
 	flight.imu.gyro.calibration.y_offset = *((float*)value);
 	config_write_float("gyro_offset.y", flight.imu.gyro.calibration.y_offset);
+	return 0;
 }
 
 void* get_gyro_calibration_z_offset()
 {
 	return (void*)&(flight.imu.gyro.calibration.z_offset);
 }
-void set_gyro_calibration_z_offset(void *value)
+char* set_gyro_calibration_z_offset(void *value)
 {
 	flight.imu.gyro.calibration.z_offset = *((float*)value);
 	config_write_float("gyro_offset.z", flight.imu.gyro.calibration.z_offset);
+	return 0;
 }
 static struct anotc_config_info configuration_list[] = {
 	{
@@ -113,7 +141,7 @@ static struct anotc_config_info configuration_list[] = {
 		.par_name="wifi_name",
 		.par_info="",
 		.get = (void*)wifi_get_name,
-		.set = wifi_set_name
+		.set = set_wifi_name
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_WIFI_PASSWORD,
@@ -121,7 +149,7 @@ static struct anotc_config_info configuration_list[] = {
 		.par_name="wifi_password",
 		.par_info="",
 		.get = (void*)wifi_get_password,
-		.set = wifi_set_password
+		.set = set_wifi_pwd
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_ACCEL_K_X,

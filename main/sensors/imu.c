@@ -9,23 +9,9 @@ static struct iir_filter_param gyr_iir[3];
 
 void init_imu(struct imu_sensor *sensor)
 {
-	if (sensor->status != IMU_STATUS_ON)
-		return;
-	
 	sensor->accel.calibration.x_k = 1.0;
 	sensor->accel.calibration.y_k = 1.0;
 	sensor->accel.calibration.z_k = 1.0;
-
-	for (int i = 0; i < 3; i++)
-	{
-		acc_iir[i].cut_off_freq = 10;
-		acc_iir[i].freq = sensor->freq;
-		iir_filter_init(&acc_iir[i]);
-
-		gyr_iir[i].cut_off_freq = 15;
-		gyr_iir[i].freq = sensor->freq;
-		iir_filter_init(&gyr_iir[i]);
-	}
 
 	config_read_float("accel_k.x", &(sensor->accel.calibration.x_k));
 	config_read_float("accel_k.y", &(sensor->accel.calibration.y_k));
@@ -38,6 +24,20 @@ void init_imu(struct imu_sensor *sensor)
 	config_read_float("gyro_offset.x", &(sensor->gyro.calibration.x_offset));
 	config_read_float("gyro_offset.y", &(sensor->gyro.calibration.y_offset));
 	config_read_float("gyro_offset.z", &(sensor->gyro.calibration.z_offset));
+
+	if (sensor->status != IMU_STATUS_ON)
+		return;
+
+	for (int i = 0; i < 3; i++)
+	{
+		acc_iir[i].cut_off_freq = 10;
+		acc_iir[i].freq = sensor->freq;
+		iir_filter_init(&acc_iir[i]);
+
+		gyr_iir[i].cut_off_freq = 15;
+		gyr_iir[i].freq = sensor->freq;
+		iir_filter_init(&gyr_iir[i]);
+	}
 
 	imu_timer.freq = sensor->freq;
 	sys_timer_set(&imu_timer);

@@ -22,10 +22,10 @@ struct spi_priv spi1_config = {
 			.address=GPIO_NUM_5
 		},
 		{
-			.address=GPIO_NUM_17
+			.address=GPIO_NUM_32
 		},
 		{
-			.address=GPIO_NUM_21
+			.address=GPIO_NUM_33
 		}
 	}
 };
@@ -42,8 +42,8 @@ struct uart_priv uart1_config = {
 
 struct i2c_priv i2c1_config = {
 	.speed = 400000,
-	.sda = GPIO_NUM_27,
-	.scl = GPIO_NUM_14,
+	.sda = GPIO_NUM_21,
+	.scl = GPIO_NUM_22,
 	.port = I2C_NUM_0,
 	.dev_list = NULL
 };

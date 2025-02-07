@@ -10,6 +10,8 @@
 #define ANOTC_FRAME_TARGET_ATTITUDE 0xA
 #define ANOTC_FRAME_BATTERY 0xD
 
+#define ANOTC_FRAME_PWM 0x20
+
 #define ANOTC_FRAME_GPS 0x30
 
 #define ANOTC_FRAME_RC 0x40
@@ -23,13 +25,15 @@ enum anotc_log_string_color{
 	GREEN
 };
 
-void anotc_send_frame_check(unsigned char id, unsigned char sc, unsigned char ac);
+void anotc_send_frame_check(unsigned char id, unsigned char sc, unsigned char ac, unsigned char code, char *msg);
 void anotc_send_imu(short acc_x, short acc_y, short acc_z, short gyr_x, short gyr_y, short gry_z, unsigned char shock);
 void anotc_send_mag(short mag_x, short mag_y, short mag_z, float temp, unsigned char mag_sta);
 void anotc_send_euler(float roll, float pitch, float yaw, unsigned char fusion);
 void anotc_send_quaternion(float q1, float q2, float q3, float q4, unsigned char fusion);
 void anotc_send_alt(int alt_baro, int alt_add, int alt_fu, unsigned char sta);
 void anotc_send_battery(float voltage, float current);
+
+void anotc_send_pwm(unsigned short pwm[8]);
 
 void anotc_send_rc(short channel[14]);
 

@@ -1,4 +1,5 @@
 #include <string.h>
+#include "flight/flight.h"
 #include "anotc/anotc.h"
 #include "anotc/anotc_official_frame.h"
 #include "anotc/anotc_config_frame.h"
@@ -8,7 +9,7 @@ struct anotc_config_info {
 	enum ANOTC_PAR_TYPE type;
 	char par_name[20];
 	char *par_info;
-	void (*set)(void *value);
+	char* (*set)(void *value);
 	void* (*get)();
 };
 
@@ -32,7 +33,24 @@ void anotc_config_frame_read_cmd_handler(union _un_anotc_v8_frame *frame, unsign
 	switch (cmd)
 	{
 	case ANOTC_CONFIG_FRAME_CMD_DEVICE_INFO:
-		anotc_send_device_info(ANOTC_DEVICE_ADDR, 1, 2, 0, 8, "esp32-drone");
+		if (val==0) {
+			anotc_send_device_info(ANOTC_DEVICE_ADDR, 1, 2, 0, 8, "esp32-drone");
+		} else if (val==1) {
+			unsigned char sensor_status = 0;
+			flight.system_info.drone_center_connect = 1;
+			if (flight.imu.status==IMU_STATUS_ON) {
+				sensor_status = 1;
+			}
+			if (IS_COMPASS_ON(flight.compass)) {
+				sensor_status |= 0x2;
+			}
+			if (IS_BARO_ON(flight.baro)) {
+				sensor_status |= 0x4;
+			}
+			anotc_send_device_info(sensor_status, 1, 2, 0, 8, "esp32-drone");
+		} else if (val==2) {
+			flight.system_info.drone_center_connect = 0;
+		}
 		break;
 	case ANOTC_CONFIG_FRAME_CMD_READ_COUNT:
 		anotc_send_config_count(ANOTC_CONFIGURATION_LIST_SIZE);
@@ -52,7 +70,7 @@ void anotc_config_frame_read_cmd_handler(union _un_anotc_v8_frame *frame, unsign
 		{
 		case ANOTC_CONFIG_FRAME_VAL_SAVE_PARAM:
 			config_commit();
-			anotc_send_frame_check(ANOTC_FRAME_CONFIG_CMD, sc, ac);
+			anotc_send_frame_check(ANOTC_FRAME_CONFIG_CMD, sc, ac, 0, 0);
 			break;
 		
 		default:
@@ -68,6 +86,7 @@ void anotc_config_frame_write_cmd_handler(union _un_anotc_v8_frame *frame, unsig
 {
 	unsigned short par_id = (frame->frame.data[1]<<8) | frame->frame.data[0];
 	struct anotc_config_info* info;
+	char *res = 0;
 	info = anotc_get_custom_config(par_id);
 	if (info==NULL) return;
 	switch (info->type)
@@ -83,17 +102,25 @@ void anotc_config_frame_write_cmd_handler(union _un_anotc_v8_frame *frame, unsig
 	case ANOTC_PAR_TYPE_FLOAT:
 	case ANOTC_PAR_TYPE_DOUBLE:
 		config_begin_transaction();
-		info->set((void*)(&(frame->frame.data[2])));
-		anotc_send_frame_check(ANOTC_FRAME_CONFIG_READ_WRITE, sc, ac);
+		res = info->set((void*)(&(frame->frame.data[2])));
+		if (res==0) {
+			anotc_send_frame_check(ANOTC_FRAME_CONFIG_READ_WRITE, sc, ac, 0, 0);
+		} else {
+			anotc_send_frame_check(ANOTC_FRAME_CONFIG_READ_WRITE, sc, ac, 1, res);
+		}
 		break;
 	case ANOTC_PAR_TYPE_STRING:
 		config_begin_transaction();
 		char *buf = malloc(frame->frame.len-sizeof(unsigned short)+1);
 		memcpy((void*)buf, (void*)(&(frame->frame.data[2])), frame->frame.len-sizeof(unsigned short));
 		buf[frame->frame.len-sizeof(unsigned short)] = '\0';
-		info->set((void*)buf);
+		res = info->set((void*)buf);
 		free(buf);
-		anotc_send_frame_check(ANOTC_FRAME_CONFIG_READ_WRITE, sc, ac);
+		if (res==0) {
+			anotc_send_frame_check(ANOTC_FRAME_CONFIG_READ_WRITE, sc, ac, 0, 0);
+		} else {
+			anotc_send_frame_check(ANOTC_FRAME_CONFIG_READ_WRITE, sc, ac, 1, res);
+		}
 		break;
 	default:
 		break;

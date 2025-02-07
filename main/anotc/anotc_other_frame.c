@@ -2,7 +2,7 @@
 #include "anotc/anotc.h"
 #include "anotc/anotc_official_frame.h"
 
-void anotc_send_frame_check(unsigned char id, unsigned char sc, unsigned char ac)
+void anotc_send_frame_check(unsigned char id, unsigned char sc, unsigned char ac, unsigned char code, char *msg)
 {
 	struct anotc_frame frame;
 	PREPARE_ANOTC_FRAME(frame);
@@ -11,6 +11,10 @@ void anotc_send_frame_check(unsigned char id, unsigned char sc, unsigned char ac
 	frame.data[frame.len++] = id;
 	frame.data[frame.len++] = sc;
 	frame.data[frame.len++] = ac;
+	frame.data[frame.len++] = code;
+	if (code) {
+		anotc_add_string(&frame, msg);
+	}
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }
