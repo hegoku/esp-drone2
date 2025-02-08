@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <freertos/queue.h>
 #include <sys/time.h>
 #include <esp_log.h>
+#include <driver/gpio.h>
 #include "platform/bus/bus_tree.h"
 #include "clocksource/clocksource.h"
 #include "clocksource/default_source.h"
@@ -27,6 +29,22 @@ int anotc_log(const char * format, va_list arg)
 	return actual_size;
 }
 
+void main_loop(void *p)
+{
+	int a;
+	for (;;) {
+		if (xQueueReceive(sys_timer_queue, &(a), portMAX_DELAY)){
+			gettimeofday(&sys_timer_time, NULL);
+			flight_read_data();
+			flight_update();
+			flight_control();
+			gettimeofday(&finish_loop, NULL);
+			flight.system_info.cpu_load = (((float)finish_loop.tv_sec) + ((float)finish_loop.tv_usec) / 1000000.0 - ((float)sys_timer_time.tv_sec) + ((float)sys_timer_time.tv_usec) / 1000000.0) * (float)(sys_timer_get()->freq);
+			log_task();
+		}
+	}
+}
+
 void app_main(void)
 {
 	init_config();
@@ -40,19 +58,7 @@ void app_main(void)
 
 	init_flight();
 
-	sys_timer_queue = xQueueCreate(5, sizeof( struct timeval ));
-	vTaskPrioritySet(NULL, 10); 
+	sys_timer_queue = xQueueCreate(5, sizeof( int ));
+	xTaskCreatePinnedToCore(main_loop, "main_loop", 1024*2, NULL, 10, NULL, 1);
 	sys_timer_start();
-	int a;
-	for (;;) {
-		if (xQueueReceive(sys_timer_queue, &(a), portMAX_DELAY)){
-			gettimeofday(&sys_timer_time, NULL);
-			flight_read_data();
-			flight_update();
-			flight_control();
-			gettimeofday(&finish_loop, NULL);
-			flight.system_info.cpu_load = (((float)finish_loop.tv_sec) + ((float)finish_loop.tv_usec) / 1000000.0 - ((float)sys_timer_time.tv_sec) + ((float)sys_timer_time.tv_usec) / 1000000.0) * (float)(sys_timer_get()->freq);
-			log_task();
-		}
-	} 
 }

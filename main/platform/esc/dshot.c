@@ -131,11 +131,6 @@ esp_err_t rmt_new_dshot_esc_encoder(const dshot_esc_encoder_config_t *config, rm
 
 void init_dshot(struct dshot_protocol *dshot)
 {
-	dshot->t1h = DSHOT_T1H;
-	dshot->t1l = DSHOT_T1L;
-	dshot->t0h = DSHOT_T0H;
-	dshot->t0h = DSHOT_T0L;
-
 	rmt_tx_channel_config_t tx_chan_config = {
         .clk_src = RMT_CLK_SRC_DEFAULT, // select a clock that can provide needed resolution
         .gpio_num = dshot->gpio_num,
@@ -163,25 +158,4 @@ void dshot_write(struct dshot_protocol *dshot, unsigned short value, unsigned ch
     };
 
 	rmt_transmit(dshot->rmt_channel, dshot->rmt_encoder, &data, sizeof(data), &tx_config);
-	// rmt_wait_tx_done(dshot->rmt_channel, 0);
-	// for (int i = 0; i < 16; i++, data <<= 1)
-	// {
-	// 	if (data & 0x8000)
-	// 	{
-	// 		// set one
-	// 		dshot->rmt_data[i].duration0 = dshot->t1h;
-	// 		dshot->rmt_data[i].level0 = 1;
-	// 		dshot->rmt_data[i].duration1 = dshot->t1l;
-	// 		dshot->rmt_data[i].level1 = 0;
-	// 	}
-	// 	else
-	// 	{
-	// 		// set zero
-	// 		dshot->rmt_data[i].duration0 = dshot->t0h;
-	// 		dshot->rmt_data[i].level0 = 1;
-	// 		dshot->rmt_data[i].duration1 = dshot->t0l;
-	// 		dshot->rmt_data[i].level1 = 0;
-	// 	}
-	// }
-	// rmt_write_items(dshot->rmt_channel, dshot->rmt_data, 16, false);
 }
