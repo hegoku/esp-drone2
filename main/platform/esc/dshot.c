@@ -143,7 +143,7 @@ void init_dshot(struct dshot_protocol *dshot)
 	dshot_esc_encoder_config_t encoder_config = {
         .resolution = DSHOT_ESC_RESOLUTION_HZ,
         .baud_rate = 300000, // DSHOT300 protocol
-        .post_delay_us = 30, // extra delay between each frame
+        .post_delay_us = 3, // extra delay between each frame
     };
     ESP_ERROR_CHECK(rmt_new_dshot_esc_encoder(&encoder_config, &(dshot->rmt_encoder)));
 

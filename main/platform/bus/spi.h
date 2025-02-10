@@ -1,5 +1,5 @@
-#ifndef DRIVERS_BUS_SPI_H
-#define DRIVERS_BUS_SPI_H
+#ifndef PLATFORM_BUS_SPI_H
+#define PLATFORM_BUS_SPI_H
 
 #include <driver/gpio.h>
 #include <driver/spi_master.h>

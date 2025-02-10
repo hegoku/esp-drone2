@@ -36,6 +36,11 @@ char* set_wifi_pwd(void *value)
 	return 0;
 }
 
+char* set_wifi_udp_port(void *value)
+{
+	wifi_set_udp_port(*((unsigned short*)value));
+	return 0;
+}
 
 void* get_accel_calibration_x_k()
 {
@@ -158,7 +163,7 @@ static struct anotc_config_info configuration_list[] = {
 		.par_name="wifi.udp.port",
 		.par_info="",
 		.get = (void*)wifi_get_udp_port,
-		.set = wifi_set_udp_port
+		.set = set_wifi_udp_port
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_ACCEL_K_X,

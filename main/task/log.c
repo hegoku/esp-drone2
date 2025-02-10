@@ -1,5 +1,6 @@
 #include "anotc/anotc.h"
 #include "anotc/anotc_official_frame.h"
+#include "anotc/anotc_custom_frame.h"
 #include "flight/flight.h"
 #include "task/task.h"
 
@@ -27,7 +28,7 @@ void send_flight_compass()
 
 void send_system_info()
 {
-	anotc_send_battery(flight.battery.voltage, flight.battery.current);
+	anotc_send_system_info();
 }
 
 static struct s_log_task log_task_list[] = {

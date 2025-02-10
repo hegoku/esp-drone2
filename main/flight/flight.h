@@ -32,7 +32,7 @@ struct flight {
 
 	struct {
 		unsigned char drone_center_connect;
-		float cpu_load;
+		unsigned char cpu_load;
 	} system_info;
 
 	enum flight_status status;

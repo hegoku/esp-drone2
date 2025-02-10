@@ -13,6 +13,13 @@
 #include "platform/drivers/wifi.h"
 #include "misc/config.h"
 
+#define WIFI_BUFFER_LEN 1400
+struct wifi_buffer {
+	unsigned char *buf[WIFI_BUFFER_LEN];
+	int head;
+	int tail;
+};
+
 static char wifi_name[32];
 static char wifi_password[64];
 static unsigned short udp_port;
@@ -34,6 +41,9 @@ static int is_udp_init = 0;
 static QueueHandle_t txQueue;
 static QueueHandle_t rxQueue;
 static struct wifi_pack inPack;
+static struct wifi_buffer tx_buffer;
+
+static void (*upd_revc_handler)(unsigned char *data, int len);
 
 static char rx_buffer[128];
 
@@ -135,8 +145,9 @@ static void udp_server_task(void *pvParameters)
 
 		is_udp_init = 1;
 
-		while (1) {
-            int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
+		for (;;)
+		{
+			int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer), 0, (struct sockaddr *)&source_addr, &socklen);
 
             // Error occurred during receiving
             if (len < 0) {
@@ -155,9 +166,9 @@ static void udp_server_task(void *pvParameters)
                     inet6_ntoa_r(((struct sockaddr_in6 *)&source_addr)->sin6_addr, addr_str, sizeof(addr_str) - 1);
                 }
             }
-        }
+		}
 
-        if (sock != -1) {
+		if (sock != -1) {
             ESP_LOGE(TAG, "Shutting down socket and restarting...");
 			is_udp_init = 0;
 			shutdown(sock, 0);
@@ -167,12 +178,29 @@ static void udp_server_task(void *pvParameters)
 	vTaskDelete(NULL);
 }
 
-void init_wifi()
+void wifi_rx_task(void *param)
 {
+	static struct wifi_pack p;
+	for (;;)
+	{
+		if (xQueueReceive(rxQueue, &p, portMAX_DELAY) == pdTRUE) {
+			if (upd_revc_handler!=0) {
+				upd_revc_handler(p.data, p.size);
+			}
+		}
+	}
+}
+
+int init_wifi()
+{
+	upd_revc_handler = 0;
+	tx_buffer.head = 0;
+	tx_buffer.tail = 0;
 	config_read_string("wifi_name", wifi_name);
 	config_read_string("wifi_pwd", wifi_password);
-	if (strlen(wifi_name)==0)
-		return;
+	config_read_ushort("wifi_udp_port", &udp_port);
+	if (strlen(wifi_name)==0 || strlen(wifi_password)==0 || udp_port==0)
+		return -1;
 	strcpy((char *)wifi_config.sta.ssid, wifi_name);
 	strcpy((char*)wifi_config.sta.password, wifi_password);
 
@@ -198,12 +226,13 @@ void init_wifi()
     ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 
-	xTaskCreate(udp_server_task, "udp_server", 4096, (void*)AF_INET, 5, NULL);
+	xTaskCreate(udp_server_task, "udp_server", 4096, (void*)AF_INET, 7, NULL);
 
-	// txQueue = xQueueCreate(100, sizeof(struct wifi_pack));
-	// rxQueue = xQueueCreate(10, sizeof(struct wifi_pack));
-	// xTaskCreatePinnedToCore(wifiTxTask, "wifi-tx", 2024 * 2, NULL, 5, NULL, 0);
-	// xTaskCreate(wifiRxTask, "wifi-rx", 2048 * 2, NULL, 6, NULL);
+	txQueue = xQueueCreate(100, sizeof(struct wifi_pack));
+	rxQueue = xQueueCreate(10, sizeof(struct wifi_pack));
+	// xTaskCreatePinnedToCore(wifiTxTask, "wifi-tx", 2048 * 2, NULL, 5, NULL, 0);
+	xTaskCreate(wifi_rx_task, "wifi-rx", 2048 * 2, NULL, 6, NULL);
+	return 0;
 }
 
 short int wifi_get_rssi()
@@ -213,4 +242,27 @@ short int wifi_get_rssi()
 		return wifidata.rssi;
 	}
 	return -999;
+}
+
+void wifi_set_recv_handler(void (*handler)(unsigned char *data, int len))
+{
+	upd_revc_handler = handler;
+}
+
+void wifi_send(unsigned char *data, int len)
+{
+	if (tx_buffer.tail+len<=WIFI_BUFFER_LEN) {
+		memcpy(tx_buffer.buf + tx_buffer.tail, data, len);
+		tx_buffer.tail += len;
+	}
+}
+
+void wifi_flush()
+{
+	int error = 0;
+	if (tx_buffer.tail > 0)
+	{
+		error = sendto(sock, tx_buffer.buf, tx_buffer.tail, 0, (struct sockaddr *)&addr_board, sizeof(addr_board));
+		tx_buffer.tail = 0;
+	}
 }

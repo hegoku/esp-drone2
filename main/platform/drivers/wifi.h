@@ -2,7 +2,7 @@
 #define PLATFORM_DRIVERS_WIFI_H
 
 struct wifi_pack{
-	unsigned char data[1024];
+	unsigned char data[128];
 	int size;
 	char priority;
 };
@@ -14,6 +14,9 @@ char* wifi_get_password();
 void wifi_set_udp_port(unsigned short port);
 unsigned short *wifi_get_udp_port();
 
-void init_wifi();
+int init_wifi();
+void wifi_set_recv_handler(void (*handler)(unsigned char *data, int len));
+void wifi_send(unsigned char *data, int len);
+void wifi_flush();
 short int wifi_get_rssi();
 #endif

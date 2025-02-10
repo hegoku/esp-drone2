@@ -8,8 +8,8 @@ void mixer_dshot_write(struct mixer_moter *motor, int count)
 	for (int i=0;i<count;i++) {
 		priv = DSHOT_GET_STRUCT(motor[i].priv);
 		dshot_write(priv, motor[i].value, 0);
-}
 	}
+}
 	
  
 void mixer_dshot_init(struct mixer_moter *motor, int count)
