@@ -7,6 +7,15 @@
 static struct iir_filter_param acc_iir[3];
 static struct iir_filter_param gyr_iir[3];
 
+struct gyro_calibration {
+	float x;
+	float y;
+	float z;
+	unsigned int count;
+};
+
+static struct gyro_calibration gyro_c;
+
 void init_imu(struct imu_sensor *sensor)
 {
 	sensor->accel.calibration.x_k = 1.0;
@@ -65,6 +74,29 @@ void imu_calibration(struct imu_sensor *sensor)
 	if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL) {
 			
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_GYRO) {
-		
+		gyro_c.x += sensor->gyro.unfiltered.x;
+		gyro_c.y += sensor->gyro.unfiltered.y;
+		gyro_c.z += sensor->gyro.unfiltered.z;
+		gyro_c.count++;
+		if (gyro_c.count>=5000) {
+			gyro_c.x /= (float)gyro_c.count;
+			gyro_c.y /= (float)gyro_c.count;
+			gyro_c.z /= (float)gyro_c.count;
+
+			sensor->gyro.calibration.x_offset = gyro_c.x;
+			sensor->gyro.calibration.y_offset = gyro_c.y;
+			sensor->gyro.calibration.z_offset = gyro_c.z;
+
+			config_write_float("gyro_offset.x", sensor->gyro.calibration.x_offset);
+			config_write_float("gyro_offset.y", sensor->gyro.calibration.y_offset);
+			config_write_float("gyro_offset.z", sensor->gyro.calibration.z_offset);
+
+			flight.status = FLIGHT_STATUS_READY;
+
+			gyro_c.x = 0;
+			gyro_c.y = 0;
+			gyro_c.z = 0;
+			gyro_c.count = 0;
+		}
 	}
 }

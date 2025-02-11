@@ -10,7 +10,7 @@ struct s_log_task {
 
 void send_flight_attitude()
 {
-	anotc_send_imu((short)(flight.imu.accel.value.x*980.665), (short)(flight.imu.accel.value.y*980.665), (short)(flight.imu.accel.value.z*980.665), (short)flight.imu.gyro.value.x, (short)flight.imu.gyro.value.y, (short)flight.imu.gyro.value.z, 0);
+	anotc_send_imu((short)(flight.imu.accel.value.x*980.665), (short)(flight.imu.accel.value.y*980.665), (short)(flight.imu.accel.value.z*980.665), (short)(flight.imu.gyro.value.x*100.0), (short)(flight.imu.gyro.value.y*100.0), (short)(flight.imu.gyro.value.z*100.0), 0);
 	// anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
 	anotc_send_euler(flight.attitude.roll, flight.attitude.pitch, flight.attitude.yaw, 0);
 }
