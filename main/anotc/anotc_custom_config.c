@@ -35,9 +35,9 @@ void anotc_config_frame_read_cmd_handler(union _un_anotc_v8_frame *frame, unsign
 	case ANOTC_CONFIG_FRAME_CMD_DEVICE_INFO:
 		if (val==0) {
 			anotc_send_device_info(ANOTC_DEVICE_ADDR, 1, 2, 0, 8, "esp32-drone");
+			flight.system_info.drone_center_connect = 1;
 		} else if (val==1) {
 			unsigned char sensor_status = 0;
-			flight.system_info.drone_center_connect = 1;
 			if (flight.imu.status==IMU_STATUS_ON) {
 				sensor_status = 1;
 			}
@@ -48,6 +48,7 @@ void anotc_config_frame_read_cmd_handler(union _un_anotc_v8_frame *frame, unsign
 				sensor_status |= 0x4;
 			}
 			anotc_send_device_info(sensor_status, 1, 2, 0, 8, "esp32-drone");
+			flight.system_info.drone_center_connect = 1;
 		} else if (val==2) {
 			flight.system_info.drone_center_connect = 0;
 		}

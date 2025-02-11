@@ -1,5 +1,5 @@
-#ifndef DRIVERS_BUS_I2C_H
-#define DRIVERS_BUS_I2C_H
+#ifndef PLATFORM_BUS_I2C_H
+#define PLATFORM_BUS_I2C_H
 
 #include <driver/gpio.h>
 #include <driver/i2c.h>

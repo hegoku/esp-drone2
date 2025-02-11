@@ -1,5 +1,5 @@
-#ifndef DRIVERS_BUS_UART_H
-#define DRIVERS_BUS_UART_H
+#ifndef PLATFORM_BUS_UART_H
+#define PLATFORM_BUS_UART_H
 #include <driver/gpio.h>
 #include <driver/uart.h>
 #include "bus/bus.h"

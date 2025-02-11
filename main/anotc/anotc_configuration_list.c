@@ -6,6 +6,7 @@
 enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_WIFI_NAME,
 	ANOTC_CONFIG_PAR_WIFI_PASSWORD,
+	ANOTC_CONFIG_PAR_WIFI_UDP_PORT,
 	ANOTC_CONFIG_PAR_ACCEL_K_X,
 	ANOTC_CONFIG_PAR_ACCEL_K_Y,
 	ANOTC_CONFIG_PAR_ACCEL_K_Z,
@@ -35,6 +36,11 @@ char* set_wifi_pwd(void *value)
 	return 0;
 }
 
+char* set_wifi_udp_port(void *value)
+{
+	wifi_set_udp_port(*((unsigned short*)value));
+	return 0;
+}
 
 void* get_accel_calibration_x_k()
 {
@@ -138,7 +144,7 @@ static struct anotc_config_info configuration_list[] = {
 	{
 		.par_id=ANOTC_CONFIG_PAR_WIFI_NAME,
 		.type=ANOTC_PAR_TYPE_STRING,
-		.par_name="wifi_name",
+		.par_name="wifi.name",
 		.par_info="",
 		.get = (void*)wifi_get_name,
 		.set = set_wifi_name
@@ -146,10 +152,18 @@ static struct anotc_config_info configuration_list[] = {
 	{
 		.par_id=ANOTC_CONFIG_PAR_WIFI_PASSWORD,
 		.type=ANOTC_PAR_TYPE_STRING,
-		.par_name="wifi_password",
+		.par_name="wifi.password",
 		.par_info="",
 		.get = (void*)wifi_get_password,
 		.set = set_wifi_pwd
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_WIFI_UDP_PORT,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="wifi.udp.port",
+		.par_info="",
+		.get = (void*)wifi_get_udp_port,
+		.set = set_wifi_udp_port
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_ACCEL_K_X,
