@@ -12,8 +12,8 @@ void init_attitude()
 	mahony.q1 = 0.0;
 	mahony.q2 = 0.0;
 	mahony.q3 = 0.0;
-	mahony.twoKp = 409.5 * 2.0;
-	mahony.twoKi = 0.002 * 2.0;
+	mahony.twoKp = 409.5 ;
+	mahony.twoKi = 0.002 ;
 	mahony.sampleFreq = (float)flight.imu.freq;
 	mahony.integralFBx = 0.0;
 	mahony.integralFBy = 0.0;

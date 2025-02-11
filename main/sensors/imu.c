@@ -3,6 +3,7 @@
 #include "misc/iir_filter.h"
 #include "clocksource/imu_source.h"
 #include "misc/config.h"
+#include "anotc/anotc_cmd_frame.h"
 
 static struct iir_filter_param acc_iir[3];
 static struct iir_filter_param gyr_iir[3];
@@ -12,6 +13,7 @@ struct gyro_calibration {
 	float y;
 	float z;
 	unsigned int count;
+	unsigned char percentage;
 };
 
 static struct gyro_calibration gyro_c;
@@ -43,7 +45,7 @@ void init_imu(struct imu_sensor *sensor)
 		acc_iir[i].freq = sensor->freq;
 		iir_filter_init(&acc_iir[i]);
 
-		gyr_iir[i].cut_off_freq = 15;
+		gyr_iir[i].cut_off_freq = 10;
 		gyr_iir[i].freq = sensor->freq;
 		iir_filter_init(&gyr_iir[i]);
 	}
@@ -78,7 +80,7 @@ void imu_calibration(struct imu_sensor *sensor)
 		gyro_c.y += sensor->gyro.unfiltered.y;
 		gyro_c.z += sensor->gyro.unfiltered.z;
 		gyro_c.count++;
-		if (gyro_c.count>=5000) {
+		if (gyro_c.count>=10000) {
 			gyro_c.x /= (float)gyro_c.count;
 			gyro_c.y /= (float)gyro_c.count;
 			gyro_c.z /= (float)gyro_c.count;
@@ -97,6 +99,11 @@ void imu_calibration(struct imu_sensor *sensor)
 			gyro_c.y = 0;
 			gyro_c.z = 0;
 			gyro_c.count = 0;
+		}
+
+		gyro_c.percentage = (unsigned char)(((float)gyro_c.count) / 10000.0 * 100.0);
+		if (gyro_c.percentage%20==0) {
+			anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_GYRO, 0, &gyro_c.percentage, 1);
 		}
 	}
 }
