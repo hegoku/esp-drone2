@@ -47,8 +47,6 @@ void main_loop(void *p)
 			gettimeofday(&finish_loop, NULL);
 			flight.system_info.cpu_load = (unsigned char)((((float)finish_loop.tv_sec) + ((float)finish_loop.tv_usec) / 1000000.0 - ((float)sys_timer_time.tv_sec) - ((float)sys_timer_time.tv_usec) / 1000000.0) * ((float)(sys_timer_get()->freq)) * 100.0);
 			xQueueSend(log_task_queue, &a, 0);
-			// log_task();
-			// wifi_task();
 			gpio_set_level(GPIO_NUM_12, b);
 			b = ~b;
 		}
@@ -61,7 +59,7 @@ void log_t(void *p)
 	for (;;)
 	{
 		if (xQueueReceive(log_task_queue, &(a), portMAX_DELAY)){
-			log_task();
+			flight_log_task();
 			wifi_task();
 		}
 	}

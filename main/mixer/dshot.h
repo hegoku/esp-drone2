@@ -7,8 +7,8 @@
 #define MIXER_DSHOT_THROTTLE_MIN 48
 #define MIXER_DSHOT_THROTTLE_MAX 2047
 
-void mixer_dshot_write(struct mixer_moter *motor, int count);
-void mixer_dshot_init(struct mixer_moter *motor, int count);
+void mixer_dshot_write(struct mixer *mixer);
+void mixer_dshot_init(struct mixer *mixer);
 
 extern struct esc_protocol mixer_dshot600;
 #endif

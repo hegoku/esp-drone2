@@ -4,14 +4,6 @@
 
 #define DSHOT_ESC_RESOLUTION_HZ 40000000
 
-#define DSHOT_TICKS_PER_BIT 19
-
-#define DSHOT_T0H 7
-#define DSHOT_T0L (DSHOT_TICKS_PER_BIT - DSHOT_T0H)
-
-#define DSHOT_T1H 14
-#define DSHOT_T1L (DSHOT_TICKS_PER_BIT - DSHOT_T1H)
-
 typedef struct {
     uint32_t resolution;    /*!< Encoder resolution, in Hz */
     uint32_t baud_rate;     /*!< Dshot protocol runs at several different baud rates, e.g. DSHOT300 = 300k baud rate */
@@ -129,7 +121,7 @@ esp_err_t rmt_new_dshot_esc_encoder(const dshot_esc_encoder_config_t *config, rm
     return ESP_OK;
 }
 
-void init_dshot(struct dshot_protocol *dshot)
+void dshot_init(struct dshot_protocol_motor *dshot)
 {
 	rmt_tx_channel_config_t tx_chan_config = {
         .clk_src = RMT_CLK_SRC_DEFAULT, // select a clock that can provide needed resolution
@@ -138,7 +130,7 @@ void init_dshot(struct dshot_protocol *dshot)
         .resolution_hz = DSHOT_ESC_RESOLUTION_HZ,
         .trans_queue_depth = 10, // set the number of transactions that can be pending in the background
     };
-    ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_chan_config, &(dshot->rmt_channel)));
+    ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_chan_config, dshot->rmt_channel));
 
 	dshot_esc_encoder_config_t encoder_config = {
         .resolution = DSHOT_ESC_RESOLUTION_HZ,
@@ -147,15 +139,15 @@ void init_dshot(struct dshot_protocol *dshot)
     };
     ESP_ERROR_CHECK(rmt_new_dshot_esc_encoder(&encoder_config, &(dshot->rmt_encoder)));
 
-	rmt_enable(dshot->rmt_channel);
+	rmt_enable(*(dshot->rmt_channel));
 }
 
-void dshot_write(struct dshot_protocol *dshot, unsigned short value, unsigned char telemetry)
+void dshot_write(struct dshot_protocol_motor *dshot, unsigned short value, unsigned char telemetry)
 {
 	unsigned short data = dshot_packet(value, telemetry);
 	rmt_transmit_config_t tx_config = {
         .loop_count = 0, // infinite loop
     };
 
-	rmt_transmit(dshot->rmt_channel, dshot->rmt_encoder, &data, sizeof(data), &tx_config);
+	rmt_transmit(*(dshot->rmt_channel), dshot->rmt_encoder, &data, sizeof(data), &tx_config);
 }

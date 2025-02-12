@@ -16,7 +16,20 @@ struct gyro_calibration {
 	unsigned char percentage;
 };
 
+struct accel_calibration {
+	float up;
+	float down;
+	float forward;
+	float backward;
+	float left;
+	float right;
+	unsigned int count;
+	unsigned char done_mask;
+	unsigned char percentage;
+};
+
 static struct gyro_calibration gyro_c;
+static struct accel_calibration accel_c;
 
 void init_imu(struct imu_sensor *sensor)
 {
@@ -73,7 +86,17 @@ void imu_filter(struct imu_sensor *sensor)
 
 void imu_calibration(struct imu_sensor *sensor)
 {
-	if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL) {
+	if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_UP) {
+			
+	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_DOWN) {
+			
+	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_FORWARD) {
+			
+	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_BACKWARD) {
+			
+	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_LEFT) {
+			
+	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_RIGHT) {
 			
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_GYRO) {
 		gyro_c.x += sensor->gyro.unfiltered.x;

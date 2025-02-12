@@ -39,7 +39,7 @@ static struct s_log_task log_task_list[] = {
 
 static unsigned int log_task_timer = 0;
 
-void log_task()
+void flight_log_task()
 {
 	if (flight.system_info.drone_center_connect) {
 		for (int i = 0; i < sizeof(log_task_list) / sizeof(struct s_log_task); i++)

@@ -19,10 +19,10 @@ void init_mixer()
 		break;
 	}
 	
-	__mixer.esc_protocol->init(__mixer.motor, sizeof(__mixer.motor)/sizeof(__mixer.motor[0]));
+	flight.mixer->esc_protocol->init(flight.mixer);
 }
 
 void mixer_output(struct mixer *mixer)
 {
-	mixer->esc_protocol->write(mixer->motor, sizeof(mixer->motor)/sizeof(mixer->motor[0]));
+	mixer->esc_protocol->write(mixer);
 }

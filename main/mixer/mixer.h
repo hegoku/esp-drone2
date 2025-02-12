@@ -1,6 +1,8 @@
 #ifndef MIXER_MIXER_H
 #define MIXER_MIXER_H
 
+struct mixer;
+
 struct mixer_moter {
 	unsigned int wire;
 	unsigned short value;
@@ -10,8 +12,8 @@ struct mixer_moter {
 struct esc_protocol {
 	char *name;
 	void *priv;
-	void (*init)(struct mixer_moter *motor, int count);
-	void (*write)(struct mixer_moter *motor, int count);
+	void (*init)(struct mixer *mixer);
+	void (*write)(struct mixer *mixer);
 };
 
 struct mixer {
