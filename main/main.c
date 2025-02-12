@@ -76,7 +76,7 @@ void app_main(void)
 	init_bus_tree();
 	print_bus_tree();
 	
-	// esp_log_set_vprintf(anotc_log);
+	esp_log_set_vprintf(anotc_log);
 
 	init_flight();
 

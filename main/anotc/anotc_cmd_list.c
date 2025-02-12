@@ -13,10 +13,10 @@ char* start_calibrate_gyro(unsigned char *param)
 
 char* start_calibrate_accel(unsigned char *param)
 {
-	if (flight.status!=FLIGHT_STATUS_READY) {
-		return "Flight isn't in ready status";
-	}
 	if (param[0]==0) {
+		if (flight.status!=FLIGHT_STATUS_READY) {
+			return "Flight isn't in ready status";
+		}
 		flight.status = FLIGHT_STATUS_CALIBRATION_ACCEL;
 	} else {
 		if (flight.status != FLIGHT_STATUS_CALIBRATION_ACCEL) {

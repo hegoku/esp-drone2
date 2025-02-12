@@ -9,7 +9,7 @@ void mixer_dshot_write(struct mixer *mixer)
 	int count = sizeof(mixer->motor) / (sizeof(mixer->motor[0]));
 	for (int i=0;i<count;i++) {
 		priv = DSHOT_GET_MOTOR_PRIV(mixer->motor[i].priv);
-		dshot_write(priv, mixer->motor[i].value, 0);
+		dshot_write(priv, dshot_convert_throttle(mixer->motor[i].value), 0);
 	}
 }
 
@@ -36,7 +36,14 @@ void mixer_dshot_init(struct mixer *mixer)
 		.tx_channel_array = priv->rmt_channel,
 		.array_size = count,
 	};
-	rmt_new_sync_manager(&synchro_config, &(priv->synchro));
+	ESP_ERROR_CHECK(rmt_new_sync_manager(&synchro_config, &(priv->synchro)));
+	
+	for (int j=0;j<50;j++) {
+		for (int i=0;i<count;i++) {
+			m_priv = DSHOT_GET_MOTOR_PRIV(mixer->motor[i].priv);
+			dshot_write(m_priv, 0, 0);
+		}
+	}
 }
 
 struct esc_protocol mixer_dshot600 = {

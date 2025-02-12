@@ -1,6 +1,9 @@
 #ifndef MIXER_MIXER_H
 #define MIXER_MIXER_H
 
+#define MIXER_THROTTLE_MAX 1000
+#define MIXER_THROTTLE_MIN 0
+
 struct mixer;
 
 struct mixer_moter {

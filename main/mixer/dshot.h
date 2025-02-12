@@ -10,5 +10,7 @@
 void mixer_dshot_write(struct mixer *mixer);
 void mixer_dshot_init(struct mixer *mixer);
 
+unsigned short dshot_convert_throttle(unsigned short throttle);
+
 extern struct esc_protocol mixer_dshot600;
 #endif
