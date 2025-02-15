@@ -4,6 +4,18 @@
 #include "clocksource/imu_source.h"
 #include "misc/config.h"
 #include "anotc/anotc_cmd_frame.h"
+#include "math/matrix.h"
+
+#define DIRECTION_UP 0
+#define DIRECTION_DOWN 1
+#define DIRECTION_FORWARD 2
+#define DIRECTION_BACKWARD 3
+#define DIRECTION_LEFT 4
+#define DIRECTION_RIGHT 5
+
+#define AXIS_X 0
+#define AXIS_Y 1
+#define AXIS_Z 2
 
 static struct iir_filter_param acc_iir[3];
 static struct iir_filter_param gyr_iir[3];
@@ -17,13 +29,10 @@ struct gyro_calibration {
 };
 
 struct accel_calibration {
-	float up;
-	float down;
-	float forward;
-	float backward;
-	float left;
-	float right;
-	float avg;
+	float ref_mat[DIRECTION_RIGHT+1][3];
+	float x_avg;
+	float y_avg;
+	float z_avg;
 	unsigned int count;
 	unsigned char done_mask;
 	unsigned char percentage;
@@ -85,14 +94,45 @@ void imu_filter(struct imu_sensor *sensor)
 	sensor->gyro.value.z = iir_filter(&gyr_iir[2], sensor->gyro.unfiltered.z);
 }
 
-void calibrate_accel()
+void calibrate_accel(struct imu_sensor *sensor)
 {
+	float mat_A[3][3], mat_A_inverse[3][3], Accel_T[3][3];
+	float mat_U[3][3] = {{1.0, 0, 0}, {0, 1.0, 0}, {0, 0, 1.0}};
 
+	//calculate offset
+	sensor->accel.calibration.x_offset = (accel_c.ref_mat[DIRECTION_FORWARD][AXIS_X] + accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_X]) * 0.5;
+	sensor->accel.calibration.y_offset = (accel_c.ref_mat[DIRECTION_LEFT][AXIS_Y] + accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Y]) * 0.5;
+	sensor->accel.calibration.z_offset = (accel_c.ref_mat[DIRECTION_UP][AXIS_Z] + accel_c.ref_mat[DIRECTION_DOWN][AXIS_Z]) * 0.5;
+
+	// x
+	mat_A[0][0] = accel_c.ref_mat[DIRECTION_BACKWARD][0];
+	mat_A[0][1] = accel_c.ref_mat[DIRECTION_BACKWARD][1];
+	mat_A[0][2] = accel_c.ref_mat[DIRECTION_BACKWARD][2];
+
+	//y
+	mat_A[1][0] = accel_c.ref_mat[DIRECTION_RIGHT][0];
+	mat_A[1][1] = accel_c.ref_mat[DIRECTION_RIGHT][1];
+	mat_A[1][2] = accel_c.ref_mat[DIRECTION_RIGHT][2];
+
+	//z
+	mat_A[2][0] = accel_c.ref_mat[DIRECTION_UP][0];
+	mat_A[2][1] = accel_c.ref_mat[DIRECTION_UP][1];
+	mat_A[2][2] = accel_c.ref_mat[DIRECTION_UP][2];
+
+	matrix_inverse(mat_A, 3, mat_A_inverse);
+	matrix_mult(mat_A_inverse, mat_U, Accel_T);
+
+	sensor->accel.calibration.x_k = Accel_T[0][0];
+	sensor->accel.calibration.y_k = Accel_T[1][1];
+	sensor->accel.calibration.z_k = Accel_T[2][2];
 }
 
-static void _calibrate_accel(unsigned char direction, float *value, unsigned char mask)
+static void _calibrate_accel(struct imu_sensor *sensor, unsigned char direction, float direction_value[3], unsigned char mask)
 {
 	unsigned char d[2] = {direction, 0};
+	accel_c.x_avg += sensor->accel.unfiltered.z;
+	accel_c.y_avg += sensor->accel.unfiltered.y;
+	accel_c.z_avg += sensor->accel.unfiltered.z;
 	accel_c.count++;
 	accel_c.percentage = (unsigned char)(((float)accel_c.count) / 10000.0 * 100.0);
 	if (accel_c.percentage%20==0) {
@@ -100,13 +140,17 @@ static void _calibrate_accel(unsigned char direction, float *value, unsigned cha
 		anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_ACCEL, 0, d, sizeof(d));
 	}
 	if (accel_c.count>=10000) {
-		*value = accel_c.avg / (float)accel_c.count;
-		accel_c.avg = 0;
+		direction_value[AXIS_X] = accel_c.x_avg / (float)accel_c.count;
+		direction_value[AXIS_Y] = accel_c.y_avg / (float)accel_c.count;
+		direction_value[AXIS_Z] = accel_c.z_avg / (float)accel_c.count;
+		accel_c.x_avg = 0;
+		accel_c.y_avg = 0;
+		accel_c.z_avg = 0;
 		flight.status = FLIGHT_STATUS_CALIBRATION_ACCEL;
 		accel_c.count = 0;
 		accel_c.done_mask |= mask;
 		if (accel_c.done_mask == 0x3F) {
-			calibrate_accel();
+			calibrate_accel(sensor);
 			d[0] = 0;
 			flight.status = FLIGHT_STATUS_READY;
 			anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_ACCEL, 0, d, sizeof(d));
@@ -118,23 +162,17 @@ static void _calibrate_accel(unsigned char direction, float *value, unsigned cha
 void imu_calibration(struct imu_sensor *sensor)
 {
 	if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_UP) {
-		accel_c.avg += sensor->accel.unfiltered.z;
-		_calibrate_accel('U', &accel_c.up, 0x1);
+		_calibrate_accel(sensor, 'U', accel_c.ref_mat[DIRECTION_UP], 0x1);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_DOWN) {
-		accel_c.avg += sensor->accel.unfiltered.z;
-		_calibrate_accel('D', &accel_c.down, 0x2);
+		_calibrate_accel(sensor, 'D', accel_c.ref_mat[DIRECTION_DOWN], 0x2);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_FORWARD) {
-		accel_c.avg += sensor->accel.unfiltered.x;
-		_calibrate_accel('F', &accel_c.forward, 0x4);
+		_calibrate_accel(sensor, 'F', accel_c.ref_mat[DIRECTION_FORWARD], 0x4);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_BACKWARD) {
-		accel_c.avg += sensor->accel.unfiltered.x;
-		_calibrate_accel('B', &accel_c.backward, 0x8);
+		_calibrate_accel(sensor, 'B', accel_c.ref_mat[DIRECTION_BACKWARD], 0x8);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_LEFT) {
-		accel_c.avg += sensor->accel.unfiltered.y;
-		_calibrate_accel('L', &accel_c.left, 0x10);
+		_calibrate_accel(sensor, 'L', accel_c.ref_mat[DIRECTION_LEFT], 0x10);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_RIGHT) {
-		accel_c.avg += sensor->accel.unfiltered.y;
-		_calibrate_accel('R', &accel_c.right, 0x20);
+		_calibrate_accel(sensor, 'R', accel_c.ref_mat[DIRECTION_RIGHT], 0x20);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_GYRO) {
 		gyro_c.x += sensor->gyro.unfiltered.x;
 		gyro_c.y += sensor->gyro.unfiltered.y;
