@@ -54,10 +54,10 @@ void anotc_send_quaternion(float q1, float q2, float q3, float q4, unsigned char
 	PREPARE_ANOTC_FRAME(frame);
 	frame.fun = ANOTC_FRAME_QUAT;
 
-	anotc_add_short(&frame, (short)(q1 * 10000));
-	anotc_add_short(&frame, (short)(q2*10000));
-	anotc_add_short(&frame, (short)(q3*10000));
-	anotc_add_short(&frame, (short)(q4*10000));
+	anotc_add_short(&frame, (short)(q1 * 10000.0));
+	anotc_add_short(&frame, (short)(q2*10000.0));
+	anotc_add_short(&frame, (short)(q3*10000.0));
+	anotc_add_short(&frame, (short)(q4*10000.0));
 	frame.data[frame.len++] = fusion;
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);

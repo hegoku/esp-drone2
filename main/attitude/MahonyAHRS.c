@@ -49,13 +49,13 @@ void MahonyAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az
 		recipNorm = invSqrt(ax * ax + ay * ay + az * az);
 		ax *= recipNorm;
 		ay *= recipNorm;
-		az *= recipNorm;     
+		az *= recipNorm;  
 
 		// Normalise magnetometer measurement
 		recipNorm = invSqrt(mx * mx + my * my + mz * mz);
 		mx *= recipNorm;
 		my *= recipNorm;
-		mz *= recipNorm;   
+		mz *= recipNorm;
 
         // Auxiliary variables to avoid repeated arithmetic
         q0q0 = res->q0 * res->q0;

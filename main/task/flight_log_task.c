@@ -31,10 +31,21 @@ void send_system_info()
 	anotc_send_system_info();
 }
 
+void send_motor()
+{
+	unsigned short pwm[8] = {0,0,0,0,0,0,0,0};
+	pwm[0] = flight.mixer->motor[0].value;
+	pwm[1] = flight.mixer->motor[1].value;
+	pwm[2] = flight.mixer->motor[2].value;
+	pwm[3] = flight.mixer->motor[3].value;
+	anotc_send_pwm(pwm);
+}
+
 static struct s_log_task log_task_list[] = {
 	{.time=1, .func=send_flight_compass},
 	{.time=1, .func=send_flight_attitude},
 	{.time=100, .func=send_system_info},
+	{.time=16, .func=send_motor},
 };
 
 static unsigned int log_task_timer = 0;

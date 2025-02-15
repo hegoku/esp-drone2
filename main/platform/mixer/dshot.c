@@ -36,7 +36,7 @@ void mixer_dshot_init(struct mixer *mixer)
 		.tx_channel_array = priv->rmt_channel,
 		.array_size = count,
 	};
-	ESP_ERROR_CHECK(rmt_new_sync_manager(&synchro_config, &(priv->synchro)));
+	rmt_new_sync_manager(&synchro_config, &(priv->synchro));
 	
 	for (int j=0;j<50;j++) {
 		for (int i=0;i<count;i++) {
