@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 #include <driver/ledc.h>
 #include "mixer/mixer.h"
 #include "platform/mixer/bushed.h"
@@ -19,6 +20,7 @@ void mixer_bushed_init(struct mixer *mixer)
 	for (int i = 0; i < count; i++)
 	{
 		m_priv = (struct bushed_protocol_motor_priv*)malloc(sizeof(struct bushed_protocol_motor_priv));
+		memset(m_priv, 0, sizeof(struct bushed_protocol_motor_priv));
 		mixer->motor[i]->priv = m_priv;
 		m_priv->channel.gpio_num = mixer->motor[i]->wire;
 		m_priv->channel.duty = 0;

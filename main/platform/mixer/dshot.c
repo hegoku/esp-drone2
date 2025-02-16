@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "mixer/dshot.h"
 #include "platform/mixer/dshot.h"
 #include "platform/esc/dshot.h"
@@ -16,16 +17,19 @@ void mixer_dshot_write(struct mixer *mixer)
 void mixer_dshot_init(struct mixer *mixer)
 {
 	struct dshot_protocol_priv *priv = (struct dshot_protocol_priv*)malloc(sizeof(struct dshot_protocol_priv));
+	memset(priv, 0, sizeof(struct dshot_protocol_priv));
 	struct dshot_protocol_motor *m_priv;
 	int count = sizeof(mixer->motor) / (sizeof(mixer->motor[0]));
 
 	priv->channel_count = count;
 	priv->rmt_channel = (rmt_channel_handle_t *)malloc(sizeof(rmt_channel_handle_t)*count);
+	memset(priv->rmt_channel, 0, sizeof(rmt_channel_handle_t)*count);
 
 	mixer->esc_protocol->priv = (void*)priv;
 
 	for (int i=0;i<count;i++) {
 		m_priv = (struct dshot_protocol_motor*)malloc(sizeof(struct dshot_protocol_motor));
+		memset(m_priv, 0, sizeof(struct dshot_protocol_motor));
 		m_priv->rmt_channel = &(priv->rmt_channel[i]);
 		mixer->motor[i]->priv = m_priv;
 		m_priv->gpio_num = mixer->motor[i]->wire;

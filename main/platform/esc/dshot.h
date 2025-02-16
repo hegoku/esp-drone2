@@ -9,6 +9,7 @@ struct dshot_protocol_motor {
 	gpio_num_t gpio_num;
 	rmt_channel_handle_t *rmt_channel;
 	rmt_encoder_handle_t rmt_encoder;
+	unsigned short packet_frame;
 };
 
 #define DSHOT_GET_MOTOR_PRIV(x) ((struct dshot_protocol_motor*)x)

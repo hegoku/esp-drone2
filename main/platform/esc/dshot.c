@@ -80,7 +80,7 @@ out:
 esp_err_t rmt_new_dshot_esc_encoder(const dshot_esc_encoder_config_t *config, rmt_encoder_handle_t *ret_encoder)
 {
     rmt_dshot_esc_encoder_t *dshot_encoder = NULL;
-    dshot_encoder = (rmt_dshot_esc_encoder_t*)calloc(1, sizeof(rmt_dshot_esc_encoder_t));
+    dshot_encoder = rmt_alloc_encoder_mem(sizeof(rmt_dshot_esc_encoder_t));
     dshot_encoder->base.encode = rmt_encode_dshot_esc;
     dshot_encoder->base.del = rmt_del_dshot_encoder;
     dshot_encoder->base.reset = rmt_dshot_encoder_reset;
@@ -144,10 +144,10 @@ void dshot_init(struct dshot_protocol_motor *dshot)
 
 void dshot_write(struct dshot_protocol_motor *dshot, unsigned short value, unsigned char telemetry)
 {
-	unsigned short data = dshot_packet(value, telemetry);
+	dshot->packet_frame = dshot_packet(value, telemetry);
 	rmt_transmit_config_t tx_config = {
         .loop_count = 0, // infinite loop
     };
 
-	rmt_transmit(*(dshot->rmt_channel), dshot->rmt_encoder, &data, sizeof(data), &tx_config);
+	rmt_transmit(*(dshot->rmt_channel), dshot->rmt_encoder, &dshot->packet_frame, sizeof(dshot->packet_frame), &tx_config);
 }
