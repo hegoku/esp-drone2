@@ -34,10 +34,10 @@ void send_system_info()
 void send_motor()
 {
 	unsigned short pwm[8] = {0,0,0,0,0,0,0,0};
-	pwm[0] = flight.mixer->motor[0].value;
-	pwm[1] = flight.mixer->motor[1].value;
-	pwm[2] = flight.mixer->motor[2].value;
-	pwm[3] = flight.mixer->motor[3].value;
+	pwm[0] = flight.mixer.motor[0]->value;
+	pwm[1] = flight.mixer.motor[1]->value;
+	pwm[2] = flight.mixer.motor[2]->value;
+	pwm[3] = flight.mixer.motor[3]->value;
 	anotc_send_pwm(pwm);
 }
 

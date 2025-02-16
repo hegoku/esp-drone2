@@ -49,7 +49,6 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 
 int lis3mdl_prob(struct bus_dev *dev)
 {
-	printf("ca:%d\n", lis3mdl_who_am_i(dev));
 	if (lis3mdl_who_am_i(dev)!=LIS3MDL_WHOAMI_VALUE)
 		return -1;
 

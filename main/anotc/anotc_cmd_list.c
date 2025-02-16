@@ -69,10 +69,10 @@ char* toggle_test_mode(unsigned char *param)
 			return "Flight isn't in motor test status";
 		}
 		flight.status = FLIGHT_STATUS_READY;
-		flight.mixer->motor[0].value = 0;
-		flight.mixer->motor[1].value = 0;
-		flight.mixer->motor[2].value = 0;
-		flight.mixer->motor[3].value = 0;
+		flight.mixer.motor[0]->value = 0;
+		flight.mixer.motor[1]->value = 0;
+		flight.mixer.motor[2]->value = 0;
+		flight.mixer.motor[3]->value = 0;
 	}
 	return 0;
 }
@@ -82,10 +82,10 @@ char* test_mode_throttle(unsigned char *param)
 	if (flight.status!=FLIGHT_STATUS_MOTOR_TEST) {
 		return "Flight isn't in motor test status";
 	}
-	flight.mixer->motor[0].value = constrain((param[0] | (((unsigned short)param[1])<<8)) - 1000, 0, 1000);
-	flight.mixer->motor[1].value = constrain((param[2] | (((unsigned short)param[3])<<8)) - 1000, 0, 1000);
-	flight.mixer->motor[2].value = constrain((param[4] | (((unsigned short)param[5])<<8)) - 1000, 0 ,1000);
-	flight.mixer->motor[3].value = constrain((param[6] | (((unsigned short)param[7])<<8)) - 1000, 0, 1000);
+	flight.mixer.motor[0]->value = constrain((param[0] | (((unsigned short)param[1])<<8)) - 1000, 0, 1000);
+	flight.mixer.motor[1]->value = constrain((param[2] | (((unsigned short)param[3])<<8)) - 1000, 0, 1000);
+	flight.mixer.motor[2]->value = constrain((param[4] | (((unsigned short)param[5])<<8)) - 1000, 0 ,1000);
+	flight.mixer.motor[3]->value = constrain((param[6] | (((unsigned short)param[7])<<8)) - 1000, 0, 1000);
 	return 0;
 }
 

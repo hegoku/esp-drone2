@@ -2,6 +2,7 @@
 #include "flight/attitude.h"
 #include "flight/altitude.h"
 #include "mixer/mixer.h"
+#include "flight/control.h"
 
 struct flight flight;
 
@@ -39,5 +40,5 @@ void flight_update()
 
 void flight_control()
 {
-	mixer_output(flight.mixer);
+	mixer_output(&flight.mixer);
 }

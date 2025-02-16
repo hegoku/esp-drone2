@@ -19,8 +19,8 @@ void mixer_bushed_init(struct mixer *mixer)
 	for (int i = 0; i < count; i++)
 	{
 		m_priv = (struct bushed_protocol_motor_priv*)malloc(sizeof(struct bushed_protocol_motor_priv));
-		mixer->motor[i].priv = m_priv;
-		m_priv->channel.gpio_num = mixer->motor[i].wire;
+		mixer->motor[i]->priv = m_priv;
+		m_priv->channel.gpio_num = mixer->motor[i]->wire;
 		m_priv->channel.duty = 0;
 		m_priv->channel.speed_mode = LEDC_LOW_SPEED_MODE;
 		m_priv->channel.timer_sel = LEDC_TIMER_3;
@@ -34,8 +34,8 @@ void mixer_bushed_write(struct mixer *mixer)
 	struct bushed_protocol_motor_priv *priv;
 	int count = sizeof(mixer->motor) / (sizeof(mixer->motor[0]));
 	for (int i=0;i<count;i++) {
-		priv = BUSHED_GET_MOTOR_PRIV(mixer->motor[i].priv);
-		ledc_set_duty(priv->channel.speed_mode, priv->channel.channel, round(mixer->motor[i].value/1000.0*255.0));
+		priv = BUSHED_GET_MOTOR_PRIV(mixer->motor[i]->priv);
+		ledc_set_duty(priv->channel.speed_mode, priv->channel.channel, round(mixer->motor[i]->value/1000.0*255.0));
 		ledc_update_duty(priv->channel.speed_mode, priv->channel.channel);
 	}
 }

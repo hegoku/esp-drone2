@@ -1,7 +1,7 @@
 #ifndef MISC_CONFIG_H
 #define MISC_CONFIG_H
 
-void config_wirte_uchar(char *key, unsigned char value);
+void config_write_uchar(char *key, unsigned char value);
 void config_write_char(char *key, char value);
 void config_write_ushort(char *key, unsigned short value);
 void config_write_short(char *key, short value);

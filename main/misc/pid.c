@@ -1,6 +1,12 @@
 #include <math.h>
 #include "misc/pid.h"
 
+void pid_init(struct pid_data *tdata)
+{
+	pid_reset(tdata);
+	iir_filter_init(&tdata->filter);
+}
+
 void pid_reset(struct pid_data *tdata)
 {
 	tdata->prev_error = 0.0;
@@ -35,7 +41,7 @@ void pid_calculate(struct pid_data *tdata, float desired)
 	}
 
 	tdata->pid_d = (error - tdata->prev_error) / tdata->dt;
-	if (tdata->enableFilter==1) {
+	if (tdata->enable_filter==1) {
 		tdata->pid_d = iir_filter(&tdata->filter, tdata->pid_d);
 	}
 	// if (isnan(tdata->pid_d)) {

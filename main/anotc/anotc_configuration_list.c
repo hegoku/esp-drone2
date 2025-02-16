@@ -15,8 +15,12 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_ACCEL_OFFSET_Z,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_X,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Y,
-	ANOTC_CONFIG_PAR_GYRO_OFFSET_Z
+	ANOTC_CONFIG_PAR_GYRO_OFFSET_Z,
+	ANOTC_CONFIG_PAR_ESC_PROTOCOL,
+	ANOTC_CONFIG_PAR_MOTOR_MAPPING
 };
+
+static unsigned int tmp_get_value;
 
 char* set_wifi_name(void *value)
 {
@@ -140,6 +144,43 @@ char* set_gyro_calibration_z_offset(void *value)
 	config_write_float("gyro_offset.z", flight.imu.gyro.calibration.z_offset);
 	return 0;
 }
+
+void* get_esc_protocol()
+{
+	unsigned char value;
+	config_read_uchar("esc_protocol", &value);
+	tmp_get_value = value;
+	return &tmp_get_value;
+}
+char* set_esc_protocol(void *value)
+{
+	if (flight.status!=FLIGHT_STATUS_MOTOR_TEST) {
+		return "Flight isn't in ready status";
+	}
+	config_write_uchar("esc_protocol", *((unsigned char*)value));
+	return 0;
+}
+
+void* get_motor_mapping()
+{
+	unsigned long int motor_mapping;
+	config_read_uint("motor_mapping", &motor_mapping);
+	tmp_get_value = motor_mapping;
+	return &tmp_get_value;
+}
+char* set_motor_mapping(void *value)
+{
+	if (flight.status!=FLIGHT_STATUS_MOTOR_TEST) {
+		return "Flight isn't in ready status";
+	}
+	unsigned long int motor_mapping = *((unsigned long int*)value);
+	config_write_uint("motor_mapping", motor_mapping);
+	for (int i=0;i<sizeof(__motors)/sizeof(__motors[0]);i++) {
+		flight.mixer.motor[i] = &__motors[MOTOR_GET_INDEX(MOTOR_MAPPING_VALUE(motor_mapping, i))];
+	}
+	return 0;
+}
+
 static struct anotc_config_info configuration_list[] = {
 	{
 		.par_id=ANOTC_CONFIG_PAR_WIFI_NAME,
@@ -236,6 +277,22 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_gyro_calibration_z_offset,
 		.set = set_gyro_calibration_z_offset
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_ESC_PROTOCOL,
+		.type=ANOTC_PAR_TYPE_UINT8,
+		.par_name="esc_protocol",
+		.par_info="0.Bushed 1.DSHOT300",
+		.get = get_esc_protocol,
+		.set = set_esc_protocol
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MOTOR_MAPPING,
+		.type=ANOTC_PAR_TYPE_UINT32,
+		.par_name="motor_mapping",
+		.par_info="bit 4:reverse",
+		.get = get_motor_mapping,
+		.set = set_motor_mapping
 	}
 };
 

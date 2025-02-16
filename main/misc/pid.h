@@ -13,7 +13,7 @@ struct pid_data {
 	float error_sum;
 	float output;
 	float err_limit;
-	char enableFilter;
+	char enable_filter;
 	struct iir_filter_param filter;
 
 	float P;
@@ -27,7 +27,8 @@ struct pid_data {
 	float pprev_desired;
 };
 
-void pid_calculate(struct pid_data *tdata, float desired);
+void pid_init(struct pid_data *tdata);
 void pid_reset(struct pid_data *tdata);
+void pid_calculate(struct pid_data *tdata, float desired);
 
 #endif

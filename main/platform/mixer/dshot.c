@@ -8,8 +8,8 @@ void mixer_dshot_write(struct mixer *mixer)
 	struct dshot_protocol_motor *priv;
 	int count = sizeof(mixer->motor) / (sizeof(mixer->motor[0]));
 	for (int i=0;i<count;i++) {
-		priv = DSHOT_GET_MOTOR_PRIV(mixer->motor[i].priv);
-		dshot_write(priv, dshot_convert_throttle(mixer->motor[i].value), 0);
+		priv = DSHOT_GET_MOTOR_PRIV(mixer->motor[i]->priv);
+		dshot_write(priv, dshot_convert_throttle(mixer->motor[i]->value), 0);
 	}
 }
 
@@ -27,8 +27,8 @@ void mixer_dshot_init(struct mixer *mixer)
 	for (int i=0;i<count;i++) {
 		m_priv = (struct dshot_protocol_motor*)malloc(sizeof(struct dshot_protocol_motor));
 		m_priv->rmt_channel = &(priv->rmt_channel[i]);
-		mixer->motor[i].priv = m_priv;
-		m_priv->gpio_num = mixer->motor[i].wire;
+		mixer->motor[i]->priv = m_priv;
+		m_priv->gpio_num = mixer->motor[i]->wire;
 		dshot_init(m_priv);
 	}
 	
@@ -40,7 +40,7 @@ void mixer_dshot_init(struct mixer *mixer)
 	
 	for (int j=0;j<50;j++) {
 		for (int i=0;i<count;i++) {
-			m_priv = DSHOT_GET_MOTOR_PRIV(mixer->motor[i].priv);
+			m_priv = DSHOT_GET_MOTOR_PRIV(mixer->motor[i]->priv);
 			dshot_write(m_priv, 0, 0);
 		}
 	}

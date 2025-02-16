@@ -85,7 +85,6 @@ void mpu6500_init(struct bus_dev *dev, unsigned int id)
 int mpu6500_spi_prob(struct bus_dev *dev)
 {
 	unsigned char id = mpu6500_who_am_i(dev);
-	printf("6500:%d\n", id);
 	if (id != MPU6500_WHOAMI_VALUE) {
 		return -1;
 	}

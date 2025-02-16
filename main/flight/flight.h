@@ -43,7 +43,7 @@ struct flight {
 
 	enum flight_status status;
 
-	struct mixer *mixer;
+	struct mixer mixer;
 };
 
 extern struct flight flight;
