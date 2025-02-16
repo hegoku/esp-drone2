@@ -147,14 +147,14 @@ char* set_gyro_calibration_z_offset(void *value)
 
 void* get_esc_protocol()
 {
-	unsigned char value;
+	unsigned char value=0;
 	config_read_uchar("esc_protocol", &value);
 	tmp_get_value = value;
 	return &tmp_get_value;
 }
 char* set_esc_protocol(void *value)
 {
-	if (flight.status!=FLIGHT_STATUS_MOTOR_TEST) {
+	if (flight.status!=FLIGHT_STATUS_READY) {
 		return "Flight isn't in ready status";
 	}
 	config_write_uchar("esc_protocol", *((unsigned char*)value));
@@ -163,14 +163,14 @@ char* set_esc_protocol(void *value)
 
 void* get_motor_mapping()
 {
-	unsigned long int motor_mapping;
+	unsigned long int motor_mapping=0x3210;
 	config_read_uint("motor_mapping", &motor_mapping);
 	tmp_get_value = motor_mapping;
 	return &tmp_get_value;
 }
 char* set_motor_mapping(void *value)
 {
-	if (flight.status!=FLIGHT_STATUS_MOTOR_TEST) {
+	if (flight.status!=FLIGHT_STATUS_READY) {
 		return "Flight isn't in ready status";
 	}
 	unsigned long int motor_mapping = *((unsigned long int*)value);

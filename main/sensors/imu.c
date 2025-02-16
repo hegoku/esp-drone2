@@ -105,19 +105,19 @@ void calibrate_accel(struct imu_sensor *sensor)
 	sensor->accel.calibration.z_offset = (accel_c.ref_mat[DIRECTION_UP][AXIS_Z] + accel_c.ref_mat[DIRECTION_DOWN][AXIS_Z]) * 0.5;
 
 	// x
-	mat_A[0][0] = accel_c.ref_mat[DIRECTION_BACKWARD][0];
-	mat_A[0][1] = accel_c.ref_mat[DIRECTION_BACKWARD][1];
-	mat_A[0][2] = accel_c.ref_mat[DIRECTION_BACKWARD][2];
+	mat_A[0][0] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_X];
+	mat_A[0][1] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_Y];
+	mat_A[0][2] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_Z];
 
 	//y
-	mat_A[1][0] = accel_c.ref_mat[DIRECTION_RIGHT][0];
-	mat_A[1][1] = accel_c.ref_mat[DIRECTION_RIGHT][1];
-	mat_A[1][2] = accel_c.ref_mat[DIRECTION_RIGHT][2];
+	mat_A[1][0] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_X];
+	mat_A[1][1] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Y];
+	mat_A[1][2] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Z];
 
 	//z
-	mat_A[2][0] = accel_c.ref_mat[DIRECTION_UP][0];
-	mat_A[2][1] = accel_c.ref_mat[DIRECTION_UP][1];
-	mat_A[2][2] = accel_c.ref_mat[DIRECTION_UP][2];
+	mat_A[2][0] = accel_c.ref_mat[DIRECTION_UP][AXIS_X];
+	mat_A[2][1] = accel_c.ref_mat[DIRECTION_UP][AXIS_Y];
+	mat_A[2][2] = accel_c.ref_mat[DIRECTION_UP][AXIS_Z];
 
 	matrix_inverse(mat_A, 3, mat_A_inverse);
 	matrix_mult(mat_A_inverse, mat_U, Accel_T);
@@ -125,12 +125,24 @@ void calibrate_accel(struct imu_sensor *sensor)
 	sensor->accel.calibration.x_k = Accel_T[0][0];
 	sensor->accel.calibration.y_k = Accel_T[1][1];
 	sensor->accel.calibration.z_k = Accel_T[2][2];
+
+	config_write_float("accel_k.x", sensor->accel.calibration.x_k);
+	config_write_float("accel_k.y", sensor->accel.calibration.y_k);
+	config_write_float("accel_k.z", sensor->accel.calibration.z_k);
+	
+	config_write_float("accel_offset.x", sensor->accel.calibration.x_offset);
+	config_write_float("accel_offset.y", sensor->accel.calibration.y_offset);
+	config_write_float("accel_offset.z", sensor->accel.calibration.z_offset);
+
+	config_write_float("gyro_offset.x", sensor->gyro.calibration.x_offset);
+	config_write_float("gyro_offset.y", sensor->gyro.calibration.y_offset);
+	config_write_float("gyro_offset.z", sensor->gyro.calibration.z_offset);
 }
 
 static void _calibrate_accel(struct imu_sensor *sensor, unsigned char direction, float direction_value[3], unsigned char mask)
 {
 	unsigned char d[2] = {direction, 0};
-	accel_c.x_avg += sensor->accel.unfiltered.z;
+	accel_c.x_avg += sensor->accel.unfiltered.x;
 	accel_c.y_avg += sensor->accel.unfiltered.y;
 	accel_c.z_avg += sensor->accel.unfiltered.z;
 	accel_c.count++;
