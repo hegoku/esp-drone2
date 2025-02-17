@@ -24,7 +24,7 @@ unsigned char lis3mdl_who_am_i(struct bus_dev *dev)
 
 int lis3mdl_sensor_read(struct compass_sensor *sensor)
 {
-	unsigned char buf[8];
+	unsigned char buf[6];
 	lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_STATUS_REG, &buf[0], 1);
 	if (buf[0] & 0xF) {
 		lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_OUT_X_L | 0x40, buf, 8);
@@ -36,8 +36,9 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 		sensor->value.y = ((float)sensor->raw.y) / LIS3MDL_RESOLUTION_4;
 		sensor->value.z = ((float)sensor->raw.z) / LIS3MDL_RESOLUTION_4;
 
-		sensor->temperature.raw = (((short)buf[13] << 8) | buf[12]);
-		sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0f;
+		lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_TEMP_OUT_L | 0x40, buf, 2);
+		sensor->temperature.raw = (((short)buf[1] << 8) | buf[0]);
+		sensor->temperature.value = ((float)sensor->temperature.raw) / 256.0f + 25.0f;
 
 		sensor->status |= COMPASS_STATUS_DTRY;
 	} else {

@@ -28,7 +28,7 @@ void anotc_send_mag(short mag_x, short mag_y, short mag_z, float temp, unsigned 
 	anotc_add_short(&frame, mag_x);
 	anotc_add_short(&frame, mag_y);
 	anotc_add_short(&frame, mag_z);
-	anotc_add_ushort(&frame, (unsigned short)(temp*10));
+	anotc_add_short(&frame, (short)(temp*10));
 	frame.data[frame.len++] = mag_sta;
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
