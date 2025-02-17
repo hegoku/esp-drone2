@@ -10,7 +10,7 @@ void init_baro(struct barometer_sensor *sensor)
 void baro_pressure2altitude(struct barometer_sensor *sensor)
 {
 	if (IS_BARO_DTRY(*sensor)) {
-		sensor->actual_altitude = 44330.0 * (1.0-pow(sensor->pressure.value/100.0/1013.25, 1.0f/5.255f)) * 100.0;
+		sensor->actual_altitude = 44330.0f * (1.0f-pow(sensor->pressure.value/100.0f/1013.25f, 1.0f/5.255f)) * 100.0f;
 	}
 }
 

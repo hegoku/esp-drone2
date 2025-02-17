@@ -5,6 +5,7 @@
 #include "misc/config.h"
 #include "anotc/anotc_cmd_frame.h"
 #include "math/matrix.h"
+#include "misc/geo.h"
 
 #define DIRECTION_UP 0
 #define DIRECTION_DOWN 1
@@ -79,9 +80,9 @@ void init_imu(struct imu_sensor *sensor)
 
 void imu_filter(struct imu_sensor *sensor)
 {
-	sensor->accel.unfiltered.x = sensor->accel.calibration.x_k * sensor->accel.unfiltered.x - sensor->accel.calibration.x_offset;
-	sensor->accel.unfiltered.y = sensor->accel.calibration.y_k * sensor->accel.unfiltered.y - sensor->accel.calibration.y_offset;
-	sensor->accel.unfiltered.z = sensor->accel.calibration.z_k * sensor->accel.unfiltered.z - sensor->accel.calibration.z_offset;
+	sensor->accel.unfiltered.x = sensor->accel.calibration.x_k * (sensor->accel.unfiltered.x - sensor->accel.calibration.x_offset);
+	sensor->accel.unfiltered.y = sensor->accel.calibration.y_k * (sensor->accel.unfiltered.y - sensor->accel.calibration.y_offset);
+	sensor->accel.unfiltered.z = sensor->accel.calibration.z_k * (sensor->accel.unfiltered.z - sensor->accel.calibration.z_offset);
 	sensor->accel.value.x = iir_filter(&acc_iir[0], sensor->accel.unfiltered.x);
 	sensor->accel.value.y = iir_filter(&acc_iir[1], sensor->accel.unfiltered.y);
 	sensor->accel.value.z = iir_filter(&acc_iir[2], sensor->accel.unfiltered.z);
@@ -96,28 +97,30 @@ void imu_filter(struct imu_sensor *sensor)
 
 void calibrate_accel(struct imu_sensor *sensor)
 {
-	float mat_A[3][3], mat_A_inverse[3][3], Accel_T[3][3];
-	float mat_U[3][3] = {{1.0, 0, 0}, {0, 1.0, 0}, {0, 0, 1.0}};
+	float mat_A[3][3];
+	float mat_A_inverse[3][3] = {{.0f,.0f,.0f}, {.0f,.0f,.0f}, {.0f,.0f,.0f}};
+	float Accel_T[3][3] = {{.0f,.0f,.0f}, {.0f,.0f,.0f}, {.0f,.0f,.0f}};
+	float mat_U[3][3] = {{CONSTANTS_ONE_G, .0f, .0f}, {.0f, CONSTANTS_ONE_G, .0f}, {.0f, .0f, CONSTANTS_ONE_G}};
 
 	//calculate offset
-	sensor->accel.calibration.x_offset = (accel_c.ref_mat[DIRECTION_FORWARD][AXIS_X] + accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_X]) * 0.5;
-	sensor->accel.calibration.y_offset = (accel_c.ref_mat[DIRECTION_LEFT][AXIS_Y] + accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Y]) * 0.5;
-	sensor->accel.calibration.z_offset = (accel_c.ref_mat[DIRECTION_UP][AXIS_Z] + accel_c.ref_mat[DIRECTION_DOWN][AXIS_Z]) * 0.5;
+	sensor->accel.calibration.x_offset = (accel_c.ref_mat[DIRECTION_FORWARD][AXIS_X] + accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_X]) * 0.5f;
+	sensor->accel.calibration.y_offset = (accel_c.ref_mat[DIRECTION_LEFT][AXIS_Y] + accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Y]) * 0.5f;
+	sensor->accel.calibration.z_offset = (accel_c.ref_mat[DIRECTION_UP][AXIS_Z] + accel_c.ref_mat[DIRECTION_DOWN][AXIS_Z]) * 0.5f;
 
 	// x
-	mat_A[0][0] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_X];
-	mat_A[0][1] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_Y];
-	mat_A[0][2] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_Z];
+	mat_A[0][0] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_X] - sensor->accel.calibration.x_offset;
+	mat_A[0][1] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_Y] - sensor->accel.calibration.y_offset;
+	mat_A[0][2] = accel_c.ref_mat[DIRECTION_BACKWARD][AXIS_Z] - sensor->accel.calibration.z_offset;
 
 	//y
-	mat_A[1][0] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_X];
-	mat_A[1][1] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Y];
-	mat_A[1][2] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Z];
+	mat_A[1][0] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_X] - sensor->accel.calibration.x_offset;
+	mat_A[1][1] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Y] - sensor->accel.calibration.y_offset;
+	mat_A[1][2] = accel_c.ref_mat[DIRECTION_RIGHT][AXIS_Z] - sensor->accel.calibration.z_offset;
 
 	//z
-	mat_A[2][0] = accel_c.ref_mat[DIRECTION_UP][AXIS_X];
-	mat_A[2][1] = accel_c.ref_mat[DIRECTION_UP][AXIS_Y];
-	mat_A[2][2] = accel_c.ref_mat[DIRECTION_UP][AXIS_Z];
+	mat_A[2][0] = accel_c.ref_mat[DIRECTION_UP][AXIS_X] - sensor->accel.calibration.x_offset;
+	mat_A[2][1] = accel_c.ref_mat[DIRECTION_UP][AXIS_Y] - sensor->accel.calibration.y_offset;
+	mat_A[2][2] = accel_c.ref_mat[DIRECTION_UP][AXIS_Z] - sensor->accel.calibration.z_offset;
 
 	matrix_inverse(mat_A, 3, mat_A_inverse);
 	matrix_mult(mat_A_inverse, mat_U, Accel_T);
@@ -146,7 +149,7 @@ static void _calibrate_accel(struct imu_sensor *sensor, unsigned char direction,
 	accel_c.y_avg += sensor->accel.unfiltered.y;
 	accel_c.z_avg += sensor->accel.unfiltered.z;
 	accel_c.count++;
-	accel_c.percentage = (unsigned char)(((float)accel_c.count) / 10000.0 * 100.0);
+	accel_c.percentage = (unsigned char)(((float)accel_c.count) / 10000.0f * 100.0f);
 	if (accel_c.percentage%20==0) {
 		d[1] = accel_c.percentage;
 		anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_ACCEL, 0, d, sizeof(d));
@@ -191,7 +194,7 @@ void imu_calibration(struct imu_sensor *sensor)
 		gyro_c.z += sensor->gyro.unfiltered.z;
 		gyro_c.count++;
 
-		gyro_c.percentage = (unsigned char)(((float)gyro_c.count) / 10000.0 * 100.0);
+		gyro_c.percentage = (unsigned char)(((float)gyro_c.count) / 10000.0f * 100.0f);
 		if (gyro_c.percentage%20==0) {
 			anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_GYRO, 0, &gyro_c.percentage, 1);
 		}

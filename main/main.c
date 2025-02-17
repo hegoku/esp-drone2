@@ -26,7 +26,12 @@ int anotc_log(const char * format, va_list arg)
 	int actual_size = 0;
 	actual_size = vsnprintf(subf, 256, format, arg);
 	if (actual_size>=0) {
-		anotc_send_log_string(BLACK, subf, actual_size);
+		int offset = 0;
+		if (subf[0]=='\033') { //去掉esp monitor颜色
+			offset+=7;
+			actual_size-=7+5;
+		}
+		anotc_send_log_string(BLACK, subf+offset, actual_size);
 	}
 	return actual_size;
 }

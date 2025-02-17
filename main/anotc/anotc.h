@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#define ANOTC_DATA_MAX_SIZE 512
+#define ANOTC_DATA_MAX_SIZE 256
 #define ANOTC_V8_HEAD_SIZE 6
 #define ANOTC_V8_HEAD 0xAB
 

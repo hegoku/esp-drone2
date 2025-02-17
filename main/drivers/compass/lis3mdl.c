@@ -37,7 +37,7 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 		sensor->value.z = ((float)sensor->raw.z) / LIS3MDL_RESOLUTION_4;
 
 		sensor->temperature.raw = (((short)buf[13] << 8) | buf[12]);
-		sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0;
+		sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0f;
 
 		sensor->status |= COMPASS_STATUS_DTRY;
 	} else {

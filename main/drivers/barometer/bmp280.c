@@ -103,9 +103,9 @@ int bmp280_get_sensor_data(struct barometer_sensor *sensor)
 		bmp280_read(sensor->dev, BMP280_REG_PRESS_MSB, temp, 6);
 		if (_parse_sensor_data(temp, &sensor->temperature.raw, &sensor->pressure.raw)==0) {
 			priv->compensated_temperature = bmp280_compensate_T_int32(sensor->temperature.raw, &priv->t_fine, &priv->calib_param);
-			sensor->temperature.value = ((float)priv->compensated_temperature) / 100.0;
+			sensor->temperature.value = ((float)priv->compensated_temperature) / 100.0f;
 			priv->compensated_pressure = bmp280_compensate_P_int64(sensor->pressure.raw, priv->t_fine, &priv->calib_param);
-			sensor->pressure.value = ((float)priv->compensated_pressure) / 256.0;
+			sensor->pressure.value = ((float)priv->compensated_pressure) / 256.0f;
 			// bmp280_data.altitude = 44330.0 * (1.0-pow(bmp280_data.pressure/100.0/1018.7, 1.0f/5.255f)) * 100.0;
 			// sensor->altitude = 44330.0 * (1.0-pow(sensor->pressure.value/100.0/1013.25, 1.0f/5.255f)) * 100.0;
 			// sensor->altitude = ((powf(101325.0 / sensor->pressure.value, 1.0 / 5.257) - 1) * (sensor->temperature.value + 273.15)) / 0.000065;

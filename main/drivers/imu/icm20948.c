@@ -50,7 +50,7 @@ int icm20948_sensor_read(struct imu_sensor *sensor)
 	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / ICM20948_GYRO_RESOLUTION;
 	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / ICM20948_GYRO_RESOLUTION;
 
-	sensor->temperature.value = 21.0 + (float)sensor->temperature.raw / 333.87;
+	sensor->temperature.value = 21.0f + (float)sensor->temperature.raw / 333.87f;
 	return 0;
 }
 
