@@ -9,6 +9,6 @@
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-#define constrain(v, s, b) (min(max(v,s),b))
+#define constrain(v, min_v, max_b) (min(max(v,min_v),max_b))
 
 #endif

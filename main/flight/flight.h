@@ -7,6 +7,9 @@
 #include "flight/attitude.h"
 #include "mixer/mixer.h"
 
+#define FLIGHT_THROTTLE_MAX 1000U
+#define FLIGHT_THROTTLE_MIN 0U
+
 enum flight_status {
 	FLIGHT_STATUS_READY,
 	FLIGHT_STATUS_ANGLE_RATE_MODE,
@@ -44,6 +47,8 @@ struct flight {
 	enum flight_status status;
 
 	struct mixer mixer;
+
+	unsigned short throttle;
 };
 
 extern struct flight flight;
