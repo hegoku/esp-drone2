@@ -3,8 +3,8 @@
 
 struct iir_filter_param
 {
-	short int freq;
-	short int cut_off_freq;
+	unsigned short freq;
+	unsigned short cut_off_freq;
 	float b0;
 	float b1;
 	float b2;
