@@ -3,6 +3,7 @@
 #include "flight/altitude.h"
 #include "mixer/mixer.h"
 #include "flight/control.h"
+#include "rc/rc.h"
 
 struct flight flight;
 
@@ -13,6 +14,8 @@ void init_flight()
 	init_imu(&flight.imu);
 	init_baro(&flight.baro);
 	init_attitude();
+	init_control();
+	init_rc();
 }
 
 void flight_read_data()
@@ -40,5 +43,7 @@ void flight_update()
 
 void flight_control()
 {
+	rc_input(&flight.rc);
+	control_update();
 	mixer_output(&flight.mixer);
 }

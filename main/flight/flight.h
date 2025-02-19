@@ -6,6 +6,7 @@
 #include "sensors/compass.h"
 #include "flight/attitude.h"
 #include "mixer/mixer.h"
+#include "rc/rc.h"
 
 #define FLIGHT_THROTTLE_MAX 1000U
 #define FLIGHT_THROTTLE_MIN 0U
@@ -48,7 +49,15 @@ struct flight {
 
 	struct mixer mixer;
 
-	unsigned short throttle;
+	float throttle;
+
+	struct rc rc;
+	struct {
+		float throttle;
+		float roll;
+		float pitch;
+		float yaw;
+	} setpoints;
 };
 
 extern struct flight flight;
