@@ -61,8 +61,8 @@ void rc_input(struct rc *rc)
 			flight.setpoints.throttle = ((float)rc->throttle) / 1000.0f;
 			flight.throttle = flight.setpoints.throttle;
 			if (flight.status == FLIGHT_STATUS_ANGLE_MODE) {
-				flight.setpoints.roll = (float)rc->roll * 45.0f / 500.0f;
-				flight.setpoints.pitch = (float)rc->pitch * 45.0f / 500.0f;
+				flight.setpoints.roll = (float)rc->roll * 30.0f / 500.0f;
+				flight.setpoints.pitch = (float)rc->pitch * 30.0f / 500.0f;
 			} else {
 				flight.setpoints.roll = (float)rc->roll * 90.0f / 500.0f;
 				flight.setpoints.pitch = (float)rc->pitch * 90.0f / 500.0f;

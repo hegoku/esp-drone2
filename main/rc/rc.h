@@ -18,8 +18,7 @@ enum rc_status
 #define RC_CHANNEL_AUX8 11
 #define RC_CHANNEL_AUX9 12
 #define RC_CHANNEL_AUX10 13
-#define RC_CHANNEL_AUX11 14
-#define RC_CHANNEL_CNT RC_CHANNEL_AUX11
+#define RC_CHANNEL_CNT RC_CHANNEL_AUX10
 
 struct rc;
 

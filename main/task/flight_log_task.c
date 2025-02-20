@@ -39,6 +39,8 @@ void send_motor()
 	pwm[2] = flight.mixer.motor[2]->value;
 	pwm[3] = flight.mixer.motor[3]->value;
 	anotc_send_pwm(pwm);
+
+	anotc_send_rc((short*)&flight.rc.channel);
 }
 
 static struct s_log_task log_task_list[] = {

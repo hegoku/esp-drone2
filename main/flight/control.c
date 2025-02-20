@@ -6,10 +6,6 @@
 #include "flight/flight.h"
 #include "math/math.h"
 
-#define PID_ROLL 0
-#define PID_PITCH 1
-#define PID_YAW 2
-
 struct pid_data angle_rate_pid[3];
 struct pid_data angle_pid[3];
 
@@ -107,11 +103,11 @@ void control_update()
 		pid_calculate(&angle_pid[PID_PITCH], flight.setpoints.pitch);
 		_desired_roll_rate = angle_pid[PID_ROLL].output;
 		_desired_pitch_rate = angle_pid[PID_PITCH].output;
-		_desired_yaw_rate = 0;
+		_desired_yaw_rate = flight.setpoints.yaw;
 	} else {
 		_desired_roll_rate = flight.setpoints.roll;
-		_desired_pitch_rate = flight.setpoints.yaw;
-		_desired_yaw_rate = 0;
+		_desired_pitch_rate = flight.setpoints.pitch;
+		_desired_yaw_rate = flight.setpoints.yaw;
 	}
 
 	pid_calculate(&angle_rate_pid[PID_ROLL], _desired_roll_rate);
