@@ -10,14 +10,14 @@ static void rc_cmd_switch_to_ready(unsigned short value)
 
 static void rc_cmd_switch_to_angle_status(unsigned short value)
 {
-	if ((flight.status==FLIGHT_STATUS_READY || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE) && flight.throttle==0) {
+	if ((flight.status==FLIGHT_STATUS_READY || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE) && flight.rc.throttle==0) {
 		flight.status = FLIGHT_STATUS_ANGLE_MODE;
 	}
 }
 
 static void rc_cmd_switch_to_angle_rate_status(unsigned short value)
 {
-	if ((flight.status==FLIGHT_STATUS_READY || flight.status==FLIGHT_STATUS_ANGLE_MODE) && flight.throttle==0) {
+	if ((flight.status==FLIGHT_STATUS_READY || flight.status==FLIGHT_STATUS_ANGLE_MODE) && flight.rc.throttle==0) {
 		flight.status = FLIGHT_STATUS_ANGLE_RATE_MODE;
 	}
 }

@@ -1,5 +1,6 @@
 #include <string.h>
 #include "rc/ibus.h"
+#include "misc/util.h"
 
 #define MAX_CHANNEL_CNT 14
 
@@ -7,12 +8,14 @@ static unsigned short channel_data1[MAX_CHANNEL_CNT];
 static unsigned short channel_data2[MAX_CHANNEL_CNT];
 static unsigned short *read_pointer = 0;
 static unsigned short *write_pointer = channel_data2;
+static unsigned int ts;
 
 void ibus_decode(unsigned char *data, int count)
 {
 	static unsigned char step = 0;
 	static unsigned int _ck_sum = 0;
 	static unsigned short channel_tmp[MAX_CHANNEL_CNT] = {0};
+					
 	for (int i = 0; i < count;i++) {
 		switch (step)
 		{
@@ -193,6 +196,7 @@ void ibus_decode(unsigned char *data, int count)
 				unsigned short *tmp = write_pointer;
 				write_pointer = read_pointer;
 				read_pointer = tmp;
+				ts = get_timestamp_ms();
 			}
 			step = 0;
 			break;
@@ -203,15 +207,32 @@ void ibus_decode(unsigned char *data, int count)
 void ibus_read(struct rc *rc)
 {
 	unsigned short *pointer = read_pointer;
-	if (pointer==0)
-		return;
-	for (int i = 0; i < MAX_CHANNEL_CNT; i++)
+	unsigned int current_ts = get_timestamp_ms();
+	if (pointer == 0)
+	return;
+	if (current_ts - ts > 20 && rc->status == RC_STATUS_CONNECTED)
 	{
-		rc->channel[i] = pointer[i];
+		rc->status = RC_STATUS_TIMEOUT;
+		for (int i = 0; i < MAX_CHANNEL_CNT; i++)
+		{
+			rc->channel[i] = 0;
+		}
 	}
-	if (rc->status==RC_STATUS_UNCONNECTED) {
+	else
+	{
+		for (int i = 0; i < MAX_CHANNEL_CNT; i++)
+		{
+			rc->channel[i] = pointer[i];
+		}
 		rc->status = RC_STATUS_CONNECTED;
 	}
+}
+
+void init_ibus()
+{
+	ibus_hw_init();
+	write_pointer = 0;
+	read_pointer = 0;
 }
 
 struct rc_protocol ibus = {

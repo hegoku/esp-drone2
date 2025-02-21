@@ -10,6 +10,7 @@ struct uart_priv {
 	gpio_num_t tx_pin;
 	gpio_num_t rx_pin;
 	int baud_rate;
+	int rx_data_size;
 	int rx_buffer_size;
 	int tx_buffer_size;
 

@@ -12,6 +12,7 @@ void anotc_send_system_info()
 	frame.data[frame.len++] = flight.system_info.cpu_load;
 	anotc_add_float(&frame, flight.battery.voltage);
 	anotc_add_float(&frame, flight.battery.current);
+	frame.data[frame.len++] = flight.rc.status;
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }

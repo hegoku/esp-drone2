@@ -45,7 +45,7 @@ void send_motor()
 
 static struct s_log_task log_task_list[] = {
 	{.time=1, .func=send_flight_compass},
-	{.time=1, .func=send_flight_attitude},
+	{.time=10, .func=send_flight_attitude},
 	{.time=100, .func=send_system_info},
 	{.time=16, .func=send_motor},
 };
