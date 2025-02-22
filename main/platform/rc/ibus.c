@@ -19,6 +19,7 @@ static struct uart_priv uart_config = {
 	.tx_pin=GPIO_NUM_0,
 	.rx_pin=GPIO_NUM_34,
 	.port=UART_NUM_1,
+	.rx_data_size=32,
 	.rx_buffer_size=256,
 	.tx_buffer_size=0,
 	.dev_init=ibus_uart_init
@@ -30,7 +31,7 @@ struct bus uart = {
 	.init = init_uart
 };
 
-void init_ibus()
+void ibus_hw_init()
 {
 	uart.init(&uart);
 }

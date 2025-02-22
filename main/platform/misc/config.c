@@ -100,8 +100,8 @@ void config_write_long(char *key, long long value)
 
 void config_write_float(char *key, float value)
 {
-    nvs_set_u32(my_handle, key, *((unsigned int*)(&value)));
-    if (is_in_transaction==0) {
+	nvs_set_u32(my_handle, key, *((unsigned int *)(&value)));
+	if (is_in_transaction==0) {
         nvs_commit(my_handle);
     }
 }

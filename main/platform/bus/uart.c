@@ -8,9 +8,9 @@ void uart_read_task(void *param)
 {
 	struct bus_dev *dev = (struct bus_dev*) param;
 	struct uart_priv *priv = UART_GET_PRIV(dev->bus->priv);
-	unsigned char* data = (unsigned char*) malloc(128);
+	unsigned char* data = (unsigned char*) malloc(priv->rx_data_size);
     while (1) {
-        const int len = uart_read_bytes(priv->port, data, 128, 10);
+        const int len = uart_read_bytes(priv->port, data, priv->rx_data_size, 10);
         if (len > 0) {
 			priv->read_handler(data, len);
 		}
@@ -42,7 +42,7 @@ void init_uart(struct bus *bus)
 	priv->dev_init(dev);
 	bus_add_dev(bus, dev);
 
-	xTaskCreate(uart_read_task, dev->name, 1024 * 2, (void*)dev, 5, NULL);
+	xTaskCreate(uart_read_task, dev->name, 1024 * 2, (void*)dev, 9, NULL);
 }
 
 int uart_write(struct bus_dev *dev, unsigned char *data, int len)

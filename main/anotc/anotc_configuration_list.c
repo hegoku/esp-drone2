@@ -230,7 +230,7 @@ void* get_pid_roll_d()
 char* set_pid_roll_d(void *value)
 {
 	angle_pid[PID_ROLL].kd = *((float*)value);
-	config_write_float("pit_pid.d", angle_pid[PID_ROLL].kd);
+	config_write_float("rol_pid.d", angle_pid[PID_ROLL].kd);
 	return 0;
 }
 
@@ -274,7 +274,7 @@ void* get_pid_yaw_p()
 char* set_pid_yaw_p(void *value)
 {
 	angle_pid[PID_YAW].kp = *((float*)value);
-	config_write_float("pit_yaw.p", angle_pid[PID_YAW].kp);
+	config_write_float("yaw_pid.p", angle_pid[PID_YAW].kp);
 	return 0;
 }
 
@@ -285,7 +285,7 @@ void* get_pid_yaw_i()
 char* set_pid_yaw_i(void *value)
 {
 	angle_pid[PID_YAW].ki = *((float*)value);
-	config_write_float("pit_yaw.i", angle_pid[PID_YAW].ki);
+	config_write_float("yaw_pid.i", angle_pid[PID_YAW].ki);
 	return 0;
 }
 
@@ -296,7 +296,7 @@ void* get_pid_yaw_d()
 char* set_pid_yaw_d(void *value)
 {
 	angle_pid[PID_YAW].kd = *((float*)value);
-	config_write_float("pit_yaw.d", angle_pid[PID_YAW].kd);
+	config_write_float("yaw_pid.d", angle_pid[PID_YAW].kd);
 	return 0;
 }
 
@@ -346,7 +346,7 @@ char* set_pid_pitch_rate_p(void *value)
 
 void* get_pid_pitch_rate_i()
 {
-	return (void*)&angle_rate_pid[PID_ROLL].ki;
+	return (void*)&angle_rate_pid[PID_PITCH].ki;
 }
 char* set_pid_pitch_rate_i(void *value)
 {
