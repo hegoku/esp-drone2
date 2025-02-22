@@ -3,6 +3,7 @@
 
 #include <esp_system.h>
 #include "flight/flight.h"
+#include "rc/pc.h"
 
 char* start_calibrate_gyro(unsigned char *param)
 {
@@ -89,6 +90,12 @@ char* test_mode_throttle(unsigned char *param)
 	return 0;
 }
 
+char* pc_rc(unsigned char *param)
+{
+	pc_rc_receive((unsigned short*)param);
+	return 0;
+}
+
 static struct anotc_cmd_info cmd_list[] = {
 	{
 		.cid = ANOTC_CMD_CALIBRATE_GYRO,
@@ -109,6 +116,10 @@ static struct anotc_cmd_info cmd_list[] = {
 	{
 		.cid = ANOTC_CMD_MOTOR_TEST_THROLLE,
 		.handle = test_mode_throttle
+	},
+	{
+		.cid = ANOTC_CMD_CHANGE_PC_RC,
+		.handle = pc_rc
 	}
 };
 

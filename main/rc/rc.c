@@ -4,6 +4,7 @@
 #include "math/math.h"
 
 #include "rc/ibus.h"
+#include "rc/pc.h"
 
 struct rc_cmd {
 	unsigned char channel;
@@ -20,6 +21,9 @@ void init_rc()
 	{
 	case 0:
 		flight.rc.protocol = &ibus;
+		break;
+	case 1:
+		flight.rc.protocol = &pc;
 		break;
 	default:
 		flight.rc.protocol = &ibus;

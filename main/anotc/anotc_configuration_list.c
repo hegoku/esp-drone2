@@ -37,6 +37,7 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_P,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_I,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_D,
+	ANOTC_CONFIG_PAR_RC_PROTOCOL
 
 };
 
@@ -399,6 +400,21 @@ char* set_pid_yaw_rate_d(void *value)
 	return 0;
 }
 
+void* get_rc_protocol()
+{
+	config_read_uchar("rc_protocol", (unsigned char*)&tmp_get_value);
+	return &tmp_get_value;
+}
+char* set_rc_protocol(void *value)
+{
+	if (flight.status!=FLIGHT_STATUS_READY) {
+		return "Flight isn't in ready status";
+	}
+	unsigned char protocol = *((unsigned char*)value);
+	config_write_uchar("rc_protocol", protocol);
+	return 0;
+}
+
 static struct anotc_config_info configuration_list[] = {
 	{
 		.par_id=ANOTC_CONFIG_PAR_WIFI_NAME,
@@ -655,6 +671,14 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_pid_yaw_rate_d,
 		.set = set_pid_yaw_rate_d
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_RC_PROTOCOL,
+		.type=ANOTC_PAR_TYPE_UINT8,
+		.par_name="rc_protocol",
+		.par_info="0.ibus 1.pc",
+		.get = get_rc_protocol,
+		.set = set_rc_protocol
 	}
 };
 
