@@ -84,6 +84,9 @@ void control_update()
 	float pitch=.0f, roll=.0f, yaw=.0f;
 	float _desired_roll_rate=0, _desired_pitch_rate = 0, _desired_yaw_rate =0;
 
+	if (flight.status==FLIGHT_STATUS_MOTOR_TEST)
+		return;
+
 	if ((flight.status!=FLIGHT_STATUS_ANGLE_MODE && flight.status!=FLIGHT_STATUS_ANGLE_RATE_MODE)
 		|| flight.throttle==0) {
 		for (int i=0;i<PID_YAW+1;i++) {
