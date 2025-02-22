@@ -33,10 +33,10 @@ struct rc {
 	struct rc_protocol *protocol;
 	unsigned short channel[14];
 
-	unsigned short throttle;
-	unsigned short roll;
-	unsigned short pitch;
-	unsigned short yaw;
+	short throttle;
+	short roll;
+	short pitch;
+	short yaw;
 };
 
 void init_rc();

@@ -30,7 +30,7 @@ void pc_read(struct rc *rc)
 	unsigned int current_ts = get_timestamp_ms();
 	if (pointer == 0)
 	return;
-	if (current_ts - ts > 50 && rc->status == RC_STATUS_CONNECTED)
+	if (current_ts - ts > 100 && rc->status == RC_STATUS_CONNECTED)
 	{
 		rc->status = RC_STATUS_TIMEOUT;
 		for (int i = 0; i < MAX_CHANNEL_CNT; i++)

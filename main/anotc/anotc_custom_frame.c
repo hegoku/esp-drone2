@@ -82,8 +82,8 @@ void anotc_send_pid()
 	anotc_add_float(&frame, angle_rate_pid[PID_YAW].desired);
 
 	anotc_add_short(&frame, (short int)flight.imu.accel.value.x);
-	anotc_add_short(&frame, (short int)flight.imu.accel.value.x);
-	anotc_add_short(&frame, (short int)flight.imu.accel.value.x);
+	anotc_add_short(&frame, (short int)flight.imu.accel.value.y);
+	anotc_add_short(&frame, (short int)flight.imu.accel.value.z);
 
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);

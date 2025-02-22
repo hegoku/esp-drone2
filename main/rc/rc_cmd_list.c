@@ -26,19 +26,19 @@ struct rc_cmd rc_cmd_list[] = {
 	{
 		.channel=RC_CHANNEL_AUX2,
 		.handler=rc_cmd_switch_to_ready,
-		.min=0,
-		.max=1000
+		.min=1000,
+		.max=1300
 	},
 	{
 		.channel=RC_CHANNEL_AUX2,
 		.handler=rc_cmd_switch_to_angle_status,
-		.min=1001,
+		.min=1301,
 		.max=1500
 	},
 	{
 		.channel=RC_CHANNEL_AUX2,
 		.handler=rc_cmd_switch_to_angle_rate_status,
-		.min=1501,
+		.min=1800,
 		.max=2000
 	}
 };
