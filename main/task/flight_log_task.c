@@ -11,14 +11,21 @@ struct s_log_task {
 
 void send_flight_attitude()
 {
-	anotc_send_imu((short)(flight.imu.accel.value.x*100.0), (short)(flight.imu.accel.value.y*100.0), (short)(flight.imu.accel.value.z*100.0), (short)(flight.imu.gyro.value.x*100.0), (short)(flight.imu.gyro.value.y*100.0), (short)(flight.imu.gyro.value.z*100.0), 0);
-	// anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
-	anotc_send_euler(flight.attitude.roll, flight.attitude.pitch, flight.attitude.yaw, 0);
+	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE) {
+		anotc_send_pid();
+	} else {
+		anotc_send_imu((short)(flight.imu.accel.value.x * 100.0), (short)(flight.imu.accel.value.y * 100.0), (short)(flight.imu.accel.value.z * 100.0), (short)(flight.imu.gyro.value.x * 100.0), (short)(flight.imu.gyro.value.y * 100.0), (short)(flight.imu.gyro.value.z * 100.0), 0);
+		// anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
+		anotc_send_euler(flight.attitude.roll, flight.attitude.pitch, flight.attitude.yaw, 0);
+	}
 }
 
 void send_flight_compass()
 {
-	if (IS_COMPASS_DTRY(flight.compass)) {
+	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE)
+		return;
+	if (IS_COMPASS_DTRY(flight.compass))
+	{
 		anotc_send_mag(flight.compass.raw.x, flight.compass.raw.y, flight.compass.raw.z, flight.compass.temperature.value, IS_COMPASS_ON(flight.compass));
 	}
 	if (IS_BARO_READYTOUSE(flight.baro)) {
@@ -33,6 +40,8 @@ void send_system_info()
 
 void send_motor()
 {
+	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE)
+		return;
 	unsigned short pwm[8] = {0,0,0,0,0,0,0,0};
 	pwm[0] = flight.mixer.motor[0]->value;
 	pwm[1] = flight.mixer.motor[1]->value;
