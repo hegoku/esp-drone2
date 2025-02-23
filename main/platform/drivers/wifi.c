@@ -251,7 +251,7 @@ void wifi_set_recv_handler(void (*handler)(unsigned char *data, int len))
 
 void wifi_send(unsigned char *data, int len)
 {
-	if (tx_buffer.tail+len<WIFI_BUFFER_LEN) {
+	if (tx_buffer.tail+len<=WIFI_BUFFER_LEN) {
 		memcpy(tx_buffer.buf + tx_buffer.tail, data, len);
 		tx_buffer.tail += len;
 	} else {
@@ -263,7 +263,7 @@ void wifi_send(unsigned char *data, int len)
 		}
 		
 	}
-	if (tx_buffer.tail>1000) {
+	if (tx_buffer.tail>1300) {
 		wifi_flush();
 	}
 }
