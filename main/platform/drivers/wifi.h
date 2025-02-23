@@ -17,6 +17,6 @@ unsigned short *wifi_get_udp_port();
 int init_wifi();
 void wifi_set_recv_handler(void (*handler)(unsigned char *data, int len));
 void wifi_send(unsigned char *data, int len);
-void wifi_flush();
+int wifi_flush();
 short int wifi_get_rssi();
 #endif

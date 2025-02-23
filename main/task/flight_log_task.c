@@ -11,17 +11,19 @@ struct s_log_task {
 
 void send_flight_attitude()
 {
+	anotc_send_pid();
 	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE) {
 		anotc_send_pid();
 	} else {
-		anotc_send_imu((short)(flight.imu.accel.value.x * 100.0), (short)(flight.imu.accel.value.y * 100.0), (short)(flight.imu.accel.value.z * 100.0), (short)(flight.imu.gyro.value.x * 100.0), (short)(flight.imu.gyro.value.y * 100.0), (short)(flight.imu.gyro.value.z * 100.0), 0);
+		// anotc_send_imu((short)(flight.imu.accel.value.x * 100.0), (short)(flight.imu.accel.value.y * 100.0), (short)(flight.imu.accel.value.z * 100.0), (short)(flight.imu.gyro.value.x * 100.0), (short)(flight.imu.gyro.value.y * 100.0), (short)(flight.imu.gyro.value.z * 100.0), 0);
 		// anotc_send_quaternion(flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3, 0);
-		anotc_send_euler(flight.attitude.roll, flight.attitude.pitch, flight.attitude.yaw, 0);
+		// anotc_send_euler(flight.attitude.roll, flight.attitude.pitch, flight.attitude.yaw, 0);
 	}
 }
 
 void send_flight_compass()
 {
+	return;
 	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE)
 		return;
 	if (IS_COMPASS_DTRY(flight.compass))
@@ -40,6 +42,7 @@ void send_system_info()
 
 void send_motor()
 {
+	return;
 	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE)
 		return;
 	unsigned short pwm[8] = {0,0,0,0,0,0,0,0};
@@ -54,7 +57,7 @@ void send_motor()
 
 static struct s_log_task log_task_list[] = {
 	{.time=1, .func=send_flight_compass},
-	{.time=10, .func=send_flight_attitude},
+	{.time=1, .func=send_flight_attitude},
 	{.time=100, .func=send_system_info},
 	{.time=16, .func=send_motor},
 };

@@ -15,7 +15,7 @@
 
 #define WIFI_BUFFER_LEN 1400
 struct wifi_buffer {
-	unsigned char *buf[WIFI_BUFFER_LEN];
+	unsigned char buf[WIFI_BUFFER_LEN];
 	int head;
 	int tail;
 };
@@ -251,18 +251,34 @@ void wifi_set_recv_handler(void (*handler)(unsigned char *data, int len))
 
 void wifi_send(unsigned char *data, int len)
 {
-	if (tx_buffer.tail+len<=WIFI_BUFFER_LEN) {
+	if (tx_buffer.tail+len<WIFI_BUFFER_LEN) {
 		memcpy(tx_buffer.buf + tx_buffer.tail, data, len);
 		tx_buffer.tail += len;
+	} else {
+		if (wifi_flush()==0) {
+			memcpy(tx_buffer.buf + tx_buffer.tail, data, len);
+			tx_buffer.tail += len;
+		} else {
+			ESP_LOGI("Wifi", "buff full");
+		}
+		
+	}
+	if (tx_buffer.tail>1000) {
+		wifi_flush();
 	}
 }
 
-void wifi_flush()
+int wifi_flush()
 {
 	int error = 0;
 	if (tx_buffer.tail > 0)
 	{
 		error = sendto(sock, tx_buffer.buf, tx_buffer.tail, 0, (struct sockaddr *)&addr_board, sizeof(addr_board));
-		tx_buffer.tail = 0;
+		if (error<0) {
+			ESP_LOGI("Wifi", "%d", error);
+		} else {
+			tx_buffer.tail = 0;
+		}
 	}
+	return error>0?0:error;
 }

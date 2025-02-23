@@ -50,11 +50,11 @@ struct i2c_priv i2c1_config = {
 };
 
 struct bus bus_tree[] = {
-	{
-		.name="UART1",
-		.priv=&uart1_config,
-		.init=init_uart
-	},
+	// {
+	// 	.name="UART1",
+	// 	.priv=&uart1_config,
+	// 	.init=init_uart
+	// },
 	{
 		.name="SPI1",
 		.priv=&spi1_config,
