@@ -13,7 +13,7 @@
 #include "platform/drivers/wifi.h"
 #include "misc/config.h"
 
-#define WIFI_BUFFER_LEN 1400
+#define WIFI_BUFFER_LEN 3000
 struct wifi_buffer {
 	unsigned char buf[WIFI_BUFFER_LEN];
 	int head;
@@ -263,7 +263,7 @@ void wifi_send(unsigned char *data, int len)
 		}
 		
 	}
-	if (tx_buffer.tail>1300) {
+	if (tx_buffer.tail>WIFI_BUFFER_LEN*0.93) {
 		wifi_flush();
 	}
 }

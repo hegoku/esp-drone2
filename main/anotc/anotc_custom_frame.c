@@ -12,8 +12,8 @@ void anotc_send_system_info()
 
 	frame.data[frame.len++] = flight.status;
 	frame.data[frame.len++] = flight.system_info.cpu_load;
-	anotc_add_float(&frame, flight.battery.voltage);
-	anotc_add_float(&frame, flight.battery.current);
+	anotc_add_ushort(&frame, (unsigned short)(flight.battery.voltage*100));
+	anotc_add_ushort(&frame, (unsigned short)(flight.battery.current*100));
 	frame.data[frame.len++] = flight.rc.status;
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
@@ -59,12 +59,16 @@ void anotc_send_pid()
 	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].P*100));
 	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].I*100));
 	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].D*100));
-	// frame.data[frame.len++] = (char)(angle_rate_pid[PID_PITCH].output*100);
+	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].output*100));
 
 	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].P*100));
 	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].I*100));
 	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].D*100));
-	// frame.data[frame.len++] = (char)(angle_rate_pid[PID_YAW].output*100);
+	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].output*100));
+
+	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].desired*100));
+	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].desired*100));
+	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].desired*100));
 
 	// anotc_add_short(&frame, (short)(angle_pid[PID_ROLL].P*100));
 	// anotc_add_short(&frame, (short)(angle_pid[PID_ROLL].I*100));
@@ -80,12 +84,6 @@ void anotc_send_pid()
 	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].I*100));
 	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].D*100));
 	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].output*100));
-
-	
-
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].desired*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].desired*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].desired*100));
 
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);

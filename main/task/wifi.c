@@ -4,7 +4,7 @@
 static unsigned int a = 0;
 void wifi_task()
 {
-	if (a%20==0) {
+	if (a%25==0) {
 		wifi_flush();
 	}
 	a++;
