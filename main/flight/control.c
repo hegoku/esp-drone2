@@ -72,9 +72,9 @@ void init_control()
 	}
 
 	for (int i=0;i<PID_YAW+1;i++) {
-		angle_rate_pid[i].dt = 1.0/((float)(sys_timer_get()->freq));
+		angle_rate_pid[i].dt = 1.0f/((float)(sys_timer_get()->freq));
 		angle_rate_pid[i].filter.freq = sys_timer_get()->freq;
-		angle_pid[i].dt = 1.0 / ((float)(sys_timer_get()->freq));
+		angle_pid[i].dt = 1.0f / ((float)(sys_timer_get()->freq));
 		angle_pid[i].filter.freq = sys_timer_get()->freq;
 	}
 }

@@ -9,19 +9,20 @@ void pid_init(struct pid_data *tdata)
 
 void pid_reset(struct pid_data *tdata)
 {
-	tdata->prev_error = 0.0;
-	tdata->value = 0.0;
-	tdata->error_sum = 0.0;
-	tdata->output = 0.0;
-	tdata->desired = 0.0;
-	tdata->output = 0.0;
-	tdata->pprev_error = 0.0;
-	tdata->pid_d = 0.0;
-	tdata->P = 0.0;
-	tdata->I = 0.0;
-	tdata->D = 0.0;
-	tdata->pprev_desired = 0.0;
-	tdata->prev_desired = 0.0;
+	tdata->prev_error = 0.0f;
+	tdata->value = 0.0f;
+	tdata->error_sum = 0.0f;
+	tdata->output = 0.0f;
+	tdata->desired = 0.0f;
+	tdata->output = 0.0f;
+	tdata->pprev_error = 0.0f;
+	tdata->pid_d = 0.0f;
+	tdata->P = 0.0f;
+	tdata->I = 0.0f;
+	tdata->D = 0.0f;
+	tdata->pprev_desired = 0.0f;
+	tdata->prev_desired = 0.0f;
+	tdata->prev_value = 0.0f;
 
 	iir_filter_init(&tdata->filter);
 }
@@ -40,7 +41,7 @@ void pid_calculate(struct pid_data *tdata, float desired)
 		tdata->error_sum = 0;
 	}
 
-	tdata->pid_d = (error - tdata->prev_error) / tdata->dt;
+	tdata->pid_d = (tdata->value - tdata->prev_value) / tdata->dt;
 	if (tdata->enable_filter==1) {
 		tdata->pid_d = iir_filter(&tdata->filter, tdata->pid_d);
 	}
@@ -70,4 +71,5 @@ void pid_calculate(struct pid_data *tdata, float desired)
 	tdata->prev_error = error;
 	tdata->pprev_desired = tdata->prev_desired;
 	tdata->prev_desired = desired;
+	tdata->prev_value = tdata->value;
 }

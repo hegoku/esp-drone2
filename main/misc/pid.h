@@ -14,6 +14,7 @@ struct pid_data {
 	float output;
 	float err_limit;
 	char enable_filter;
+	float output_limit;
 	struct iir_filter_param filter;
 
 	float P;
@@ -25,6 +26,7 @@ struct pid_data {
 	float pprev_error;
 	float prev_desired;
 	float pprev_desired;
+	float prev_value;
 };
 
 void pid_init(struct pid_data *tdata);
