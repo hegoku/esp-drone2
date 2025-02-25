@@ -5,8 +5,7 @@
 #include <freertos/queue.h>
 #include "clocksource/clocksource.h"
 #include "clocksource/imu_source.h"
-
-#define IMU_INT_GPIO GPIO_NUM_35
+#include "platform/gpio_config.h"
 
 extern QueueHandle_t sys_timer_queue;
 

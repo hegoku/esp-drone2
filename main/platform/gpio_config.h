@@ -1,0 +1,24 @@
+#ifndef PLATFORM_GPIO_CONFIG_H
+#define PLATFORM_GPIO_CONFIG_H
+
+#include <driver/gpio.h>
+#include <esp_adc/adc_oneshot.h>
+
+#define IMU_INT_GPIO GPIO_NUM_35
+
+#define SPI1_MISO_GPIO GPIO_NUM_19
+#define SPI1_MOSI_GPIO GPIO_NUM_23
+#define SPI1_CLK_GPIO GPIO_NUM_18
+#define SPI1_CS1_GPIO GPIO_NUM_5
+#define SPI1_CS2_GPIO GPIO_NUM_32
+#define SPI1_CS3_GPIO GPIO_NUM_33
+
+#define UART1_TX_GPIO GPIO_NUM_1
+#define UART1_RX_GPIO GPIO_NUM_3
+
+#define I2C1_SDA_GPIO GPIO_NUM_21
+#define I2C1_SCL_GPIO GPIO_NUM_22
+
+#define VOLTAGE_ADC_CHANNEL ADC_CHANNEL_0
+
+#endif
