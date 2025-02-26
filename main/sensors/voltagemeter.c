@@ -5,7 +5,6 @@ __attribute__((weak)) void init_voltagemeter()
 
 }
 
-__attribute__((weak)) float voltagemeter_read()
+__attribute__((weak)) void voltagemeter_read(float *output)
 {
-	return 0.0f;
 }

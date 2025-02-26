@@ -2,7 +2,7 @@
 #define PLATFORM_GPIO_CONFIG_H
 
 #include <driver/gpio.h>
-#include <esp_adc/adc_oneshot.h>
+#include <esp_adc/adc_continuous.h>
 
 #define IMU_INT_GPIO GPIO_NUM_35
 

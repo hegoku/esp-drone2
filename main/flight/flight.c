@@ -17,7 +17,7 @@ void init_flight()
 	init_attitude();
 	init_control();
 	init_rc();
-	// init_voltagemeter();
+	init_voltagemeter();
 }
 
 void flight_read_data()
@@ -46,7 +46,7 @@ void flight_update()
 void flight_control()
 {
 	rc_input(&flight.rc);
-	// flight.battery.voltage = voltagemeter_read();
+	voltagemeter_read(&flight.battery.voltage);
 	control_update();
 	mixer_output(&flight.mixer);
 }

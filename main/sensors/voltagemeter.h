@@ -2,6 +2,6 @@
 #define SENSORS_VOLTAGEMETER_H
 
 void init_voltagemeter();
-float voltagemeter_read();
+void voltagemeter_read(float *output);
 
 #endif
