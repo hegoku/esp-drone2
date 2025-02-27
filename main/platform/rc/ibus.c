@@ -1,4 +1,4 @@
-#include <driver/gpio.h>
+#include "platform/gpio_config/gpio_config.h"
 #include "platform/bus/uart.h"
 #include "rc/ibus.h"
 
@@ -16,8 +16,8 @@ int ibus_uart_init(struct bus_dev *dev)
 
 static struct uart_priv uart_config = {
 	.baud_rate = 115200,
-	.tx_pin=GPIO_NUM_0,
-	.rx_pin=GPIO_NUM_34,
+	.tx_pin=RC_TX_GPIO,
+	.rx_pin=RC_RX_GPIO,
 	.port=UART_NUM_1,
 	.rx_data_size=32,
 	.rx_buffer_size=256,

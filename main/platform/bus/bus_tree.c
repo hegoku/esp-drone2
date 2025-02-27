@@ -1,9 +1,8 @@
-#include <driver/gpio.h>
 #include <stdio.h>
 #include "platform/bus/spi.h"
 #include "platform/bus/uart.h"
 #include "platform/bus/i2c.h"
-#include "platform/gpio_config.h"
+#include "platform/gpio_config/gpio_config.h"
 
 #include "drivers/anotc_uart.h"
 
@@ -11,6 +10,7 @@ extern int (*spi_dev_probs[])(struct bus_dev *dev);
 extern int (*uart_dev_probs[])(struct bus_dev *dev);
 extern int (*i2c_dev_probs[])(struct bus_dev *dev);
 
+#ifdef SPI1_MISO_GPIO
 struct spi_priv spi1_config = {
 	.miso=SPI1_MISO_GPIO,
 	.mosi=SPI1_MOSI_GPIO,
@@ -30,6 +30,7 @@ struct spi_priv spi1_config = {
 		}
 	}
 };
+#endif
 
 struct uart_priv uart1_config = {
 	.baud_rate = 460800,
@@ -56,12 +57,14 @@ struct bus bus_tree[] = {
 	// 	.priv=&uart1_config,
 	// 	.init=init_uart
 	// },
+#ifdef SPI1_MISO_GPIO
 	{
 		.name="SPI1",
 		.priv=&spi1_config,
 		.probs=&spi_dev_probs,
 		.init=init_spi
 	},
+#endif
 	{
 		.name="I2C1",
 		.priv=&i2c1_config,

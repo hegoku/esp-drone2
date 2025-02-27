@@ -4,7 +4,7 @@
 #include <esp_log.h>
 #include <string.h>
 #include "sensors/voltagemeter.h"
-#include "platform/gpio_config.h"
+#include "platform/gpio_config/gpio_config.h"
 
 #define READ_LEN 4
 

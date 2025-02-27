@@ -1,17 +1,17 @@
-#include <driver/gpio.h>
+#include "platform/gpio_config/gpio_config.h"
 #include "mixer/mixer.h"
 
 struct mixer_moter __motors[] = {
 	{
-		.wire = GPIO_NUM_25
+		.wire = MOTOR1_GPIO
 	},
 	{
-		.wire = GPIO_NUM_26
+		.wire = MOTOR2_GPIO
 	},
 	{
-		.wire = GPIO_NUM_27
+		.wire = MOTOR3_GPIO
 	},
 	{
-		.wire = GPIO_NUM_14
+		.wire = MOTOR4_GPIO
 	}
 };
