@@ -4,6 +4,7 @@
 #include "mixer/mixer.h"
 #include "flight/control.h"
 #include "rc/rc.h"
+#include "sensors/voltagemeter.h"
 
 struct flight flight;
 
@@ -16,6 +17,7 @@ void init_flight()
 	init_attitude();
 	init_control();
 	init_rc();
+	init_voltagemeter();
 }
 
 void flight_read_data()
@@ -44,6 +46,7 @@ void flight_update()
 void flight_control()
 {
 	rc_input(&flight.rc);
+	voltagemeter_read(&flight.battery.voltage);
 	control_update();
 	mixer_output(&flight.mixer);
 }
