@@ -145,6 +145,7 @@ void dshot_init(struct dshot_protocol_motor *dshot)
 void dshot_write(struct dshot_protocol_motor *dshot, unsigned short value, unsigned char telemetry)
 {
 	dshot->packet_frame = dshot_packet(value, telemetry);
+	dshot->packet_frame = ((dshot->packet_frame & 0xFF) << 8) | ((dshot->packet_frame & 0xFF00) >> 8); // change the endian
 	rmt_transmit_config_t tx_config = {
         .loop_count = 0, // infinite loop
     };
