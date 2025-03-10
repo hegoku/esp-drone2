@@ -1,7 +1,7 @@
 idf_component_register(SRCS "main.c"
 	"platform/bus/bus_tree.c" "platform/bus/spi.c" "platform/bus/uart.c" "platform/bus/i2c.c"
 	"platform/misc/util.c" "platform/misc/config.c"
-	"platform/drivers/wifi.c" "platform/drivers/anotc_wifi.c" "platform/drivers/voltagemeter.c"
+	"platform/drivers/wifi.c" "platform/drivers/anotc_wifi.c" "platform/drivers/voltagemeter.c" "platform/drivers/voltagemeter_oneshot.c"
 	"platform/clocksource/default_source.c" "platform/clocksource/imu_source.c"
 	"platform/esc/dshot.c"
 	"platform/mixer/mixer.c" "platform/mixer/dshot.c" "platform/mixer/bushed.c"

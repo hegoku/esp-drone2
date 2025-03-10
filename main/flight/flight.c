@@ -46,7 +46,9 @@ void flight_update()
 void flight_control()
 {
 	rc_input(&flight.rc);
-	voltagemeter_read(&flight.battery.voltage);
+	if (!IS_BARO_DTRY(flight.baro) && !IS_COMPASS_DTRY(flight.compass)) {
+		voltagemeter_read(&flight.battery.voltage);
+	}
 	control_update();
 	mixer_output(&flight.mixer);
 }
