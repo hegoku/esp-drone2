@@ -37,7 +37,7 @@ void mixer_bushed_write(struct mixer *mixer)
 	int count = sizeof(mixer->motor) / (sizeof(mixer->motor[0]));
 	for (int i=0;i<count;i++) {
 		priv = BUSHED_GET_MOTOR_PRIV(mixer->motor[i]->priv);
-		ledc_set_duty(priv->channel.speed_mode, priv->channel.channel, round(mixer->motor[i]->value/1000.0*255.0));
+		ledc_set_duty(priv->channel.speed_mode, priv->channel.channel, (uint32_t)round(mixer->motor[i]->value/1000.0*255.0));
 	}
 	for (int i=0;i<count;i++) {
 		priv = BUSHED_GET_MOTOR_PRIV(mixer->motor[i]->priv);

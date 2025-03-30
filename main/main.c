@@ -43,8 +43,6 @@ void main_loop(void *p)
 	for (;;)
 	{
 		if (xQueueReceive(sys_timer_queue, &(a), portMAX_DELAY)){
-			gpio_set_level(GPIO_NUM_12, b);
-			b = ~b;
 			gettimeofday(&sys_timer_time, NULL);
 			flight_read_data();
 			flight_update();
@@ -52,7 +50,6 @@ void main_loop(void *p)
 			gettimeofday(&finish_loop, NULL);
 			flight.system_info.cpu_load = (unsigned char)((((float)finish_loop.tv_sec) + ((float)finish_loop.tv_usec) / 1000000.0 - ((float)sys_timer_time.tv_sec) - ((float)sys_timer_time.tv_usec) / 1000000.0) * ((float)(sys_timer_get()->freq)) * 100.0);
 			xQueueSend(log_task_queue, &a, 0);
-			gpio_set_level(GPIO_NUM_12, b);
 			b = ~b;
 		}
 	}
@@ -91,14 +88,5 @@ void app_main(void)
 	log_task_queue = xQueueCreate(5, sizeof( int ));
 	xTaskCreatePinnedToCore(log_t, "log_task", 1024*4, NULL, 5, NULL, 0);
 
-	gpio_config_t io_conf = {
-		.intr_type = GPIO_INTR_DISABLE,
-		.mode = GPIO_MODE_OUTPUT,
-		.pin_bit_mask = (1ULL << GPIO_NUM_12),
-		.pull_down_en = 0,
-		.pull_up_en = 0
-	};
-	gpio_config(&io_conf);
-	
 	sys_timer_start();
 }
