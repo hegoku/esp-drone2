@@ -22,21 +22,27 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_PID_ROLL_P,
 	ANOTC_CONFIG_PAR_PID_ROLL_I,
 	ANOTC_CONFIG_PAR_PID_ROLL_D,
+	ANOTC_CONFIG_PAR_PID_ROLL_D_F,
 	ANOTC_CONFIG_PAR_PID_PITCH_P,
 	ANOTC_CONFIG_PAR_PID_PITCH_I,
 	ANOTC_CONFIG_PAR_PID_PITCH_D,
+	ANOTC_CONFIG_PAR_PID_PITCH_D_F,
 	ANOTC_CONFIG_PAR_PID_YAW_P,
 	ANOTC_CONFIG_PAR_PID_YAW_I,
 	ANOTC_CONFIG_PAR_PID_YAW_D,
+	ANOTC_CONFIG_PAR_PID_YAW_D_F,
 	ANOTC_CONFIG_PAR_PID_ROLL_RATE_P,
 	ANOTC_CONFIG_PAR_PID_ROLL_RATE_I,
 	ANOTC_CONFIG_PAR_PID_ROLL_RATE_D,
+	ANOTC_CONFIG_PAR_PID_ROLL_RATE_D_F,
 	ANOTC_CONFIG_PAR_PID_PITCH_RATE_P,
 	ANOTC_CONFIG_PAR_PID_PITCH_RATE_I,
 	ANOTC_CONFIG_PAR_PID_PITCH_RATE_D,
+	ANOTC_CONFIG_PAR_PID_PITCH_RATE_D_F,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_P,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_I,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_D,
+	ANOTC_CONFIG_PAR_PID_YAW_RATE_D_F,
 	ANOTC_CONFIG_PAR_RC_PROTOCOL
 
 };
@@ -235,6 +241,17 @@ char* set_pid_roll_d(void *value)
 	return 0;
 }
 
+void* get_pid_roll_d_f()
+{
+	return (void*)(&angle_pid[PID_ROLL].filter.cut_off_freq);
+}
+char* set_pid_roll_d_f(void *value)
+{
+	angle_pid[PID_ROLL].filter.cut_off_freq = *((unsigned short*)value);
+	config_write_ushort("rol_pid.d_f", angle_pid[PID_ROLL].filter.cut_off_freq);
+	return 0;
+}
+
 void* get_pid_pitch_p()
 {
 	return (void*)&(angle_pid[PID_PITCH].kp);
@@ -265,6 +282,17 @@ char* set_pid_pitch_d(void *value)
 {
 	angle_pid[PID_PITCH].kd = *((float*)value);
 	config_write_float("pit_pid.d", angle_pid[PID_PITCH].kd);
+	return 0;
+}
+
+void* get_pid_pitch_d_f()
+{
+	return (void*)(&angle_pid[PID_PITCH].filter.cut_off_freq);
+}
+char* set_pid_pitch_d_f(void *value)
+{
+	angle_pid[PID_PITCH].filter.cut_off_freq = *((unsigned short*)value);
+	config_write_ushort("pit_pid.d_f", angle_pid[PID_PITCH].filter.cut_off_freq);
 	return 0;
 }
 
@@ -301,6 +329,17 @@ char* set_pid_yaw_d(void *value)
 	return 0;
 }
 
+void* get_pid_yaw_d_f()
+{
+	return (void*)(&angle_pid[PID_YAW].filter.cut_off_freq);
+}
+char* set_pid_yaw_d_f(void *value)
+{
+	angle_pid[PID_YAW].filter.cut_off_freq = *((unsigned short*)value);
+	config_write_ushort("yaw_pid.d_f", angle_pid[PID_YAW].filter.cut_off_freq);
+	return 0;
+}
+
 void* get_pid_roll_rate_p()
 {
 	return (void*)&angle_rate_pid[PID_ROLL].kp;
@@ -331,6 +370,17 @@ char* set_pid_roll_rate_d(void *value)
 {
 	angle_rate_pid[PID_ROLL].kd = *((float*)value);
 	config_write_float("rol_r_pid.d", angle_rate_pid[PID_ROLL].kd);
+	return 0;
+}
+
+void* get_pid_roll_rate_d_f()
+{
+	return (void*)(&angle_rate_pid[PID_ROLL].filter.cut_off_freq);
+}
+char* set_pid_roll_rate_d_f(void *value)
+{
+	angle_rate_pid[PID_ROLL].filter.cut_off_freq = *((unsigned short*)value);
+	config_write_ushort("rol_r_pid.d_f", angle_rate_pid[PID_ROLL].filter.cut_off_freq);
 	return 0;
 }
 
@@ -367,6 +417,17 @@ char* set_pid_pitch_rate_d(void *value)
 	return 0;
 }
 
+void* get_pid_pitch_rate_d_f()
+{
+	return (void*)(&angle_rate_pid[PID_PITCH].filter.cut_off_freq);
+}
+char* set_pid_pitch_rate_d_f(void *value)
+{
+	angle_rate_pid[PID_PITCH].filter.cut_off_freq = *((unsigned short*)value);
+	config_write_ushort("pit_r_pid.d_f", angle_rate_pid[PID_PITCH].filter.cut_off_freq);
+	return 0;
+}
+
 void* get_pid_yaw_rate_p()
 {
 	return (void*)&angle_rate_pid[PID_YAW].kp;
@@ -397,6 +458,17 @@ char* set_pid_yaw_rate_d(void *value)
 {
 	angle_rate_pid[PID_YAW].kd = *((float*)value);
 	config_write_float("yaw_r_pid.d", angle_rate_pid[PID_YAW].kd);
+	return 0;
+}
+
+void* get_pid_yaw_rate_d_f()
+{
+	return (void*)(&angle_rate_pid[PID_YAW].filter.cut_off_freq);
+}
+char* set_pid_yaw_rate_d_f(void *value)
+{
+	angle_rate_pid[PID_YAW].filter.cut_off_freq = *((unsigned short*)value);
+	config_write_ushort("yaw_r_pid.d_f", angle_rate_pid[PID_YAW].filter.cut_off_freq);
 	return 0;
 }
 
@@ -553,6 +625,14 @@ static struct anotc_config_info configuration_list[] = {
 		.set = set_pid_roll_d
 	},
 	{
+		.par_id=ANOTC_CONFIG_PAR_PID_ROLL_D_F,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="pid.roll.d_f",
+		.par_info="",
+		.get = get_pid_roll_d_f,
+		.set = set_pid_roll_d_f
+	},
+	{
 		.par_id=ANOTC_CONFIG_PAR_PID_PITCH_P,
 		.type=ANOTC_PAR_TYPE_FLOAT,
 		.par_name="pid.pitch.p",
@@ -575,6 +655,14 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_pid_pitch_d,
 		.set = set_pid_pitch_d
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_PID_PITCH_D_F,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="pid.pitch.d_f",
+		.par_info="",
+		.get = get_pid_pitch_d_f,
+		.set = set_pid_pitch_d_f
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_PID_YAW_P,
@@ -601,6 +689,14 @@ static struct anotc_config_info configuration_list[] = {
 		.set = set_pid_yaw_d
 	},
 	{
+		.par_id=ANOTC_CONFIG_PAR_PID_YAW_D_F,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="pid.yaw.d_f",
+		.par_info="",
+		.get = get_pid_yaw_d_f,
+		.set = set_pid_yaw_d_f
+	},
+	{
 		.par_id=ANOTC_CONFIG_PAR_PID_ROLL_RATE_P,
 		.type=ANOTC_PAR_TYPE_FLOAT,
 		.par_name="pid.roll_rate.p",
@@ -623,6 +719,14 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_pid_roll_rate_d,
 		.set = set_pid_roll_rate_d
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_PID_ROLL_RATE_D_F,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="pid.roll_rate.d_f",
+		.par_info="",
+		.get = get_pid_roll_rate_d_f,
+		.set = set_pid_roll_rate_d_f
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_PID_PITCH_RATE_P,
@@ -649,6 +753,14 @@ static struct anotc_config_info configuration_list[] = {
 		.set = set_pid_pitch_rate_d
 	},
 	{
+		.par_id=ANOTC_CONFIG_PAR_PID_PITCH_RATE_D_F,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="pid.pitch_rate.d_f",
+		.par_info="",
+		.get = get_pid_pitch_rate_d_f,
+		.set = set_pid_pitch_rate_d_f
+	},
+	{
 		.par_id=ANOTC_CONFIG_PAR_PID_YAW_RATE_P,
 		.type=ANOTC_PAR_TYPE_FLOAT,
 		.par_name="pid.yaw_rate.p",
@@ -671,6 +783,14 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_pid_yaw_rate_d,
 		.set = set_pid_yaw_rate_d
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_PID_YAW_RATE_D_F,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="pid.yaw_rate.d_f",
+		.par_info="",
+		.get = get_pid_yaw_rate_d_f,
+		.set = set_pid_yaw_rate_d_f
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_RC_PROTOCOL,
