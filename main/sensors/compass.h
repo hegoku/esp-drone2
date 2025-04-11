@@ -27,9 +27,12 @@ struct compass_sensor {
 
 	struct bus_dev *dev;
 	int(*read)(struct compass_sensor *sensor);
+	unsigned short freq;
 };
 
 #define IS_COMPASS_ON(sensor) ((sensor).status & COMPASS_STATUS_ON)
 #define IS_COMPASS_DTRY(sensor) ((sensor).status & COMPASS_STATUS_DTRY)
 
+void init_compass(struct compass_sensor *sensor);
+void compass_filter(struct compass_sensor *sensor);
 #endif

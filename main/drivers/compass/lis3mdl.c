@@ -64,6 +64,7 @@ int lis3mdl_prob(struct bus_dev *dev)
 	flight.compass.dev = dev;
 	flight.compass.read = lis3mdl_sensor_read;
 	flight.compass.status |= COMPASS_STATUS_ON;
+	flight.compass.freq = 76;
 
 	return 0;
 }

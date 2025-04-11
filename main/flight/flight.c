@@ -14,6 +14,7 @@ void init_flight()
 	init_mixer();
 	init_imu(&flight.imu);
 	init_baro(&flight.baro);
+	init_compass(&flight.compass);
 	init_attitude();
 	init_control();
 	init_rc();
@@ -29,6 +30,7 @@ void flight_read_data()
 	}
 	if (IS_COMPASS_ON(flight.compass)) {
 		flight.compass.read(&flight.compass);
+		compass_filter(&flight.compass);
 	}
 	if (IS_BARO_ON(flight.baro)) {
 		flight.baro.read(&flight.baro);
