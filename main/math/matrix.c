@@ -1,3 +1,6 @@
+#include <string.h>
+#include "math/matrix.h"
+
 //按第一行展开计算|A|
 static float getA(float arcs[3][3], int n)
 {
@@ -87,7 +90,7 @@ int matrix_inverse(float src[3][3], int n, float des[3][3])
     return 1;
 }
 
-void matrix_mult(float matrix1[3][3], float matrix2[3][3], float ans[3][3])
+void matrix_mult_33(float matrix1[3][3], float matrix2[3][3], float ans[3][3])
 {
 	int i, j,k;
 	for (i = 0; i < 3; i++)
@@ -98,4 +101,66 @@ void matrix_mult(float matrix1[3][3], float matrix2[3][3], float ans[3][3])
             } 
         }
 	}
+}
+
+void matrix_mult(float *matrix1, int row1, int col1, float *matrix2, int row2, int col2, float *ans)
+{
+	if (col1!=row2) {
+		return;
+	}
+	int i, j,k;
+	for (i = 0; i < row1; i++)
+	{
+		for(j=0;j<col2;j++){
+            for(k=0;k<col1;k++){
+                *((float *)ans+col2*i+j)+=(*((float *)matrix1+col1*i+k))*(*((float *)matrix2+col2*k+j)); 
+            } 
+        }
+	}
+}
+
+void matrix_add(float *matrix1, float *matrix2, float *ans, int row, int col)
+{
+    for (int i=0;i<row;i++) {
+        for (int j=0;j<col;j++) {
+            *((float *)ans+col*i+j) = *((float *)matrix1+col*i+j) + *((float *)matrix2+col*i+j);
+        }
+    }
+}
+
+void matrix_sub(float *matrix1, float *matrix2, float *ans, int row, int col)
+{
+    for (int i=0;i<row;i++) {
+        for (int j=0;j<col;j++) {
+            *((float *)ans+col*i+j) = *((float *)matrix1+col*i+j) - *((float *)matrix2+col*i+j);
+        }
+    }
+}
+
+void matrix_t(float *matrix1, int row, int col, float *ans)
+{
+    for(int i=0;i<row;i++) {
+        for (int j=0;j<col;j++) {
+            *((float *)ans+row*j+i) = *((float *)matrix1+col*i+j);
+        }
+    }
+}
+
+void matrix_clear(float *mat, int row, int col)
+{
+    memset(mat, 0, row*col*sizeof(float));
+    // for(int i=0;i<row;i++) {
+    //     for (int j=0;j<col;j++) {
+    //         *((float *)mat+row*j+i) = 0.0f;
+    //     }
+    // }
+}
+
+void matrix_mult_number(float *mat, int row, int col, float num, float *ans)
+{
+	for(int i=0;i<row;i++) {
+        for (int j=0;j<col;j++) {
+            *((float *)ans+row*j+i) = *((float *)mat+row*j+i) * num;
+        }
+    }
 }

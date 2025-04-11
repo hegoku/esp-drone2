@@ -7,6 +7,7 @@
 #define ANOTC_FRAME_EULER 0x3
 #define ANOTC_FRAME_QUAT 0x4
 #define ANOTC_FRAME_ALT 0x5
+#define ANOTC_FRAME_SPEED 0x7
 #define ANOTC_FRAME_TARGET_ATTITUDE 0xA
 #define ANOTC_FRAME_BATTERY 0xD
 
@@ -31,6 +32,7 @@ void anotc_send_mag(short mag_x, short mag_y, short mag_z, float temp, unsigned 
 void anotc_send_euler(float roll, float pitch, float yaw, unsigned char fusion);
 void anotc_send_quaternion(float q1, float q2, float q3, float q4, unsigned char fusion);
 void anotc_send_alt(int alt_baro, int alt_add, int alt_fu, unsigned char sta);
+void anotc_send_speed(short x, short y, short z);
 void anotc_send_battery(float voltage, float current);
 
 void anotc_send_pwm(unsigned short pwm[8]);

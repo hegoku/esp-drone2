@@ -41,6 +41,12 @@ struct flight {
 	float altitude;
 
 	struct {
+		float x;
+		float y;
+		float z;
+	} velocity;
+
+	struct {
 		unsigned char drone_center_connect;
 		unsigned char cpu_load;
 	} system_info;

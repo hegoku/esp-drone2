@@ -123,7 +123,7 @@ void calibrate_accel(struct imu_sensor *sensor)
 	mat_A[2][2] = accel_c.ref_mat[DIRECTION_UP][AXIS_Z] - sensor->accel.calibration.z_offset;
 
 	matrix_inverse(mat_A, 3, mat_A_inverse);
-	matrix_mult(mat_A_inverse, mat_U, Accel_T);
+	matrix_mult_33(mat_A_inverse, mat_U, Accel_T);
 
 	sensor->accel.calibration.x_k = Accel_T[0][0];
 	sensor->accel.calibration.y_k = Accel_T[1][1];

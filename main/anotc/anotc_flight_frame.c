@@ -77,6 +77,19 @@ void anotc_send_alt(int alt_baro, int alt_add, int alt_fu, unsigned char sta)
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }
 
+void anotc_send_speed(short x, short y, short z)
+{
+	struct anotc_frame frame;
+	PREPARE_ANOTC_FRAME(frame);
+	frame.fun = ANOTC_FRAME_SPEED;
+
+	anotc_add_short(&frame, x);
+	anotc_add_short(&frame, y);
+	anotc_add_short(&frame, z);
+	anotc_add_checksum(&frame);
+	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
+}
+
 void anotc_send_target_attitude(float roll, float pitch, float yaw)
 {
 	struct anotc_frame frame;

@@ -29,14 +29,21 @@ void quat_normalize(struct quaternion *q, struct quaternion *n_q)
 
 void quat_dcm_z(struct quaternion *q, float mat[3])
 {
-	mat[0] = 2 * (q->q0 * q->q2 + q->q1 * q->q3);
-	mat[1] = 2 * (q->q2 * q->q3 - q->q0 * q->q1);
-	mat[2] = 1- 2 * (q->q1 * q->q1 + q->q2 * q->q2);
+	mat[0] = 2.0f * (q->q0 * q->q2 + q->q1 * q->q3);
+	mat[1] = 2.0f * (q->q2 * q->q3 - q->q0 * q->q1);
+	mat[2] = 1.0f - 2.0f * (q->q1 * q->q1 + q->q2 * q->q2);
+}
+
+void quat_dcm_z_T(struct quaternion *q, float mat[3])
+{
+	mat[0] = 2.0f * (q->q1 * q->q3 - q->q0 * q->q2);
+	mat[1] = 2.0f * (q->q2 * q->q3 + q->q0 * q->q1);
+	mat[2] = 1.0f - 2.0f * (q->q1 * q->q1 + q->q2 * q->q2);
 }
 
 void quat_from_vector(float mat1[3], float mat2[3], struct quaternion *res)
 {
-	float half_angle = vector_angle(mat1, mat2) / 2;
+	float half_angle = vector_angle(mat1, mat2) / 2.0f;
 	float cross[3];
 	float sin_half_angle = sinf(half_angle);
 	vector_cross(mat1, mat2, cross);
@@ -67,4 +74,37 @@ void quat_inverse(struct quaternion *q, struct quaternion *res)
 	res->q1 = -q->q1 * norm;
 	res->q2 = -q->q2 * norm;
 	res->q3 = -q->q3 * norm;
+}
+
+void euler_2_quat(float roll, float pitch, float yaw, struct quaternion *q)
+{
+	float y = yaw/180.0f*M_PI*0.5f;
+	float p = pitch/180.0f*M_PI*0.5f;
+	float r = roll/180.0f*M_PI*0.5f;
+	float cy = cosf(y);
+	float sy = sinf(y);
+	float cp = cosf(p);
+	float sp = sinf(p);
+	float cr = cosf(r);
+	float sr = sinf(r);
+
+	q->q0 = cy*cp*cr + sy*sp*sr;
+	q->q1 = cy*cp*sr - sy*sp*cr;
+	q->q2 = sy*cp*sr + cy*sp*cr;
+	q->q3 = sy*cp*cr - cy*sp*sr;
+}
+
+void quat_2_dcm(struct quaternion *q, float mat[3][3])
+{
+	mat[0][0] = 1.0f - 2.0f * (q->q2*q->q2 + q->q3*q->q3);
+	mat[1][0] = 2.0f * (q->q1*q->q2 + q->q0*q->q3);
+	mat[2][0] = 2.0f * (q->q1*q->q3 - q->q0*q->q2);
+
+	mat[0][1] = 2.0f * (q->q1*q->q2 - q->q0*q->q3);
+	mat[1][1] = 1.0f - 2.0f * (q->q1*q->q1 + q->q3*q->q3);
+	mat[2][1] = 2.0f * (q->q2*q->q3 + q->q0*q->q1);
+
+	mat[0][2] = 2.0f * (q->q0 * q->q2 + q->q1 * q->q3);
+	mat[1][2] = 2.0f * (q->q2 * q->q3 - q->q0 * q->q1);
+	mat[2][2] = 1.0f - 2.0f * (q->q1 * q->q1 + q->q2 * q->q2);
 }
