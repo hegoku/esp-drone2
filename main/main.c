@@ -71,14 +71,14 @@ void app_main(void)
 {
 	init_config();
 	sys_timer_set(&default_timer);
+
+	init_bus_tree();
+	esp_log_set_vprintf(anotc_log);
+	// print_bus_tree();
+
 	if (init_wifi()==0) {
 		anotc_wifi_init();
 	}
-	
-	init_bus_tree();
-	print_bus_tree();
-	
-	// esp_log_set_vprintf(anotc_log);
 
 	init_flight();
 
