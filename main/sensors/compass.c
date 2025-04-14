@@ -30,6 +30,7 @@ void init_compass(struct compass_sensor *sensor)
 
 void compass_filter(struct compass_sensor *sensor)
 {
+	if (!IS_COMPASS_DTRY(*sensor)) return;
 	sensor->value.x = sensor->calibration.x_k * (sensor->value.x - sensor->calibration.x_offset);
 	sensor->value.y = sensor->calibration.y_k * (sensor->value.y - sensor->calibration.y_offset);
 	sensor->value.z = sensor->calibration.z_k * (sensor->value.z - sensor->calibration.z_offset);
