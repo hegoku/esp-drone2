@@ -17,6 +17,12 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_X,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Y,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Z,
+	ANOTC_CONFIG_PAR_MAG_K_X,
+	ANOTC_CONFIG_PAR_MAG_K_Y,
+	ANOTC_CONFIG_PAR_MAG_K_Z,
+	ANOTC_CONFIG_PAR_MAG_OFFSET_X,
+	ANOTC_CONFIG_PAR_MAG_OFFSET_Y,
+	ANOTC_CONFIG_PAR_MAG_OFFSET_Z,
 	ANOTC_CONFIG_PAR_ESC_PROTOCOL,
 	ANOTC_CONFIG_PAR_MOTOR_MAPPING,
 	ANOTC_CONFIG_PAR_PID_ROLL_P,
@@ -169,6 +175,72 @@ char* set_gyro_calibration_z_offset(void *value)
 {
 	flight.imu.gyro.calibration.z_offset = *((float*)value);
 	config_write_float("gyro_offset.z", flight.imu.gyro.calibration.z_offset);
+	return 0;
+}
+
+void* get_mag_calibration_x_k()
+{
+	return (void*)&(flight.compass.calibration.x_k);
+}
+char* set_mag_calibration_x_k(void *value)
+{
+	flight.compass.calibration.x_k = *((float*)value);
+	config_write_float("mag_k.x", flight.compass.calibration.x_k);
+	return 0;
+}
+
+void* get_mag_calibration_y_k()
+{
+	return (void*)&(flight.compass.calibration.y_k);
+}
+char* set_mag_calibration_y_k(void *value)
+{
+	flight.compass.calibration.y_k = *((float*)value);
+	config_write_float("mag_k.y", flight.compass.calibration.y_k);
+	return 0;
+}
+
+void* get_mag_calibration_z_k()
+{
+	return (void*)&(flight.compass.calibration.z_k);
+}
+char* set_mag_calibration_z_k(void *value)
+{
+	flight.compass.calibration.z_k = *((float*)value);
+	config_write_float("mag_k.z", flight.compass.calibration.z_k);
+	return 0;
+}
+
+void* get_mag_calibration_x_offset()
+{
+	return (void*)&(flight.compass.calibration.x_offset);
+}
+char* set_mag_calibration_x_offset(void *value)
+{
+	flight.compass.calibration.x_offset = *((float*)value);
+	config_write_float("mag_offset.x", flight.compass.calibration.x_offset);
+	return 0;
+}
+
+void* get_mag_calibration_y_offset()
+{
+	return (void*)&(flight.compass.calibration.y_offset);
+}
+char* set_mag_calibration_y_offset(void *value)
+{
+	flight.compass.calibration.y_offset = *((float*)value);
+	config_write_float("mag_offset.y", flight.compass.calibration.y_offset);
+	return 0;
+}
+
+void* get_mag_calibration_z_offset()
+{
+	return (void*)&(flight.compass.calibration.z_offset);
+}
+char* set_mag_calibration_z_offset(void *value)
+{
+	flight.compass.calibration.z_offset = *((float*)value);
+	config_write_float("mag_offset.z", flight.compass.calibration.z_offset);
 	return 0;
 }
 
@@ -583,6 +655,54 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_gyro_calibration_z_offset,
 		.set = set_gyro_calibration_z_offset
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_X,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.x",
+		.par_info="",
+		.get = get_mag_calibration_x_k,
+		.set = set_mag_calibration_x_k
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Y,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.y",
+		.par_info="",
+		.get = get_mag_calibration_y_k,
+		.set = set_mag_calibration_y_k
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Z,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.z",
+		.par_info="",
+		.get = get_mag_calibration_z_k,
+		.set = set_mag_calibration_z_k
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_OFFSET_X,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_offset.x",
+		.par_info="",
+		.get = get_mag_calibration_x_offset,
+		.set = set_mag_calibration_x_offset
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_OFFSET_Y,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_offset.y",
+		.par_info="",
+		.get = get_mag_calibration_y_offset,
+		.set = set_mag_calibration_y_offset
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_OFFSET_Z,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_offset.z",
+		.par_info="",
+		.get = get_mag_calibration_z_offset,
+		.set = set_mag_calibration_z_offset
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_ESC_PROTOCOL,
