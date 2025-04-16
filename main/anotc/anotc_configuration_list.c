@@ -3,6 +3,7 @@
 #include "platform/drivers/wifi.h"
 #include "flight/flight.h"
 #include "flight/control.h"
+#include "anotc/anotc_custom_frame.h"
 
 enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_WIFI_NAME,
@@ -49,8 +50,8 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_I,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_D,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_D_F,
-	ANOTC_CONFIG_PAR_RC_PROTOCOL
-
+	ANOTC_CONFIG_PAR_RC_PROTOCOL,
+	ANOTC_CONFIG_PAR_PID_LOG_TYPE
 };
 
 static unsigned int tmp_get_value;
@@ -559,6 +560,16 @@ char* set_rc_protocol(void *value)
 	return 0;
 }
 
+void* get_pid_log_type()
+{
+	return &pid_log_type;
+}
+char* set_pid_log_type(void *value)
+{
+	pid_log_type = *((unsigned char*)value);
+	return 0;
+}
+
 static struct anotc_config_info configuration_list[] = {
 	{
 		.par_id=ANOTC_CONFIG_PAR_WIFI_NAME,
@@ -919,6 +930,14 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="0.ibus 1.pc",
 		.get = get_rc_protocol,
 		.set = set_rc_protocol
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_PID_LOG_TYPE,
+		.type=ANOTC_PAR_TYPE_UINT8,
+		.par_name="pid_log_type",
+		.par_info="0.roll 1.pitch 3.yaw",
+		.get = get_pid_log_type,
+		.set = set_pid_log_type
 	}
 };
 

@@ -4,6 +4,8 @@
 #include "misc/util.h"
 #include "flight/control.h"
 
+unsigned char pid_log_type = 0;
+
 void anotc_send_system_info()
 {
 	struct anotc_frame frame;
@@ -25,10 +27,12 @@ void anotc_send_pid()
 	PREPARE_ANOTC_FRAME(frame);
 	frame.fun = ANOTC_FRAME_CUSTOM_PID;
 
-	// unsigned int time = get_timestamp_ms();
-
-	// anotc_add_uint(&frame, time);
-
+	unsigned char type = PID_ROLL;
+	if (pid_log_type==1) {
+		type=PID_PITCH;
+	} else if (pid_log_type==2) {
+		type=PID_YAW;
+	}
 	anotc_add_short(&frame, (short)(flight.imu.accel.value.x*100));
 	anotc_add_short(&frame, (short)(flight.imu.accel.value.y*100));
 	anotc_add_short(&frame, (short)(flight.imu.accel.value.z*100));
@@ -37,53 +41,29 @@ void anotc_send_pid()
 	frame.data[frame.len++] = (char)(flight.attitude.pitch);
 	frame.data[frame.len++] = (char)(flight.attitude.yaw);
 
-	anotc_add_short(&frame, (short)(flight.imu.gyro.value.x*100));
-	anotc_add_short(&frame, (short)(flight.imu.gyro.value.y*100));
-	anotc_add_short(&frame, (short)(flight.imu.gyro.value.z*100));
+	anotc_add_short(&frame, (short)(flight.imu.gyro.value.x));
+	anotc_add_short(&frame, (short)(flight.imu.gyro.value.y));
+	anotc_add_short(&frame, (short)(flight.imu.gyro.value.z));
 
 	anotc_add_ushort(&frame, (unsigned short)(flight.setpoints.throttle*1000));
-	anotc_add_short(&frame, (short)(flight.setpoints.roll*100));
-	anotc_add_short(&frame, (short)(flight.setpoints.pitch*100));
-	anotc_add_short(&frame, (short)(flight.setpoints.yaw*100));
+	frame.data[frame.len++] = (char)(flight.setpoints.roll);
+	frame.data[frame.len++] = (char)(flight.setpoints.pitch);
+	frame.data[frame.len++] = (char)(flight.setpoints.yaw);
 
 	anotc_add_ushort(&frame, flight.mixer.motor[0]->value);
 	anotc_add_ushort(&frame, flight.mixer.motor[1]->value);
 	anotc_add_ushort(&frame, flight.mixer.motor[2]->value);
 	anotc_add_ushort(&frame, flight.mixer.motor[3]->value);
 
-	anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].P*100));
-	anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].I*100));
-	anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].D*100));
-	anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].output*100));
+	anotc_add_short(&frame, (short)(angle_rate_pid[type].P*1000));
+	anotc_add_short(&frame, (short)(angle_rate_pid[type].I*1000));
+	anotc_add_short(&frame, (short)(angle_rate_pid[type].D*1000));
+	anotc_add_short(&frame, (short)(angle_rate_pid[type].output*1000));
 
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].P*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].I*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].D*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].output*100));
-
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].P*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].I*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].D*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].output*100));
-
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_ROLL].desired*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_PITCH].desired*100));
-	// anotc_add_short(&frame, (short)(angle_rate_pid[PID_YAW].desired*100));
-
-	// anotc_add_short(&frame, (short)(angle_pid[PID_ROLL].P*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_ROLL].I*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_ROLL].D*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_ROLL].output*100));
-
-	// anotc_add_short(&frame, (short)(angle_pid[PID_PITCH].P*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_PITCH].I*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_PITCH].D*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_PITCH].output*100));
-
-	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].P*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].I*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].D*100));
-	// anotc_add_short(&frame, (short)(angle_pid[PID_YAW].output*100));
+	anotc_add_short(&frame, (short)(angle_pid[type].P));
+	anotc_add_short(&frame, (short)(angle_pid[type].I));
+	anotc_add_short(&frame, (short)(angle_pid[type].D));
+	anotc_add_short(&frame, (short)(angle_pid[type].output));
 
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);
