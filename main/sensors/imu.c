@@ -69,7 +69,7 @@ void init_imu(struct imu_sensor *sensor)
 		acc_iir[i].freq = sensor->freq;
 		iir_filter_init(&acc_iir[i]);
 
-		gyr_iir[i].cut_off_freq = 10;
+		gyr_iir[i].cut_off_freq = 15;
 		gyr_iir[i].freq = sensor->freq;
 		iir_filter_init(&gyr_iir[i]);
 	}

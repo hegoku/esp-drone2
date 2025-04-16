@@ -56,10 +56,10 @@ void rc_input(struct rc *rc)
 				flight.setpoints.roll = (float)rc->roll * 30.0f / 500.0f;
 				flight.setpoints.pitch = (float)rc->pitch * 30.0f / 500.0f;
 			} else {
-				flight.setpoints.roll = (float)rc->roll * 90.0f / 500.0f;
-				flight.setpoints.pitch = (float)rc->pitch * 90.0f / 500.0f;
+				flight.setpoints.roll = (float)rc->roll * 45.0f / 500.0f;
+				flight.setpoints.pitch = (float)rc->pitch * 45.0f / 500.0f;
 			}
-			flight.setpoints.yaw = (float)rc->yaw * 90.0f / 500.0f;
+			flight.setpoints.yaw = (float)rc->yaw * 30.0f / 500.0f;
 		}
 	} else if (rc->status==RC_STATUS_TIMEOUT) {
 		flight.throttle = 0;
