@@ -2,6 +2,7 @@
 #include "math/math.h"
 #include "flight/flight.h"
 #include "attitude/MahonyAHRS.h"
+#include <stdio.h>
 
 static struct mahony_ahrs mahony;
 
@@ -13,8 +14,8 @@ void init_attitude()
 	mahony.q1 = 0.0f;
 	mahony.q2 = 0.0f;
 	mahony.q3 = 0.0f;
-	mahony.twoKp = 409.5f ;
-	mahony.twoKi = 0.002f ;
+	mahony.twoKp = 7.0f ;
+	mahony.twoKi = 0.000001f ;
 	mahony.dt = 1.0f/(float)flight.imu.freq;
 	mahony.integralFBx = 0.0f;
 	mahony.integralFBy = 0.0f;

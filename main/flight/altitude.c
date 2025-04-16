@@ -5,6 +5,8 @@
 
 void calculate_altitude()
 {
+	if (!IS_BARO_ON(flight.baro))
+		return;
 	struct quaternion q = {flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3};
 	float mat[3];
 	quat_dcm_z(&q, mat);
