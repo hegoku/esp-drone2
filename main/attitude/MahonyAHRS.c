@@ -111,9 +111,9 @@ void MahonyAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az
 	}
 	
 	// Integrate rate of change of quaternion
-	gx *= (0.5f * (1.0f / res->sampleFreq));		// pre-multiply common factors
-	gy *= (0.5f * (1.0f / res->sampleFreq));
-	gz *= (0.5f * (1.0f / res->sampleFreq));
+	gx *= (0.5f * res->dt);		// pre-multiply common factors
+	gy *= (0.5f * res->dt);
+	gz *= (0.5f * res->dt);
 	qa = res->q0;
 	qb = res->q1;
 	qc = res->q2;
@@ -160,9 +160,9 @@ void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float
 
 		// Compute and apply integral feedback if enabled
 		if(res->twoKi > 0.0f) {
-			res->integralFBx += res->twoKi * halfex * (1.0f / res->sampleFreq);	// integral error scaled by Ki
-			res->integralFBy += res->twoKi * halfey * (1.0f / res->sampleFreq);
-			res->integralFBz += res->twoKi * halfez * (1.0f / res->sampleFreq);
+			res->integralFBx += res->twoKi * halfex;	// integral error scaled by Ki
+			res->integralFBy += res->twoKi * halfey;
+			res->integralFBz += res->twoKi * halfez;
 			gx += res->integralFBx;	// apply integral feedback
 			gy += res->integralFBy;
 			gz += res->integralFBz;
@@ -180,9 +180,9 @@ void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float
 	}
 	
 	// Integrate rate of change of quaternion
-	gx *= (0.5f * (1.0f / res->sampleFreq));		// pre-multiply common factors
-	gy *= (0.5f * (1.0f / res->sampleFreq));
-	gz *= (0.5f * (1.0f / res->sampleFreq));
+	gx *= (0.5f * res->dt);		// pre-multiply common factors
+	gy *= (0.5f * res->dt);
+	gz *= (0.5f * res->dt);
 	qa = res->q0;
 	qb = res->q1;
 	qc = res->q2;

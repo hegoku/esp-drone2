@@ -20,7 +20,7 @@ struct mahony_ahrs {
 	float q0, q1, q2, q3;
 	float twoKp; // 2 * proportional gain (Kp)
 	float twoKi; // 2 * integral gain (Ki)
-	float sampleFreq;
+	float dt;
 	float integralFBx,  integralFBy, integralFBz;	// integral error terms scaled by Ki
 };
 
