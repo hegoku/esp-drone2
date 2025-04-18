@@ -84,7 +84,7 @@ void app_main(void)
 	init_flight();
 
 	sys_timer_queue = xQueueCreate(5, sizeof( int ));
-	xTaskCreatePinnedToCore(main_loop, "main_loop", 1024*4, NULL, 10, NULL, 1);
+	xTaskCreatePinnedToCore(main_loop, "main_loop", 1024*4, NULL, 20, NULL, 1);
 
 	log_task_queue = xQueueCreate(5, sizeof( int ));
 	xTaskCreatePinnedToCore(log_t, "log_task", 1024*4, NULL, 5, NULL, 0);

@@ -1,0 +1,12 @@
+menu "esp-drone"
+	choice 
+		prompt "Hardward gpio version"
+		default ESP_DRONE_HW_VER_1
+		
+		config ESP_DRONE_HW_VER_1
+			bool "Version 1"
+		
+		config ESP_DRONE_HW_VER_2
+			bool "Version 2"
+	endchoice
+endmenu

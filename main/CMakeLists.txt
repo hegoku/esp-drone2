@@ -24,5 +24,3 @@ idf_component_register(SRCS "main.c"
 	"task/flight_log_task.c" "task/wifi.c"
 	REQUIRES "driver" "esp_timer" "esp_wifi" "nvs_flash" "log" "esp_adc"
                     INCLUDE_DIRS ".")
-
-add_definitions(-DHW_VER_2="")
