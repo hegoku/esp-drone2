@@ -55,6 +55,8 @@ void anotc_send_pid()
 	anotc_add_ushort(&frame, flight.mixer.motor[2]->value);
 	anotc_add_ushort(&frame, flight.mixer.motor[3]->value);
 
+	anotc_add_short(&frame, (short)(angle_rate_pid[type].desired));
+
 	anotc_add_short(&frame, (short)(angle_rate_pid[type].P*1000));
 	anotc_add_short(&frame, (short)(angle_rate_pid[type].I*1000));
 	anotc_add_short(&frame, (short)(angle_rate_pid[type].D*1000));
