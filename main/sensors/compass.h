@@ -24,11 +24,11 @@ struct compass_sensor {
 		float value;
 	} temperature;
 	struct {
-		float x_k;
+		float x_k[3];
 		float x_offset;
-		float y_k;
+		float y_k[3];
 		float y_offset;
-		float z_k;
+		float z_k[3];
 		float z_offset;
 	} calibration;
 	void *priv;

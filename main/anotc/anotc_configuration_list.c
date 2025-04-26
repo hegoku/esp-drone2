@@ -18,9 +18,15 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_X,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Y,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Z,
-	ANOTC_CONFIG_PAR_MAG_K_X,
-	ANOTC_CONFIG_PAR_MAG_K_Y,
-	ANOTC_CONFIG_PAR_MAG_K_Z,
+	ANOTC_CONFIG_PAR_MAG_K_X1,
+	ANOTC_CONFIG_PAR_MAG_K_X2,
+	ANOTC_CONFIG_PAR_MAG_K_X3,
+	ANOTC_CONFIG_PAR_MAG_K_Y1,
+	ANOTC_CONFIG_PAR_MAG_K_Y2,
+	ANOTC_CONFIG_PAR_MAG_K_Y3,
+	ANOTC_CONFIG_PAR_MAG_K_Z1,
+	ANOTC_CONFIG_PAR_MAG_K_Z2,
+	ANOTC_CONFIG_PAR_MAG_K_Z3,
 	ANOTC_CONFIG_PAR_MAG_OFFSET_X,
 	ANOTC_CONFIG_PAR_MAG_OFFSET_Y,
 	ANOTC_CONFIG_PAR_MAG_OFFSET_Z,
@@ -179,36 +185,102 @@ char* set_gyro_calibration_z_offset(void *value)
 	return 0;
 }
 
-void* get_mag_calibration_x_k()
+void* get_mag_calibration_x_k1()
 {
-	return (void*)&(flight.compass.calibration.x_k);
+	return (void*)&(flight.compass.calibration.x_k[0]);
 }
-char* set_mag_calibration_x_k(void *value)
+char* set_mag_calibration_x_k1(void *value)
 {
-	flight.compass.calibration.x_k = *((float*)value);
-	config_write_float("mag_k.x", flight.compass.calibration.x_k);
+	flight.compass.calibration.x_k[0] = *((float*)value);
+	config_write_float("mag_k.x1", flight.compass.calibration.x_k[0]);
 	return 0;
 }
 
-void* get_mag_calibration_y_k()
+void* get_mag_calibration_x_k2()
 {
-	return (void*)&(flight.compass.calibration.y_k);
+	return (void*)&(flight.compass.calibration.x_k[1]);
 }
-char* set_mag_calibration_y_k(void *value)
+char* set_mag_calibration_x_k2(void *value)
 {
-	flight.compass.calibration.y_k = *((float*)value);
-	config_write_float("mag_k.y", flight.compass.calibration.y_k);
+	flight.compass.calibration.x_k[1] = *((float*)value);
+	config_write_float("mag_k.x2", flight.compass.calibration.x_k[1]);
 	return 0;
 }
 
-void* get_mag_calibration_z_k()
+void* get_mag_calibration_x_k3()
 {
-	return (void*)&(flight.compass.calibration.z_k);
+	return (void*)&(flight.compass.calibration.x_k[2]);
 }
-char* set_mag_calibration_z_k(void *value)
+char* set_mag_calibration_x_k3(void *value)
 {
-	flight.compass.calibration.z_k = *((float*)value);
-	config_write_float("mag_k.z", flight.compass.calibration.z_k);
+	flight.compass.calibration.x_k[2] = *((float*)value);
+	config_write_float("mag_k.x3", flight.compass.calibration.x_k[2]);
+	return 0;
+}
+
+void* get_mag_calibration_y_k1()
+{
+	return (void*)&(flight.compass.calibration.y_k[0]);
+}
+char* set_mag_calibration_y_k1(void *value)
+{
+	flight.compass.calibration.y_k[0] = *((float*)value);
+	config_write_float("mag_k.y1", flight.compass.calibration.y_k[0]);
+	return 0;
+}
+
+void* get_mag_calibration_y_k2()
+{
+	return (void*)&(flight.compass.calibration.y_k[1]);
+}
+char* set_mag_calibration_y_k2(void *value)
+{
+	flight.compass.calibration.y_k[1] = *((float*)value);
+	config_write_float("mag_k.y2", flight.compass.calibration.y_k[1]);
+	return 0;
+}
+
+void* get_mag_calibration_y_k3()
+{
+	return (void*)&(flight.compass.calibration.y_k[2]);
+}
+char* set_mag_calibration_y_k3(void *value)
+{
+	flight.compass.calibration.y_k[2] = *((float*)value);
+	config_write_float("mag_k.y3", flight.compass.calibration.y_k[2]);
+	return 0;
+}
+
+void* get_mag_calibration_z_k1()
+{
+	return (void*)&(flight.compass.calibration.z_k[0]);
+}
+char* set_mag_calibration_z_k1(void *value)
+{
+	flight.compass.calibration.z_k[0] = *((float*)value);
+	config_write_float("mag_k.z1", flight.compass.calibration.z_k[0]);
+	return 0;
+}
+
+void* get_mag_calibration_z_k2()
+{
+	return (void*)&(flight.compass.calibration.z_k[1]);
+}
+char* set_mag_calibration_z_k2(void *value)
+{
+	flight.compass.calibration.z_k[1] = *((float*)value);
+	config_write_float("mag_k.z2", flight.compass.calibration.z_k[1]);
+	return 0;
+}
+
+void* get_mag_calibration_z_k3()
+{
+	return (void*)&(flight.compass.calibration.z_k[2]);
+}
+char* set_mag_calibration_z_k3(void *value)
+{
+	flight.compass.calibration.z_k[2] = *((float*)value);
+	config_write_float("mag_k.z3", flight.compass.calibration.z_k[2]);
 	return 0;
 }
 
@@ -668,28 +740,76 @@ static struct anotc_config_info configuration_list[] = {
 		.set = set_gyro_calibration_z_offset
 	},
 	{
-		.par_id=ANOTC_CONFIG_PAR_MAG_K_X,
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_X1,
 		.type=ANOTC_PAR_TYPE_FLOAT,
-		.par_name="mag_k.x",
+		.par_name="mag_k.x1",
 		.par_info="",
-		.get = get_mag_calibration_x_k,
-		.set = set_mag_calibration_x_k
+		.get = get_mag_calibration_x_k1,
+		.set = set_mag_calibration_x_k1
 	},
 	{
-		.par_id=ANOTC_CONFIG_PAR_MAG_K_Y,
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_X2,
 		.type=ANOTC_PAR_TYPE_FLOAT,
-		.par_name="mag_k.y",
+		.par_name="mag_k.x2",
 		.par_info="",
-		.get = get_mag_calibration_y_k,
-		.set = set_mag_calibration_y_k
+		.get = get_mag_calibration_x_k2,
+		.set = set_mag_calibration_x_k2
 	},
 	{
-		.par_id=ANOTC_CONFIG_PAR_MAG_K_Z,
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_X3,
 		.type=ANOTC_PAR_TYPE_FLOAT,
-		.par_name="mag_k.z",
+		.par_name="mag_k.x3",
 		.par_info="",
-		.get = get_mag_calibration_z_k,
-		.set = set_mag_calibration_z_k
+		.get = get_mag_calibration_x_k3,
+		.set = set_mag_calibration_x_k3
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Y1,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.y1",
+		.par_info="",
+		.get = get_mag_calibration_y_k1,
+		.set = set_mag_calibration_y_k1
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Y2,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.y2",
+		.par_info="",
+		.get = get_mag_calibration_y_k2,
+		.set = set_mag_calibration_y_k2
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Y3,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.y3",
+		.par_info="",
+		.get = get_mag_calibration_y_k3,
+		.set = set_mag_calibration_y_k3
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Z1,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.z1",
+		.par_info="",
+		.get = get_mag_calibration_z_k1,
+		.set = set_mag_calibration_z_k1
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Z2,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.z2",
+		.par_info="",
+		.get = get_mag_calibration_z_k2,
+		.set = set_mag_calibration_z_k2
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_K_Z3,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag_k.z3",
+		.par_info="",
+		.get = get_mag_calibration_z_k3,
+		.set = set_mag_calibration_z_k3
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_MAG_OFFSET_X,
