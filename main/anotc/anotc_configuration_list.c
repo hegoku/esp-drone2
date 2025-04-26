@@ -1055,7 +1055,7 @@ static struct anotc_config_info configuration_list[] = {
 		.par_id=ANOTC_CONFIG_PAR_PID_LOG_TYPE,
 		.type=ANOTC_PAR_TYPE_UINT8,
 		.par_name="pid_log_type",
-		.par_info="0.roll 1.pitch 3.yaw",
+		.par_info="0.roll 1.pitch 2.yaw",
 		.get = get_pid_log_type,
 		.set = set_pid_log_type
 	}
