@@ -15,7 +15,7 @@ void init_attitude()
 	mahony.q2 = 0.0f;
 	mahony.q3 = 0.0f;
 	mahony.twoKp = 7.0f ;
-	mahony.twoKi = 0.000001f ;
+	mahony.twoKi = 0.0f ;
 	mahony.dt = 1.0f/(float)flight.imu.freq;
 	mahony.integralFBx = 0.0f;
 	mahony.integralFBy = 0.0f;
@@ -26,6 +26,11 @@ void calculate_attitude()
 {
 	if (flight.imu.status!=IMU_STATUS_ON)
 		return;
+	if (flight.status==FLIGHT_STATUS_ANGLE_MODE) {
+		mahony.twoKp = 0.7f;
+	} else {
+		mahony.twoKp = 7.0f;
+	}
 	MahonyAHRSupdate(DEGREES_TO_RADIANS(flight.imu.gyro.value.x), DEGREES_TO_RADIANS(flight.imu.gyro.value.y), DEGREES_TO_RADIANS(flight.imu.gyro.value.z), flight.imu.accel.value.x, flight.imu.accel.value.y, flight.imu.accel.value.z, flight.compass.value.x, flight.compass.value.y, flight.compass.value.z, &mahony);
 
 	flight.attitude.q0 = mahony.q0;
