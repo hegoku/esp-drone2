@@ -6,15 +6,15 @@ static struct iir_filter_param compass_iir[3];
 
 void init_compass(struct compass_sensor *sensor)
 {
-	sensor->calibration.x_k[0] = 0.9643;
-	sensor->calibration.x_k[1] = -0.0188;
-	sensor->calibration.x_k[2] = -0.0062;
-	sensor->calibration.y_k[0] = -0.0188;
-	sensor->calibration.y_k[1] = 1.0297;
-	sensor->calibration.y_k[2] = 0.0172;
-	sensor->calibration.z_k[0] = -0.0062;
-	sensor->calibration.z_k[1] = 0.0172;
-	sensor->calibration.z_k[2] = 1.0078;
+	sensor->calibration.x_k[0] = 1.0f;
+	sensor->calibration.x_k[1] = 0.0f;
+	sensor->calibration.x_k[2] = 0.0f;
+	sensor->calibration.y_k[0] = 1.0f;
+	sensor->calibration.y_k[1] = 0.0f;
+	sensor->calibration.y_k[2] = 0.0f;
+	sensor->calibration.z_k[0] = 0.0f;
+	sensor->calibration.z_k[1] = 0.0f;
+	sensor->calibration.z_k[2] = 1.0f;
 
 	config_read_float("mag_k.x1", &(sensor->calibration.x_k[0]));
 	config_read_float("mag_k.x2", &(sensor->calibration.x_k[1]));

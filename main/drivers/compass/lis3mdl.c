@@ -27,7 +27,7 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 	unsigned char buf[6];
 	lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_STATUS_REG, &buf[0], 1);
 	if (buf[0] & 0xF) {
-		lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_OUT_X_L | 0x40, buf, 8);
+		lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_OUT_X_L | 0x40, buf, 6);
 		sensor->raw.x = (((short)buf[1] << 8) | buf[0]);
 		sensor->raw.y = (((short)buf[3] << 8) | buf[2]);
 		sensor->raw.z = (((short)buf[5] << 8) | buf[4]);
