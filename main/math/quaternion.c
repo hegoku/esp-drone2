@@ -108,3 +108,27 @@ void quat_2_dcm(struct quaternion *q, float mat[3][3])
 	mat[1][2] = 2.0f * (q->q2 * q->q3 - q->q0 * q->q1);
 	mat[2][2] = 1.0f - 2.0f * (q->q1 * q->q1 + q->q2 * q->q2);
 }
+
+void quat_rotate_vector(struct quaternion *q, struct quaternion *vector, struct quaternion *res)
+{
+	struct quaternion q_inv={0};
+	res->q0 = q->q0;
+	res->q1 = q->q1;
+	res->q2 = q->q2;
+	res->q3 = q->q3;
+	quat_inverse(q, &q_inv);
+	quat_product(res, vector);
+	quat_product(res, &q_inv);
+}
+
+void quat_rotate_vector_inverse(struct quaternion *q, struct quaternion *vector, struct quaternion *res)
+{
+	struct quaternion q_inv={0};
+	quat_inverse(q, &q_inv);
+	res->q0 = q_inv.q0;
+	res->q1 = q_inv.q1;
+	res->q2 = q_inv.q2;
+	res->q3 = q_inv.q3;
+	quat_product(res, vector);
+	quat_product(res, q);
+}

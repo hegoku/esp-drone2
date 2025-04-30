@@ -13,4 +13,6 @@ void quat_product(struct quaternion *q1, struct quaternion *q2);
 void quat_inverse(struct quaternion *q, struct quaternion *res);
 void euler_2_quat(float roll, float pitch, float yaw, struct quaternion *q);
 void quat_2_dcm(struct quaternion *q, float mat[3][3]);
+void quat_rotate_vector(struct quaternion *q, struct quaternion *vector, struct quaternion *res);
+void quat_rotate_vector_inverse(struct quaternion *q, struct quaternion *vector, struct quaternion *res);
 #endif

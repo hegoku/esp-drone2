@@ -47,6 +47,10 @@ struct flight {
 	} velocity;
 
 	struct {
+		float x,y,z;
+	} acceleration;
+
+	struct {
 		unsigned char drone_center_connect;
 		unsigned char cpu_load;
 	} system_info;
