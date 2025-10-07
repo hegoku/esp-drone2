@@ -6,6 +6,9 @@
 #include "anotc/anotc_cmd_frame.h"
 #include "math/matrix.h"
 #include "misc/geo.h"
+#include "math/math.h"
+#include "anotc/anotc_custom_frame.h"
+#include <math.h>
 
 #define DIRECTION_UP 0
 #define DIRECTION_DOWN 1
@@ -25,7 +28,7 @@ struct gyro_calibration {
 	float x;
 	float y;
 	float z;
-	unsigned int count;
+	unsigned short int count;
 	unsigned char percentage;
 };
 
@@ -34,13 +37,28 @@ struct accel_calibration {
 	float x_avg;
 	float y_avg;
 	float z_avg;
-	unsigned int count;
+	unsigned short int count;
 	unsigned char done_mask;
 	unsigned char percentage;
 };
 
+#define FLIGHT_STATIONARY_CHECK_WINDOW_SIZE 250
+struct flight_stationary {
+	float gyro_samples_x[FLIGHT_STATIONARY_CHECK_WINDOW_SIZE];
+	float gyro_samples_y[FLIGHT_STATIONARY_CHECK_WINDOW_SIZE];
+	float gyro_samples_z[FLIGHT_STATIONARY_CHECK_WINDOW_SIZE];
+	float accel_samples_x[FLIGHT_STATIONARY_CHECK_WINDOW_SIZE];
+	float accel_samples_y[FLIGHT_STATIONARY_CHECK_WINDOW_SIZE];
+	float accel_samples_z[FLIGHT_STATIONARY_CHECK_WINDOW_SIZE];
+	unsigned short int count;
+	unsigned short int head;
+};
+
 static struct gyro_calibration gyro_c;
 static struct accel_calibration accel_c;
+static struct flight_stationary flight_s={0};
+
+unsigned int check_flight_stationary(struct flight_stationary *flight_s, struct imu_sensor *sensor);
 
 void init_imu(struct imu_sensor *sensor)
 {
@@ -174,6 +192,37 @@ static void _calibrate_accel(struct imu_sensor *sensor, unsigned char direction,
 	}
 }
 
+void _calibrate_gyro(struct imu_sensor *sensor, float total_count)
+{
+	gyro_c.x += sensor->gyro.unfiltered.x;
+	gyro_c.y += sensor->gyro.unfiltered.y;
+	gyro_c.z += sensor->gyro.unfiltered.z;
+	gyro_c.count++;
+
+	gyro_c.percentage = (unsigned char)(((float)gyro_c.count) / total_count * 100.0f);
+
+	if (gyro_c.count>=total_count) {
+		gyro_c.x /= (float)gyro_c.count;
+		gyro_c.y /= (float)gyro_c.count;
+		gyro_c.z /= (float)gyro_c.count;
+
+		sensor->gyro.calibration.x_offset = gyro_c.x;
+		sensor->gyro.calibration.y_offset = gyro_c.y;
+		sensor->gyro.calibration.z_offset = gyro_c.z;
+
+		config_write_float("gyro_offset.x", sensor->gyro.calibration.x_offset);
+		config_write_float("gyro_offset.y", sensor->gyro.calibration.y_offset);
+		config_write_float("gyro_offset.z", sensor->gyro.calibration.z_offset);
+
+		flight.status = FLIGHT_STATUS_READY;
+
+		gyro_c.x = 0;
+		gyro_c.y = 0;
+		gyro_c.z = 0;
+		gyro_c.count = 0;
+	}
+}
+
 void imu_calibration(struct imu_sensor *sensor)
 {
 	if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_UP) {
@@ -189,35 +238,63 @@ void imu_calibration(struct imu_sensor *sensor)
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_ACCEL_RIGHT) {
 		_calibrate_accel(sensor, 'R', accel_c.ref_mat[DIRECTION_RIGHT], 0x20);
 	} else if (flight.status==FLIGHT_STATUS_CALIBRATION_GYRO) {
-		gyro_c.x += sensor->gyro.unfiltered.x;
-		gyro_c.y += sensor->gyro.unfiltered.y;
-		gyro_c.z += sensor->gyro.unfiltered.z;
-		gyro_c.count++;
-
-		gyro_c.percentage = (unsigned char)(((float)gyro_c.count) / 10000.0f * 100.0f);
-		if (gyro_c.percentage%20==0) {
-			anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_GYRO, 0, &gyro_c.percentage, 1);
-		}
-
-		if (gyro_c.count>=10000) {
-			gyro_c.x /= (float)gyro_c.count;
-			gyro_c.y /= (float)gyro_c.count;
-			gyro_c.z /= (float)gyro_c.count;
-
-			sensor->gyro.calibration.x_offset = gyro_c.x;
-			sensor->gyro.calibration.y_offset = gyro_c.y;
-			sensor->gyro.calibration.z_offset = gyro_c.z;
-
-			config_write_float("gyro_offset.x", sensor->gyro.calibration.x_offset);
-			config_write_float("gyro_offset.y", sensor->gyro.calibration.y_offset);
-			config_write_float("gyro_offset.z", sensor->gyro.calibration.z_offset);
-
-			flight.status = FLIGHT_STATUS_READY;
-
+		if (check_flight_stationary(&flight_s, sensor)==0) {
 			gyro_c.x = 0;
 			gyro_c.y = 0;
 			gyro_c.z = 0;
 			gyro_c.count = 0;
+			return;
 		}
+
+		_calibrate_gyro(sensor, 10000.0f);
+		if (gyro_c.percentage%20==0) {
+			anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_GYRO, 0, &gyro_c.percentage, 1);
+		}
+	} else if (flight.status==FLIGHT_STATUS_SELFTEST) {
+		if (check_flight_stationary(&flight_s, sensor)==0) {
+			gyro_c.x = 0;
+			gyro_c.y = 0;
+			gyro_c.z = 0;
+			gyro_c.count = 0;
+			return;
+		}
+		_calibrate_gyro(sensor, 1000.0f);
 	}
+}
+
+unsigned int check_flight_stationary(struct flight_stationary *flight_s, struct imu_sensor *sensor)
+{
+	flight_s->gyro_samples_x[flight_s->head] = sensor->gyro.unfiltered.x;
+	flight_s->gyro_samples_y[flight_s->head] = sensor->gyro.unfiltered.y;
+	flight_s->gyro_samples_z[flight_s->head] = sensor->gyro.unfiltered.z;
+
+	flight_s->accel_samples_x[flight_s->head] = sensor->accel.unfiltered.x;
+	flight_s->accel_samples_y[flight_s->head] = sensor->accel.unfiltered.y;
+	flight_s->accel_samples_z[flight_s->head] = sensor->accel.unfiltered.z;
+	flight_s->head++;
+	if (flight_s->head==FLIGHT_STATIONARY_CHECK_WINDOW_SIZE) {
+		flight_s->head = 0;
+	}
+	if (flight_s->count<FLIGHT_STATIONARY_CHECK_WINDOW_SIZE) {
+		flight_s->count++;
+		return 0;
+	}
+
+	float variance_x = calculate_variance(flight_s->gyro_samples_x, FLIGHT_STATIONARY_CHECK_WINDOW_SIZE);
+	float variance_y = calculate_variance(flight_s->gyro_samples_y, FLIGHT_STATIONARY_CHECK_WINDOW_SIZE);
+	float variance_z = calculate_variance(flight_s->gyro_samples_z, FLIGHT_STATIONARY_CHECK_WINDOW_SIZE);
+	float a_variance_x = calculate_variance(flight_s->accel_samples_x, FLIGHT_STATIONARY_CHECK_WINDOW_SIZE);
+	float a_variance_y = calculate_variance(flight_s->accel_samples_y, FLIGHT_STATIONARY_CHECK_WINDOW_SIZE);
+	float a_variance_z = calculate_variance(flight_s->accel_samples_z, FLIGHT_STATIONARY_CHECK_WINDOW_SIZE);
+	float magnitude = sqrtf(sensor->accel.unfiltered.x*sensor->accel.unfiltered.x + sensor->accel.unfiltered.y*sensor->accel.unfiltered.y + sensor->accel.unfiltered.z*sensor->accel.unfiltered.z);
+
+	if (variance_x<=0.12*2.0 && variance_y<=0.11133728642*2.0 && variance_z<=0.099180884939*2.0
+		&& a_variance_x<=0.002660199243*2.0 && a_variance_y<=0.0026*2.0 && a_variance_z<=0.0041*2.0) {
+			anotc_send_var(variance_x, variance_y, variance_z, a_variance_x, a_variance_y, a_variance_z, magnitude, 1);
+		return 1;
+	}
+	flight_s->head = 0;
+	flight_s->count = 0;
+	anotc_send_var(variance_x, variance_y, variance_z, a_variance_x, a_variance_y, a_variance_z, magnitude, 0);
+	return 0;
 }

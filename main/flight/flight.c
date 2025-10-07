@@ -10,7 +10,7 @@ struct flight flight;
 
 void init_flight()
 {
-	flight.status = FLIGHT_STATUS_READY;
+	flight.status = FLIGHT_STATUS_SELFTEST;
 	init_mixer();
 	init_imu(&flight.imu);
 	init_baro(&flight.baro);

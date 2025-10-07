@@ -22,4 +22,6 @@ static inline float invNormal(float mat[3])
 {
 	return invSqrt(mat[0]*mat[0] + mat[1]*mat[1] + mat[2]*mat[2]);
 }
+
+float calculate_variance(float samples[], int count);
 #endif

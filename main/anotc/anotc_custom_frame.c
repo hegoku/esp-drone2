@@ -70,3 +70,24 @@ void anotc_send_pid()
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }
+
+void anotc_send_var(float gyro_x, float gyro_y, float gyrp_z, float accel_x, float accel_y, float accel_z, float magnitude, unsigned char stationary)
+{
+	struct anotc_frame frame;
+	PREPARE_ANOTC_FRAME(frame);
+	frame.fun = 0xF3;
+
+	anotc_add_float(&frame, gyro_x);
+	anotc_add_float(&frame, gyro_y);
+	anotc_add_float(&frame, gyrp_z);
+
+	anotc_add_float(&frame, accel_x);
+	anotc_add_float(&frame, accel_y);
+	anotc_add_float(&frame, accel_z);
+
+	anotc_add_float(&frame, magnitude);
+	frame.data[frame.len++] = stationary;
+
+	anotc_add_checksum(&frame);
+	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);
+}
