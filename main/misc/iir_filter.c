@@ -22,10 +22,13 @@ void iir_filter_init(struct iir_filter_param *p)
 float iir_filter(struct iir_filter_param *p, float input)
 {
 	float x0 = input;
-	p->y0 = (x0 * p->b0 + p->x1*p->b1 + p->x2*p->b2 - p->y0*p->a1 - p->y1*p->a2);
-	p->y2 = p->y1;
-	p->y1 = p->y0;
-	p->x2 = p->x1;
-	p->x1 = x0;
-	return p->y2;
+	float y0 = p->b0 * x0 + p->b1 * p->x1 + p->b2 * p->x2
+               - p->a1 * p->y1 - p->a2 * p->y2;
+
+    p->x2 = p->x1;
+    p->x1 = x0;
+    p->y2 = p->y1;
+    p->y1 = y0;
+
+    return y0;
 }
