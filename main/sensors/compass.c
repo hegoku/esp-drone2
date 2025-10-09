@@ -1,8 +1,8 @@
 #include "sensors/compass.h"
-#include "misc/iir_filter.h"
+#include "misc/low_pass_filter_2p.h"
 #include "misc/config.h"
 
-static struct iir_filter_param compass_iir[3];
+static struct low_pass_filter_2p_param compass_iir[3];
 
 void init_compass(struct compass_sensor *sensor)
 {
@@ -36,7 +36,7 @@ void init_compass(struct compass_sensor *sensor)
 	{
 		compass_iir[i].cut_off_freq = 5;
 		compass_iir[i].freq = sensor->freq;
-		iir_filter_init(&compass_iir[i]);
+		low_pass_filter_2p_init(&compass_iir[i]);
 	}
 }
 
@@ -50,7 +50,7 @@ void compass_filter(struct compass_sensor *sensor)
 	sensor->value.x = sensor->calibration.x_k[0] * hx + sensor->calibration.x_k[1] * hy + sensor->calibration.x_k[2] * hz;
 	sensor->value.y = sensor->calibration.y_k[0] * hx + sensor->calibration.y_k[1] * hy + sensor->calibration.y_k[2] * hz;
 	sensor->value.z = sensor->calibration.z_k[0] * hx + sensor->calibration.z_k[1] * hy + sensor->calibration.z_k[2] * hz;
-	sensor->value.x = iir_filter(&compass_iir[0], sensor->value.x);
-	sensor->value.y = iir_filter(&compass_iir[1], sensor->value.y);
-	sensor->value.z = iir_filter(&compass_iir[2], sensor->value.z);
+	sensor->value.x = low_pass_filter_2p(&compass_iir[0], sensor->value.x);
+	sensor->value.y = low_pass_filter_2p(&compass_iir[1], sensor->value.y);
+	sensor->value.z = low_pass_filter_2p(&compass_iir[2], sensor->value.z);
 }

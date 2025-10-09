@@ -1,7 +1,7 @@
 #ifndef MISC_PID_H
 #define MISC_PID_H
 
-#include "misc/iir_filter.h"
+#include "misc/low_pass_filter_2p.h"
 
 struct pid_data {
 	float kp;
@@ -15,7 +15,7 @@ struct pid_data {
 	float err_limit;
 	char enable_filter;
 	float output_limit;
-	struct iir_filter_param filter;
+	struct low_pass_filter_2p_param filter;
 
 	float P;
 	float I;
