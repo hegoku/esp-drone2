@@ -78,9 +78,9 @@ void quat_inverse(struct quaternion *q, struct quaternion *res)
 
 void euler_2_quat(float roll, float pitch, float yaw, struct quaternion *q)
 {
-	float y = yaw/180.0f*M_PI*0.5f;
-	float p = pitch/180.0f*M_PI*0.5f;
-	float r = roll/180.0f*M_PI*0.5f;
+	float y = yaw/180.0f*M_PIf*0.5f;
+	float p = pitch/180.0f*M_PIf*0.5f;
+	float r = roll/180.0f*M_PIf*0.5f;
 	float cy = cosf(y);
 	float sy = sinf(y);
 	float cp = cosf(p);

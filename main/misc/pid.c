@@ -4,7 +4,7 @@
 void pid_init(struct pid_data *tdata)
 {
 	pid_reset(tdata);
-	iir_filter_init(&tdata->filter);
+	low_pass_filter_2p_init(&tdata->filter);
 }
 
 void pid_reset(struct pid_data *tdata)
@@ -24,7 +24,7 @@ void pid_reset(struct pid_data *tdata)
 	tdata->prev_desired = 0.0f;
 	tdata->prev_value = 0.0f;
 
-	iir_filter_init(&tdata->filter);
+	low_pass_filter_2p_init(&tdata->filter);
 }
 
 void pid_calculate(struct pid_data *tdata, float desired)
@@ -43,7 +43,7 @@ void pid_calculate(struct pid_data *tdata, float desired)
 
 	tdata->pid_d = (tdata->value - tdata->prev_value) / tdata->dt;
 	if (tdata->enable_filter==1) {
-		tdata->pid_d = iir_filter(&tdata->filter, tdata->pid_d);
+		tdata->pid_d = low_pass_filter_2p(&tdata->filter, tdata->pid_d);
 	}
 	// if (isnan(tdata->pid_d)) {
 	// 	tdata->pid_d = 0.0f; 
