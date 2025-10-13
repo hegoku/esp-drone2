@@ -42,13 +42,13 @@ int mpu6050_sensor_read(struct imu_sensor *sensor)
 
 	sensor->temperature.raw = (((short)buf[6] << 8) | buf[7]);
 
-	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / MPU6050_ACCEL_RESOLUTION;
-	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / MPU6050_ACCEL_RESOLUTION;
-	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / MPU6050_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / MPU6050_ACCEL_RESOLUTION_2;
+	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / MPU6050_ACCEL_RESOLUTION_2;
+	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / MPU6050_ACCEL_RESOLUTION_2;
 
-	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / MPU6050_GYRO_RESOLUTION;
-	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6050_GYRO_RESOLUTION;
-	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6050_GYRO_RESOLUTION;
+	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / MPU6050_GYRO_RESOLUTION_2000;
+	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6050_GYRO_RESOLUTION_2000;
+	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6050_GYRO_RESOLUTION_2000;
 
 	if (strcmp(sensor->name, "MPU6050")==0) {
 		sensor->temperature.value = 36.53f + ((float)sensor->temperature.raw) / 340.0f;

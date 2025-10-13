@@ -36,8 +36,9 @@
 #define MPU6050_REG_PWR_MGMT_2 0x6C    //电源管理2
 #define MPU6050_REG_WHO_AM_I 0x75
 
-#define MPU6050_ACCEL_RESOLUTION 16384.0f
-#define MPU6050_GYRO_RESOLUTION 16.4f
+#define MPU6050_ACCEL_RESOLUTION_2 16384.0f
+#define MPU6050_ACCEL_RESOLUTION_16 2048.0f
+#define MPU6050_GYRO_RESOLUTION_2000 16.4f
 
 int mpu6050_i2c_prob(struct bus_dev *dev);
 int mpu6050_spi_prob(struct bus_dev *dev);

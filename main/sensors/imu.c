@@ -89,7 +89,7 @@ void init_imu(struct imu_sensor *sensor)
 		acc_lpf[i].freq = sensor->freq;
 		low_pass_filter_2p_init(&acc_lpf[i]);
 
-		gyr_lpf[i].cut_off_freq = 80;
+		gyr_lpf[i].cut_off_freq = 30;
 		gyr_lpf[i].freq = sensor->freq;
 		low_pass_filter_2p_init(&gyr_lpf[i]);
 	}
@@ -295,6 +295,7 @@ unsigned int check_flight_stationary(struct flight_stationary *flight_s, struct 
 	float magnitude = sqrtf(sensor->accel.unfiltered.x*sensor->accel.unfiltered.x + sensor->accel.unfiltered.y*sensor->accel.unfiltered.y + sensor->accel.unfiltered.z*sensor->accel.unfiltered.z);
 
 	if (variance_x<=0.12*2.0 && variance_y<=0.11133728642*2.0 && variance_z<=0.099180884939*2.0
+	// if (variance_x<=0.960134196281 && variance_y<=2.05 && variance_z<=2.031064999104
 		&& a_variance_x<=0.002660199243*2.0 && a_variance_y<=0.0026*2.0 && a_variance_z<=0.0041*2.0) {
 			anotc_send_var(variance_x, variance_y, variance_z, a_variance_x, a_variance_y, a_variance_z, magnitude, 1);
 		return 1;
