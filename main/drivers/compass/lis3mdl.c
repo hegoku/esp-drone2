@@ -38,7 +38,7 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 
 		lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_TEMP_OUT_L | 0x40, buf, 2);
 		sensor->temperature.raw = (((short)buf[1] << 8) | buf[0]);
-		sensor->temperature.value = ((float)sensor->temperature.raw) / 256.0f + 25.0f;
+		sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0f + 25.0f;
 
 		sensor->status |= COMPASS_STATUS_DTRY;
 	} else {
@@ -55,10 +55,11 @@ int lis3mdl_prob(struct bus_dev *dev)
 
 	dev->name = "LIS3MDL";
 
+	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG1, 0xFC);
 	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG2, 0);
 	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG3, 0x0);
-	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG1, 0xFC);
 	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG4, 0xC);
+	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG4, 0x0);
 	
 	flight.compass.name = "LIS3MDL";
 	flight.compass.dev = dev;
