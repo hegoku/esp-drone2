@@ -9,6 +9,7 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_WIFI_NAME,
 	ANOTC_CONFIG_PAR_WIFI_PASSWORD,
 	ANOTC_CONFIG_PAR_WIFI_UDP_PORT,
+	ANOTC_CONFIG_PAR_IMU_ROTATION,
 	ANOTC_CONFIG_PAR_ACCEL_K_X,
 	ANOTC_CONFIG_PAR_ACCEL_K_Y,
 	ANOTC_CONFIG_PAR_ACCEL_K_Z,
@@ -18,6 +19,8 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_X,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Y,
 	ANOTC_CONFIG_PAR_GYRO_OFFSET_Z,
+	ANOTC_CONFIG_PAR_MAG_ROTATION,
+	ANOTC_CONFIG_PAR_MAG_DECLINATION,
 	ANOTC_CONFIG_PAR_MAG_K_X1,
 	ANOTC_CONFIG_PAR_MAG_K_X2,
 	ANOTC_CONFIG_PAR_MAG_K_X3,
@@ -57,7 +60,7 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_D,
 	ANOTC_CONFIG_PAR_PID_YAW_RATE_D_F,
 	ANOTC_CONFIG_PAR_RC_PROTOCOL,
-	ANOTC_CONFIG_PAR_PID_LOG_TYPE
+	ANOTC_CONFIG_PAR_PID_LOG_TYPE,
 };
 
 static unsigned int tmp_get_value;
@@ -83,6 +86,17 @@ char* set_wifi_pwd(void *value)
 char* set_wifi_udp_port(void *value)
 {
 	wifi_set_udp_port(*((unsigned short*)value));
+	return 0;
+}
+
+void* get_imu_rotation()
+{
+	return (void*)&(flight.imu.rotation);
+}
+char* set_imu_rotation(void *value)
+{
+	flight.imu.rotation = *((unsigned char*)value);
+	config_write_uchar("imu.rotation", flight.imu.rotation);
 	return 0;
 }
 
@@ -182,6 +196,28 @@ char* set_gyro_calibration_z_offset(void *value)
 {
 	flight.imu.gyro.calibration.z_offset = *((float*)value);
 	config_write_float("gyro_offset.z", flight.imu.gyro.calibration.z_offset);
+	return 0;
+}
+
+void* get_mag_rotation()
+{
+	return (void*)&(flight.compass.rotation);
+}
+char* set_mag_rotation(void *value)
+{
+	flight.compass.rotation = *((unsigned char*)value);
+	config_write_uchar("mag.rotation", flight.compass.rotation);
+	return 0;
+}
+
+void* get_mag_declination()
+{
+	return (void*)&(flight.compass.declination);
+}
+char* set_mag_declination(void *value)
+{
+	flight.compass.declination = *((float*)value);
+	config_write_float("mag.decl", flight.compass.declination);
 	return 0;
 }
 
@@ -668,6 +704,14 @@ static struct anotc_config_info configuration_list[] = {
 		.set = set_wifi_udp_port
 	},
 	{
+		.par_id=ANOTC_CONFIG_PAR_IMU_ROTATION,
+		.type=ANOTC_PAR_TYPE_UINT8,
+		.par_name="imu.rotation",
+		.par_info="",
+		.get = get_imu_rotation,
+		.set = set_imu_rotation
+	},
+	{
 		.par_id=ANOTC_CONFIG_PAR_ACCEL_K_X,
 		.type=ANOTC_PAR_TYPE_FLOAT,
 		.par_name="accel_k.x",
@@ -738,6 +782,22 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_gyro_calibration_z_offset,
 		.set = set_gyro_calibration_z_offset
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_ROTATION,
+		.type=ANOTC_PAR_TYPE_UINT8,
+		.par_name="mag.rotation",
+		.par_info="",
+		.get = get_mag_rotation,
+		.set = set_mag_rotation
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_MAG_DECLINATION,
+		.type=ANOTC_PAR_TYPE_FLOAT,
+		.par_name="mag.decl",
+		.par_info="mag declination(degree)",
+		.get = get_mag_declination,
+		.set = set_mag_declination
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_MAG_K_X1,

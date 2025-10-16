@@ -1,11 +1,14 @@
 #include "sensors/compass.h"
 #include "misc/low_pass_filter_2p.h"
 #include "misc/config.h"
+#include "sensors/sensor_rotation.h"
 
 static struct low_pass_filter_2p_param compass_iir[3];
 
 void init_compass(struct compass_sensor *sensor)
 {
+	sensor->rotation = ROTATION_NONE;
+	sensor->declination = 0.0f;
 	sensor->calibration.x_k[0] = 1.0f;
 	sensor->calibration.x_k[1] = 0.0f;
 	sensor->calibration.x_k[2] = 0.0f;
@@ -16,6 +19,8 @@ void init_compass(struct compass_sensor *sensor)
 	sensor->calibration.z_k[1] = 0.0f;
 	sensor->calibration.z_k[2] = 1.0f;
 
+	config_read_uchar("mag.rotation", &(sensor->rotation));
+	config_read_float("mag.decl", &(sensor->declination));
 	config_read_float("mag_k.x1", &(sensor->calibration.x_k[0]));
 	config_read_float("mag_k.x2", &(sensor->calibration.x_k[1]));
 	config_read_float("mag_k.x3", &(sensor->calibration.x_k[2]));
@@ -53,4 +58,6 @@ void compass_filter(struct compass_sensor *sensor)
 	sensor->value.x = low_pass_filter_2p(&compass_iir[0], sensor->value.x);
 	sensor->value.y = low_pass_filter_2p(&compass_iir[1], sensor->value.y);
 	sensor->value.z = low_pass_filter_2p(&compass_iir[2], sensor->value.z);
+
+	sensor_rotate_3f(sensor->rotation, &(sensor->value.x), &(sensor->value.y), &(sensor->value.z));
 }

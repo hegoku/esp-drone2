@@ -2,6 +2,7 @@
 #define SENSORS_IMU_H
 
 #include "bus/bus.h"
+#include "sensors/sensor_rotation.h"
 
 enum imu_status {
 	IMU_STATUS_OFF,
@@ -37,6 +38,7 @@ struct imu_data {
 struct imu_sensor {
 	char *name;
 	enum imu_status status;
+	enum sensor_rotation rotation;
 	struct imu_data accel;
 	struct imu_data gyro;
 	struct {

@@ -10,6 +10,7 @@
 #include "math/math.h"
 #include "anotc/anotc_custom_frame.h"
 #include <math.h>
+#include "sensors/sensor_rotation.h"
 
 #define DIRECTION_UP 0
 #define DIRECTION_DOWN 1
@@ -64,9 +65,12 @@ unsigned int check_flight_stationary(struct flight_stationary *flight_s, struct 
 
 void init_imu(struct imu_sensor *sensor)
 {
+	sensor->rotation = ROTATION_NONE;
 	sensor->accel.calibration.x_k = 1.0;
 	sensor->accel.calibration.y_k = 1.0;
 	sensor->accel.calibration.z_k = 1.0;
+
+	config_read_uchar("imu.rotation", &(sensor->rotation));
 
 	config_read_float("accel_k.x", &(sensor->accel.calibration.x_k));
 	config_read_float("accel_k.y", &(sensor->accel.calibration.y_k));
@@ -117,6 +121,9 @@ void imu_filter(struct imu_sensor *sensor)
 	sensor->gyro.value.x = low_pass_filter_2p(&gyr_lpf[0], sensor->gyro.unfiltered.x);
 	sensor->gyro.value.y = low_pass_filter_2p(&gyr_lpf[1], sensor->gyro.unfiltered.y);
 	sensor->gyro.value.z = low_pass_filter_2p(&gyr_lpf[2], sensor->gyro.unfiltered.z);
+
+	sensor_rotate_3f(sensor->rotation, &(sensor->gyro.value.x), &(sensor->gyro.value.y), &(sensor->gyro.value.z));
+	sensor_rotate_3f(sensor->rotation, &(sensor->accel.value.x), &(sensor->accel.value.y), &(sensor->accel.value.z));
 }
 
 void calibrate_accel(struct imu_sensor *sensor)

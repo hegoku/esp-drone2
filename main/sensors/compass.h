@@ -2,12 +2,14 @@
 #define SENSORS_COMPASS_H
 
 #include "bus/bus.h"
+#include "sensors/sensor_rotation.h"
 
 #define COMPASS_STATUS_ON 0x1
 #define COMPASS_STATUS_DTRY 0x02
 
 struct compass_sensor {
 	char *name;
+	enum sensor_rotation rotation;
 	unsigned char status;
 	struct {
 		short x;
@@ -36,6 +38,8 @@ struct compass_sensor {
 	struct bus_dev *dev;
 	int(*read)(struct compass_sensor *sensor);
 	unsigned short freq;
+
+	float declination;
 };
 
 #define IS_COMPASS_ON(sensor) ((sensor).status & COMPASS_STATUS_ON)
