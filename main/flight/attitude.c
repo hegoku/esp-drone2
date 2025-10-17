@@ -14,12 +14,20 @@ void init_attitude()
 	mahony.q1 = 0.0f;
 	mahony.q2 = 0.0f;
 	mahony.q3 = 0.0f;
-	mahony.twoKp = 10.0f ;
-	mahony.twoKi = 0.0f ;
+	mahony.twoKp = 10.0f;
+	mahony.twoKi = 0.0f;
 	mahony.dt = 1.0f/(float)flight.imu.freq;
 	mahony.integralFBx = 0.0f;
 	mahony.integralFBy = 0.0f;
 	mahony.integralFBz = 0.0f;
+}
+
+float deg_min_to_decimal(int deg, int min) {
+    if (deg < 0) {
+        return deg - (float)min / 60.0f;
+    } else {
+        return deg + (float)min / 60.0f;
+    }
 }
 
 void calculate_attitude()
@@ -38,12 +46,18 @@ void calculate_attitude()
 	flight.attitude.q2 = mahony.q2;
 	flight.attitude.q3 = mahony.q3;
 
+	flight.attitude.q0 = mahony.q0;
+	flight.attitude.q1 = mahony.q1;
+	flight.attitude.q2 = mahony.q2;
+	flight.attitude.q3 = mahony.q3;
+
 	flight.attitude.roll = atan2f(2.0f*(flight.attitude.q0*flight.attitude.q1+ flight.attitude.q2*flight.attitude.q3), 1.0f- 2.0f * (flight.attitude.q1*flight.attitude.q1 + flight.attitude.q2*flight.attitude.q2));
 	flight.attitude.roll = RADIANS_TO_DEGREES(flight.attitude.roll);
 	flight.attitude.pitch = -asinf(2.0f*(flight.attitude.q1*flight.attitude.q3 - flight.attitude.q0*flight.attitude.q2));
 	flight.attitude.pitch = RADIANS_TO_DEGREES(flight.attitude.pitch);
-	// if (IS_COMPASS_DTRY(flight.compass)) {
-		flight.attitude.yaw = atan2f(2.0f*(flight.attitude.q1*flight.attitude.q2 + flight.attitude.q0*flight.attitude.q3), 1.0f - 2.0f *(flight.attitude.q2*flight.attitude.q2 + flight.attitude.q3*flight.attitude.q3));
-		flight.attitude.yaw = RADIANS_TO_DEGREES(flight.attitude.yaw);
-	// }
+	flight.attitude.yaw = atan2f(2.0f*(flight.attitude.q1*flight.attitude.q2 + flight.attitude.q0*flight.attitude.q3), 1.0f - 2.0f *(flight.attitude.q2*flight.attitude.q2 + flight.attitude.q3*flight.attitude.q3));
+	flight.attitude.yaw = RADIANS_TO_DEGREES(flight.attitude.yaw);
+	if (flight.compass.declination!=0.0f) {
+		flight.attitude.yaw += flight.compass.declination;
+	}
 }

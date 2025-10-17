@@ -10,6 +10,9 @@ enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_WIFI_PASSWORD,
 	ANOTC_CONFIG_PAR_WIFI_UDP_PORT,
 	ANOTC_CONFIG_PAR_IMU_ROTATION,
+	ANOTC_CONFIG_PAR_GYRO_AUTO_CAL,
+	ANOTC_CONFIG_PAR_GYRO_CUTOFF,
+	ANOTC_CONFIG_PAR_ACCEL_CUTOFF,
 	ANOTC_CONFIG_PAR_ACCEL_K_X,
 	ANOTC_CONFIG_PAR_ACCEL_K_Y,
 	ANOTC_CONFIG_PAR_ACCEL_K_Z,
@@ -97,6 +100,47 @@ char* set_imu_rotation(void *value)
 {
 	flight.imu.rotation = *((unsigned char*)value);
 	config_write_uchar("imu.rotation", flight.imu.rotation);
+	return 0;
+}
+
+void* get_gyro_auto_cal()
+{
+	return (void*)&(flight.imu.gyro_auto_calibration);
+}
+char* set_gyro_auto_cal(void *value)
+{
+	flight.imu.gyro_auto_calibration = *((unsigned char*)value);
+	config_write_uchar("gyro.auto_cal", flight.imu.gyro_auto_calibration);
+	return 0;
+}
+
+void* get_gyro_cutoff()
+{
+	return (void*)&(flight.imu.gyro_lpf_cutoff);
+}
+char* set_gyro_cutoff(void *value)
+{
+	flight.imu.gyro_lpf_cutoff = *((unsigned short*)value);
+	config_write_ushort("gyro.cutoff", flight.imu.gyro_lpf_cutoff);
+	for (int i = 0; i < 3; i++) {
+		flight.imu.gyro_lpf[i].cut_off_freq = flight.imu.gyro_lpf_cutoff;
+		low_pass_filter_2p_init(&(flight.imu.gyro_lpf[i]));
+	}
+	return 0;
+}
+
+void* get_accel_cutoff()
+{
+	return (void*)&(flight.imu.accel_lpf_cutoff);
+}
+char* set_accel_cutoff(void *value)
+{
+	flight.imu.accel_lpf_cutoff = *((unsigned short*)value);
+	config_write_ushort("accel.cutoff", flight.imu.accel_lpf_cutoff);
+	for (int i = 0; i < 3; i++) {
+		flight.imu.accel_lpf[i].cut_off_freq = flight.imu.accel_lpf_cutoff;
+		low_pass_filter_2p_init(&(flight.imu.accel_lpf[i]));
+	}
 	return 0;
 }
 
@@ -710,6 +754,30 @@ static struct anotc_config_info configuration_list[] = {
 		.par_info="",
 		.get = get_imu_rotation,
 		.set = set_imu_rotation
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_GYRO_AUTO_CAL,
+		.type=ANOTC_PAR_TYPE_UINT8,
+		.par_name="gyro.auto_cal",
+		.par_info="IMU gyro auto calibration enable",
+		.get = get_gyro_auto_cal,
+		.set = set_gyro_auto_cal
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_GYRO_CUTOFF,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="gyro.cutoff",
+		.par_info="Low pass filter cutoff frequency for gyro",
+		.get = get_gyro_cutoff,
+		.set = set_gyro_cutoff
+	},
+	{
+		.par_id=ANOTC_CONFIG_PAR_ACCEL_CUTOFF,
+		.type=ANOTC_PAR_TYPE_UINT16,
+		.par_name="accel.cutoff",
+		.par_info="Low pass filter cutoff frequency for accel",
+		.get = get_accel_cutoff,
+		.set = set_accel_cutoff
 	},
 	{
 		.par_id=ANOTC_CONFIG_PAR_ACCEL_K_X,

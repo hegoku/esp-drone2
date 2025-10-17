@@ -1,6 +1,5 @@
 #include "sensors/imu.h"
 #include "flight/flight.h"
-#include "misc/low_pass_filter_2p.h"
 #include "misc/notch_filter.h"
 #include "clocksource/imu_source.h"
 #include "misc/config.h"
@@ -23,9 +22,7 @@
 #define AXIS_Y 1
 #define AXIS_Z 2
 
-static struct low_pass_filter_2p_param acc_lpf[3];
 static struct notch_filter_param gyr_notch[3];
-static struct low_pass_filter_2p_param gyr_lpf[3];
 
 struct gyro_calibration {
 	float x;
@@ -66,11 +63,18 @@ unsigned int check_flight_stationary(struct flight_stationary *flight_s, struct 
 void init_imu(struct imu_sensor *sensor)
 {
 	sensor->rotation = ROTATION_NONE;
+	sensor->gyro_auto_calibration = 0;
+	sensor->gyro_lpf_cutoff = 30;
+	sensor->accel_lpf_cutoff = 20;
 	sensor->accel.calibration.x_k = 1.0;
 	sensor->accel.calibration.y_k = 1.0;
 	sensor->accel.calibration.z_k = 1.0;
 
 	config_read_uchar("imu.rotation", &(sensor->rotation));
+	config_read_uchar("gyro.auto_cal", &(sensor->gyro_auto_calibration));
+
+	config_read_ushort("gyro.cutoff", &(sensor->gyro_lpf_cutoff));
+	config_read_ushort("accel.cutoff", &(sensor->accel_lpf_cutoff));
 
 	config_read_float("accel_k.x", &(sensor->accel.calibration.x_k));
 	config_read_float("accel_k.y", &(sensor->accel.calibration.y_k));
@@ -89,13 +93,13 @@ void init_imu(struct imu_sensor *sensor)
 
 	for (int i = 0; i < 3; i++)
 	{
-		acc_lpf[i].cut_off_freq = 20;
-		acc_lpf[i].freq = sensor->freq;
-		low_pass_filter_2p_init(&acc_lpf[i]);
+		sensor->accel_lpf[i].cut_off_freq = sensor->accel_lpf_cutoff;
+		sensor->accel_lpf[i].freq = sensor->freq;
+		low_pass_filter_2p_init(&(sensor->accel_lpf[i]));
 
-		gyr_lpf[i].cut_off_freq = 30;
-		gyr_lpf[i].freq = sensor->freq;
-		low_pass_filter_2p_init(&gyr_lpf[i]);
+		sensor->gyro_lpf[i].cut_off_freq = sensor->gyro_lpf_cutoff;
+		sensor->gyro_lpf[i].freq = sensor->freq;
+		low_pass_filter_2p_init(&(sensor->gyro_lpf[i]));
 	}
 
 	imu_timer.freq = sensor->freq;
@@ -107,9 +111,9 @@ void imu_filter(struct imu_sensor *sensor)
 	sensor->accel.unfiltered.x = sensor->accel.calibration.x_k * (sensor->accel.unfiltered.x - sensor->accel.calibration.x_offset);
 	sensor->accel.unfiltered.y = sensor->accel.calibration.y_k * (sensor->accel.unfiltered.y - sensor->accel.calibration.y_offset);
 	sensor->accel.unfiltered.z = sensor->accel.calibration.z_k * (sensor->accel.unfiltered.z - sensor->accel.calibration.z_offset);
-	sensor->accel.value.x = low_pass_filter_2p(&acc_lpf[0], sensor->accel.unfiltered.x);
-	sensor->accel.value.y = low_pass_filter_2p(&acc_lpf[1], sensor->accel.unfiltered.y);
-	sensor->accel.value.z = low_pass_filter_2p(&acc_lpf[2], sensor->accel.unfiltered.z);
+	sensor->accel.value.x = low_pass_filter_2p(&(sensor->accel_lpf[0]), sensor->accel.unfiltered.x);
+	sensor->accel.value.y = low_pass_filter_2p(&(sensor->accel_lpf[1]), sensor->accel.unfiltered.y);
+	sensor->accel.value.z = low_pass_filter_2p(&(sensor->accel_lpf[2]), sensor->accel.unfiltered.z);
 
 	sensor->gyro.unfiltered.x -=  sensor->gyro.calibration.x_offset;
 	sensor->gyro.unfiltered.y -=  sensor->gyro.calibration.y_offset;
@@ -118,9 +122,9 @@ void imu_filter(struct imu_sensor *sensor)
 	// sensor->gyro.value.x = notch_filter(&gyr_notch[0], sensor->gyro.unfiltered.x);
 	// sensor->gyro.value.y = notch_filter(&gyr_notch[1], sensor->gyro.unfiltered.y);
 	// sensor->gyro.value.z = notch_filter(&gyr_notch[2], sensor->gyro.unfiltered.z);
-	sensor->gyro.value.x = low_pass_filter_2p(&gyr_lpf[0], sensor->gyro.unfiltered.x);
-	sensor->gyro.value.y = low_pass_filter_2p(&gyr_lpf[1], sensor->gyro.unfiltered.y);
-	sensor->gyro.value.z = low_pass_filter_2p(&gyr_lpf[2], sensor->gyro.unfiltered.z);
+	sensor->gyro.value.x = low_pass_filter_2p(&(sensor->gyro_lpf[0]), sensor->gyro.unfiltered.x);
+	sensor->gyro.value.y = low_pass_filter_2p(&(sensor->gyro_lpf[1]), sensor->gyro.unfiltered.y);
+	sensor->gyro.value.z = low_pass_filter_2p(&(sensor->gyro_lpf[2]), sensor->gyro.unfiltered.z);
 
 	sensor_rotate_3f(sensor->rotation, &(sensor->gyro.value.x), &(sensor->gyro.value.y), &(sensor->gyro.value.z));
 	sensor_rotate_3f(sensor->rotation, &(sensor->accel.value.x), &(sensor->accel.value.y), &(sensor->accel.value.z));
@@ -264,6 +268,10 @@ void imu_calibration(struct imu_sensor *sensor)
 			anotc_send_cmd_response(ANOTC_CMD_CALIBRATE_GYRO, 0, &gyro_c.percentage, 1);
 		}
 	} else if (flight.status==FLIGHT_STATUS_SELFTEST) {
+		if (sensor->gyro_auto_calibration==0) {
+			flight.status = FLIGHT_STATUS_READY;
+			return;
+		}
 		if (check_flight_stationary(&flight_s, sensor)==0) {
 			gyro_c.x = 0;
 			gyro_c.y = 0;

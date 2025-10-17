@@ -3,6 +3,7 @@
 
 #include "bus/bus.h"
 #include "sensors/sensor_rotation.h"
+#include "misc/low_pass_filter_2p.h"
 
 enum imu_status {
 	IMU_STATUS_OFF,
@@ -50,6 +51,13 @@ struct imu_sensor {
 	struct bus_dev *dev;
 	int(*read)(struct imu_sensor *sensor);
 	unsigned short freq;
+
+	unsigned char gyro_auto_calibration;
+	unsigned short gyro_lpf_cutoff;
+	unsigned short accel_lpf_cutoff;
+
+	struct low_pass_filter_2p_param gyro_lpf[3];
+	struct low_pass_filter_2p_param accel_lpf[3];
 };
 
 void init_imu(struct imu_sensor *sensor);
