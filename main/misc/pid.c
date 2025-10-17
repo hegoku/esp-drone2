@@ -65,7 +65,7 @@ void pid_calculate(struct pid_data *tdata, float desired)
 	// if (tdata->D<-10) {
 	// 	tdata->D = -10;
 	// }
-	tdata->output = tdata->P + tdata->I - tdata->D;
+	tdata->output = tdata->P + tdata->I - tdata->D + tdata->ff*tdata->desired;
 	
 	tdata->pprev_error = tdata->prev_error;
 	tdata->prev_error = error;

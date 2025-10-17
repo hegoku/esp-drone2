@@ -7,6 +7,7 @@ struct pid_data {
 	float kp;
 	float ki;
 	float kd;
+	float ff;
 	float prev_error;
 	float value;
 	float dt;
