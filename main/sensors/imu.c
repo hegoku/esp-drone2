@@ -100,6 +100,11 @@ void init_imu(struct imu_sensor *sensor)
 		sensor->gyro_lpf[i].cut_off_freq = sensor->gyro_lpf_cutoff;
 		sensor->gyro_lpf[i].freq = sensor->freq;
 		low_pass_filter_2p_init(&(sensor->gyro_lpf[i]));
+
+		// gyr_notch[i].freq = (float)sensor->freq;
+		// gyr_notch[i].notch_freq = 24.5;
+		// gyr_notch[i].bandwidth = 5;
+		// notch_filter_init(&gyr_notch[i]);
 	}
 
 	imu_timer.freq = sensor->freq;

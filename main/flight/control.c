@@ -15,6 +15,7 @@ void init_control()
 	config_read_float("rol_r_pid.i", &angle_rate_pid[PID_ROLL].ki);
 	config_read_float("rol_r_pid.d", &angle_rate_pid[PID_ROLL].kd);
 	config_read_ushort("rol_r_pid.d_f", &angle_rate_pid[PID_ROLL].filter.cut_off_freq);
+	config_read_float("rol_r_pid.ff", &angle_rate_pid[PID_ROLL].ff);
 	if (angle_rate_pid[PID_ROLL].filter.cut_off_freq==0) {
 		angle_rate_pid[PID_ROLL].enable_filter = 0;
 	} else {
@@ -25,6 +26,7 @@ void init_control()
 	config_read_float("pit_r_pid.i", &angle_rate_pid[PID_PITCH].ki);
 	config_read_float("pit_r_pid.d", &angle_rate_pid[PID_PITCH].kd);
 	config_read_ushort("pit_r_pid.d_f", &angle_rate_pid[PID_PITCH].filter.cut_off_freq);
+	config_read_float("pit_r_pid.ff", &angle_rate_pid[PID_PITCH].ff);
 	if (angle_rate_pid[PID_PITCH].filter.cut_off_freq==0) {
 		angle_rate_pid[PID_PITCH].enable_filter = 0;
 	} else {
@@ -35,6 +37,7 @@ void init_control()
 	config_read_float("yaw_r_pid.i", &angle_rate_pid[PID_YAW].ki);
 	config_read_float("yaw_r_pid.d", &angle_rate_pid[PID_YAW].kd);
 	config_read_ushort("yaw_r_pid.d_f", &angle_rate_pid[PID_YAW].filter.cut_off_freq);
+	config_read_float("yaw_r_pid.ff", &angle_rate_pid[PID_YAW].ff);
 	if (angle_rate_pid[PID_YAW].filter.cut_off_freq==0) {
 		angle_rate_pid[PID_YAW].enable_filter = 0;
 	} else {
