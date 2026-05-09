@@ -9,10 +9,10 @@
 #define MPU6050_WHOAMI_VALUE 0x68
 #define MPU6500_WHOAMI_VALUE 0x70
 
-#define MPU6050_REG_SMPLRT_DIV 0x19    //陀螺仪采样率，典型值：0x07(125Hz)
-#define MPU6050_REG_CONFIG 0x1A    //低通滤波频率，典型值：0x06(5Hz)
-#define MPU6050_REG_GYRO_CONFIG 0x1B    //陀螺仪自检及测量范围，典型值：0x18(不自检，2000deg/s)
-#define MPU6050_REG_ACCEL_CONFIG 0x1C    //加速计自检、测量范围及高通滤波频率，典型值：0x01(不自检，2G，5Hz)
+#define MPU6050_REG_SMPLRT_DIV 0x19    //陀螺仪采样率
+#define MPU6050_REG_CONFIG 0x1A    //低通滤波频率
+#define MPU6050_REG_GYRO_CONFIG 0x1B    //陀螺仪自检及测量范围
+#define MPU6050_REG_ACCEL_CONFIG 0x1C    //加速计自检、测量范围及高通滤波频率
 #define MPU6050_REG_ACCEL_CONFIG2 0x1D    //加速计滤波
 #define MPU6050_REG_INT_PIN_CFG 0x37 //中断/旁路设置寄存器
 #define MPU6050_REG_INT_ENABLE 0x38 //中断
