@@ -42,9 +42,9 @@ int icm20948_sensor_read(struct imu_sensor *sensor)
 
 	sensor->temperature.raw = (((short)buf[12] << 8) | buf[13]);
 
-	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / ICM20948_GYRO_RESOLUTION;
-	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / ICM20948_GYRO_RESOLUTION;
-	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / ICM20948_GYRO_RESOLUTION;
+	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / ICM20948_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / ICM20948_ACCEL_RESOLUTION;
+	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / ICM20948_ACCEL_RESOLUTION;
 
 	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / ICM20948_GYRO_RESOLUTION;
 	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / ICM20948_GYRO_RESOLUTION;
