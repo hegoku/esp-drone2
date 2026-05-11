@@ -198,5 +198,6 @@ struct bmp280_baro_priv
 
 #define BMP280_GET_PRIV(x) ((struct bmp280_baro_priv*)x)
 
+double bmp280_compensate_P_double(int adc_P, int t_fine, struct bmp2_calib_param *calib_param);
 int bmp280_prob(struct bus_dev *dev);
 #endif

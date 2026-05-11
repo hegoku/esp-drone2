@@ -1,0 +1,107 @@
+#ifndef DRIVERS_BARO_SPL06_H
+#define DRIVERS_BARO_SPL06_H
+
+#include "bus/bus.h"
+
+#define SPL06_REG_PRESSURE_MSB 0x00
+#define SPL06_REG_PRESSURE_LSB 0x01
+#define SPL06_REG_PRESSURE_XLSB 0x02
+#define SPL06_REG_TEMPERATURE_MSB 0x03
+#define SPL06_REG_TEMPERATURE_LSB 0x04
+#define SPL06_REG_TEMPERATURE_XLSB 0x05
+#define SPL06_REG_PRS_CFG 0x06
+#define SPL06_REG_TMP_CFG 0x07
+#define SPL06_REG_MEAS_CFG 0x08
+#define SPL06_REG_CFG_REG 0x09
+#define SPL06_REG_INT_STS 0x0A
+#define SPL06_REG_FIFO_STS 0x0B
+#define SPL06_REG_RESET 0x0C
+#define SPL06_REG_ID 0x0D
+#define SPL06_REG_CALIB_COEFF 0x10
+
+#define SPL06_SPI_RD_MASK 0x80
+#define SPL06_SPI_WR_MASK 0x7F
+
+#define SPL06_PRS_RATE_1HZ (0x00 << 4)
+#define SPL06_PRS_RATE_2HZ (0x01 << 4)
+#define SPL06_PRS_RATE_4HZ (0x02 << 4)
+#define SPL06_PRS_RATE_8HZ (0x03 << 4)
+#define SPL06_PRS_RATE_16HZ (0x04 << 4)
+#define SPL06_PRS_RATE_32HZ (0x05 << 4)
+#define SPL06_PRS_RATE_64HZ (0x06 << 4)
+#define SPL06_PRS_RATE_128HZ (0x07 << 4)
+
+#define SPL06_PRS_OVERSAMPLING_1X 0x00
+#define SPL06_PRS_OVERSAMPLING_2X 0x01
+#define SPL06_PRS_OVERSAMPLING_4X 0x02
+#define SPL06_PRS_OVERSAMPLING_8X 0x03
+#define SPL06_PRS_OVERSAMPLING_16X 0x04
+#define SPL06_PRS_OVERSAMPLING_32X 0x05
+#define SPL06_PRS_OVERSAMPLING_64X 0x06
+#define SPL06_PRS_OVERSAMPLING_128X 0x07
+
+#define SPL06_TMP_EXT_SENSOR 0x80
+#define SPL06_TMP_RATE_1HZ (0x00 << 4)
+#define SPL06_TMP_RATE_2HZ (0x01 << 4)
+#define SPL06_TMP_RATE_4HZ (0x02 << 4)
+#define SPL06_TMP_RATE_8HZ (0x03 << 4)
+#define SPL06_TMP_RATE_16HZ (0x04 << 4)
+#define SPL06_TMP_RATE_32HZ (0x05 << 4)
+#define SPL06_TMP_RATE_64HZ (0x06 << 4)
+#define SPL06_TMP_RATE_128HZ (0x07 << 4)
+
+#define SPL06_TMP_OVERSAMPLING_1X 0x00
+#define SPL06_TMP_OVERSAMPLING_2X 0x01
+#define SPL06_TMP_OVERSAMPLING_4X 0x02
+#define SPL06_TMP_OVERSAMPLING_8X 0x03
+#define SPL06_TMP_OVERSAMPLING_16X 0x04
+#define SPL06_TMP_OVERSAMPLING_32X 0x05
+#define SPL06_TMP_OVERSAMPLING_64X 0x06
+#define SPL06_TMP_OVERSAMPLING_128X 0x07
+
+#define SPL06_MEAS_CFG_COEF_RDY 0x80
+#define SPL06_MEAS_CFG_SENSOR_RDY 0x40
+#define SPL06_MEAS_CFG_TMP_RDY 0x20
+#define SPL06_MEAS_CFG_PRS_RDY 0x10
+
+#define SPL06_MEAS_CTRL_STOP 0x00
+#define SPL06_MEAS_CTRL_CONTINUOUS_PRESSURE 0x05
+#define SPL06_MEAS_CTRL_CONTINUOUS_TEMPERATURE 0x06
+#define SPL06_MEAS_CTRL_CONTINUOUS_BOTH 0x07
+
+#define SPL06_CFG_T_SHIFT 0x08
+#define SPL06_CFG_P_SHIFT 0x04
+#define SPL06_CFG_FIFO_EN 0x02
+
+#define SPL06_RESET_SOFT_RST 0x09
+
+#define SPL06_CHIP_ID 0x10
+#define SPL06_CALIB_DATA_SIZE 18
+
+struct spl06_calib_param
+{
+	short c0;
+	short c1;
+	int c00;
+	int c10;
+	short c01;
+	short c11;
+	short c20;
+	short c21;
+	short c30;
+};
+
+struct spl06_baro_priv
+{
+	struct spl06_calib_param calib_param;
+	float pressure_scale_factor;
+	float temperature_scale_factor;
+	float compensated_temperature;
+	float compensated_pressure;
+};
+
+#define SPL06_GET_PRIV(x) ((struct spl06_baro_priv*)x)
+
+int spl06_prob(struct bus_dev *dev);
+
+#endif

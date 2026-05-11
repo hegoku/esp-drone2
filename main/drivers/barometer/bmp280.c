@@ -44,6 +44,28 @@ unsigned int bmp280_compensate_P_int64(int adc_P, int t_fine, struct bmp2_calib_
 	return (unsigned int)p;
 }
 
+// Bosch reference double-precision pressure compensation. Returns pressure in Pa.
+double bmp280_compensate_P_double(int adc_P, int t_fine, struct bmp2_calib_param *calib_param)
+{
+	double var1, var2, p;
+	var1 = ((double)t_fine / 2.0) - 64000.0;
+	var2 = var1 * var1 * ((double)calib_param->dig_p6) / 32768.0;
+	var2 = var2 + var1 * ((double)calib_param->dig_p5) * 2.0;
+	var2 = (var2 / 4.0) + (((double)calib_param->dig_p4) * 65536.0);
+	var1 = (((double)calib_param->dig_p3) * var1 * var1 / 524288.0
+		+ ((double)calib_param->dig_p2) * var1) / 524288.0;
+	var1 = (1.0 + var1 / 32768.0) * ((double)calib_param->dig_p1);
+	if (var1 == 0.0) {
+		return 0.0;
+	}
+	p = 1048576.0 - (double)adc_P;
+	p = (p - (var2 / 4096.0)) * 6250.0 / var1;
+	var1 = ((double)calib_param->dig_p9) * p * p / 2147483648.0;
+	var2 = p * ((double)calib_param->dig_p8) / 32768.0;
+	p = p + (var1 + var2 + ((double)calib_param->dig_p7)) / 16.0;
+	return p;
+}
+
 int bmp280_read(struct bus_dev *dev, unsigned char reg_addr, unsigned char *data, int len) {
 	return spi_read(dev, reg_addr, data, len);
 }

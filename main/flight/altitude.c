@@ -4,8 +4,15 @@
 #include "misc/geo.h"
 #include "math/matrix.h"
 
+#define ALTITUDE_DEFAULT_BARO_VARIANCE 0.10f
+#define ALTITUDE_DEFAULT_ACCEL_NOISE 0.50f
+#define ALTITUDE_DEFAULT_BIAS_NOISE 0.03f
+
 struct altitude_kalman_filter_param {
 	float dt;
+	float gravity;
+	float accel_noise;
+	float bias_noise;
 	float prior_x[3][1];
 	float x_hat[3][1];
 	float prior_P[3][3];
@@ -21,11 +28,14 @@ struct altitude_kalman_filter_param {
 
 struct altitude_kalman_filter_param f = {
 	.dt=0.001,
+	.gravity=CONSTANTS_ONE_G,
+	.accel_noise=ALTITUDE_DEFAULT_ACCEL_NOISE,
+	.bias_noise=ALTITUDE_DEFAULT_BIAS_NOISE,
 	.A={{0,0,0}, {0,0,0}, {0,0,0} },
 	.prior_x={{0}, {0},{0}},
 	.x_hat={{0}, {0},{0}},
 	.prior_P={{0,0,0}, {0,0,0}, {0,0,0}},
-	.R={{10.0f}},
+	.R={{ALTITUDE_DEFAULT_BARO_VARIANCE}},
 	.P={{100.0f, 0.0f, 0}, {0.0f, 100.0f,0}, {0,0,100.0f}},
 	.H={{1.0f,0,0}},
 	.Q={{0,0,0}, {0,0,0}, {0,0,0}},
@@ -34,29 +44,38 @@ struct altitude_kalman_filter_param f = {
 
 void altitude_kalman_filter(float accel, float height, struct altitude_kalman_filter_param *filter)
 {
+	float dt2 = filter->dt * filter->dt;
+	float dt3 = dt2 * filter->dt;
+	float dt4 = dt2 * dt2;
+	float accel_variance = filter->accel_noise * filter->accel_noise;
+	float bias_variance = filter->bias_noise * filter->bias_noise;
 	float A_T[3][3] = {0};
 	float H_T[3][1] = {0};
 	filter->A[0][0] = 1.0f;
 	filter->A[0][1] = filter->dt;
-	filter->A[0][2] = -0.5f*filter->dt*filter->dt;
+	filter->A[0][2] = -0.5f*dt2;
 	filter->A[1][1] = 1.0f;
 	filter->A[1][2] = -filter->dt;
 	filter->A[2][2] = 1.0f;
 	matrix_t(*(filter->A), 3,3, *A_T);
 	matrix_t(*(filter->H), 1, 3, *H_T);
 
-	filter->G[0][0] = 0.5f*filter->dt*filter->dt;
+	filter->G[0][0] = 0.5f*dt2;
 	filter->G[1][0] = filter->dt;
 
-	filter->Q[0][0] = 0.25f*filter->dt*filter->dt*filter->dt*filter->dt;
-	filter->Q[0][1] = 0.5f*filter->dt*filter->dt*filter->dt;
-	filter->Q[1][0] = 0.25f*filter->dt*filter->dt*filter->dt;
-	filter->Q[1][1] = filter->dt*filter->dt;
-	filter->Q[2][2] = filter->dt*0.01;
+	filter->Q[0][0] = 0.25f * dt4 * accel_variance;
+	filter->Q[0][1] = 0.5f * dt3 * accel_variance;
+	filter->Q[0][2] = 0.0f;
+	filter->Q[1][0] = filter->Q[0][1];
+	filter->Q[1][1] = dt2 * accel_variance;
+	filter->Q[1][2] = 0.0f;
+	filter->Q[2][0] = 0.0f;
+	filter->Q[2][1] = 0.0f;
+	filter->Q[2][2] = filter->dt * bias_variance;
 
-	accel-=CONSTANTS_ONE_G;
+	accel-=filter->gravity;
 
-	filter->G[0][0] = 0.5f*filter->dt*filter->dt*accel;
+	filter->G[0][0] = 0.5f*dt2*accel;
 	filter->G[1][0] = filter->dt*accel;
 
 	float tmp2[3][3] = {0};
@@ -147,4 +166,29 @@ void calculate_altitude()
 	if (IS_BARO_DTRY(flight.baro)) {
 		// flight.altitude = flight.baro.altitude;
 	}
+}
+
+float altitude_get_gravity()
+{
+	return f.gravity;
+}
+
+float altitude_get_accel_bias()
+{
+	return f.x_hat[2][0];
+}
+
+float altitude_get_k_altitude()
+{
+	return f.K[0][0];
+}
+
+float altitude_get_k_velocity()
+{
+	return f.K[1][0];
+}
+
+float altitude_get_k_accel_bias()
+{
+	return f.K[2][0];
 }
