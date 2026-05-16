@@ -2,6 +2,5 @@
 #define TASK_LOG_H
 
 void flight_log_task();
-void wifi_task();
 
 #endif

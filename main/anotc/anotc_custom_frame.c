@@ -33,17 +33,19 @@ void anotc_send_pid()
 	} else if (pid_log_type==2) {
 		type=PID_YAW;
 	}
-	anotc_add_short(&frame, (short)(flight.imu.accel.value.x*100));
-	anotc_add_short(&frame, (short)(flight.imu.accel.value.y*100));
-	anotc_add_short(&frame, (short)(flight.imu.accel.value.z*100));
+	anotc_add_uint(&frame, (unsigned int)(flight.system_info.time/1000ULL));
+
+	anotc_add_float(&frame, flight.imu.accel.value.x);
+	anotc_add_float(&frame, flight.imu.accel.value.y);
+	anotc_add_float(&frame, flight.imu.accel.value.z);
 
 	frame.data[frame.len++] = (char)(flight.attitude.roll);
 	frame.data[frame.len++] = (char)(flight.attitude.pitch);
 	frame.data[frame.len++] = (char)(flight.attitude.yaw);
 
-	anotc_add_short(&frame, (short)(flight.imu.gyro.value.x));
-	anotc_add_short(&frame, (short)(flight.imu.gyro.value.y));
-	anotc_add_short(&frame, (short)(flight.imu.gyro.value.z));
+	anotc_add_float(&frame, flight.imu.gyro.value.x);
+	anotc_add_float(&frame, flight.imu.gyro.value.y);
+	anotc_add_float(&frame, flight.imu.gyro.value.z);
 
 	anotc_add_ushort(&frame, (unsigned short)(flight.setpoints.throttle*1000));
 	frame.data[frame.len++] = (char)(flight.setpoints.roll);

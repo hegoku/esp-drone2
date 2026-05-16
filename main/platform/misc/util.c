@@ -1,7 +1,6 @@
 #include <freertos/FreeRTOS.h>
-#include <sys/time.h>
 #include "misc/util.h"
-#include <stdio.h>
+#include "esp_timer.h"
 
 void delay_ms(unsigned int ms)
 {
@@ -10,7 +9,10 @@ void delay_ms(unsigned int ms)
 
 unsigned int get_timestamp_ms()
 {
-	struct timeval time;
-	gettimeofday(&time, NULL);
-	return time.tv_sec * 1000 + time.tv_usec / 1000;
+	return (uint32_t)(esp_timer_get_time() / 1000ULL);
+}
+
+unsigned long long get_timestamp_us()
+{
+    return esp_timer_get_time();
 }

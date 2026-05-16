@@ -1,6 +1,7 @@
 #include "anotc/anotc.h"
 #include "anotc/anotc_config_frame.h"
 #include "anotc/anotc_cmd_frame.h"
+#include "anotc/anotc_data_analysis.h"
 
 enum anotc_decode_status
 {
@@ -87,6 +88,9 @@ void anotc_decode(unsigned char *data, int count)
 						break;
 					case ANOTC_FRAME_CMD_SEND:
 						anotc_cmd_frame_send_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
+						break;
+					case ANOTC_FRAME_DATA_ANALYSIS_LIST_CMD:
+						anotc_data_analytics_frame_cmd_handler(&_decode_data.frame, _decode_data.sum_check, _decode_data.add_check);
 						break;
 					default:
 						break;

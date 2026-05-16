@@ -1,4 +1,5 @@
 #include <string.h>
+#include <errno.h>
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <lwip/err.h>
@@ -10,42 +11,43 @@
 #include <freertos/event_groups.h>
 #include <esp_log.h>
 #include <esp_system.h>
+#include <esp_timer.h>
 #include "platform/drivers/wifi.h"
 #include "misc/config.h"
 
-#define WIFI_BUFFER_LEN 3000
-struct wifi_buffer {
-	unsigned char buf[WIFI_BUFFER_LEN];
-	int head;
-	int tail;
-};
+static const char *TAG = "Wifi";
+static const int CONNECTED_BIT = BIT0;
 
 static char wifi_name[32];
 static char wifi_password[64];
 static unsigned short udp_port;
 
-static const char *TAG = "Wifi";
-static const int CONNECTED_BIT = BIT0;
 static wifi_config_t wifi_config;
-static struct sockaddr_storage source_addr;
-static struct sockaddr_in addr_board;
-static EventGroupHandle_t wifi_event_group;
-static esp_netif_t *sta_netif = NULL;
-
-static int sock;
 static wifi_ap_record_t wifidata;
 
 static int is_wifi_init = 0;
 static int is_udp_init = 0;
 
+static struct sockaddr_storage source_addr;
+static struct sockaddr_in addr_board;
+static struct sockaddr_in peer_addr;
+static int peer_valid = 0;
+
+static int sock;
+
+static EventGroupHandle_t wifi_event_group;
+static esp_netif_t *sta_netif = NULL;
+
 static QueueHandle_t txQueue;
 static QueueHandle_t rxQueue;
-static struct wifi_pack inPack;
-static struct wifi_buffer tx_buffer;
 
 static void (*upd_revc_handler)(unsigned char *data, int len);
 
 static char rx_buffer[128];
+static struct wifi_pack inPack;
+
+static TaskHandle_t wifi_tx_task_handle = NULL;
+static esp_timer_handle_t wifi_tx_timer = NULL;
 
 void wifi_set_name(char *name)
 {
@@ -160,6 +162,8 @@ static void udp_server_task(void *pvParameters)
 				memcpy(inPack.data, rx_buffer, len);
 				xQueueSend(rxQueue, &inPack, pdMS_TO_TICKS(2));
 				// Get the sender's ip address as string
+				memcpy(&peer_addr, &source_addr, sizeof(source_addr));
+				peer_valid = 1;
 				if (source_addr.ss_family == PF_INET) {
                     inet_ntoa_r(((struct sockaddr_in *)&source_addr)->sin_addr, addr_str, sizeof(addr_str) - 1);
                 } else if (source_addr.ss_family == PF_INET6) {
@@ -191,11 +195,24 @@ void wifi_rx_task(void *param)
 	}
 }
 
+void wifi_tx_task(void *param)
+{
+	for (;;) {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        wifi_flush();
+    }
+}
+
+static void wifi_tx_timer_cb(void *arg)
+{
+    if (wifi_tx_task_handle != NULL) {
+        xTaskNotifyGive(wifi_tx_task_handle);
+    }
+}
+
 int init_wifi()
 {
 	upd_revc_handler = 0;
-	tx_buffer.head = 0;
-	tx_buffer.tail = 0;
 	config_read_string("wifi_name", wifi_name);
 	config_read_string("wifi_pwd", wifi_password);
 	config_read_ushort("wifi_udp_port", &udp_port);
@@ -206,7 +223,7 @@ int init_wifi()
 
 	addr_board.sin_len = 6;
 	addr_board.sin_family = AF_INET;
-	addr_board.sin_addr.s_addr=htonl(INADDR_BROADCAST);//套接字地址为广播地址
+	addr_board.sin_addr.s_addr=htonl(INADDR_BROADCAST);
 	addr_board.sin_port=htons(udp_port);
 
     ESP_ERROR_CHECK(esp_netif_init());
@@ -226,12 +243,25 @@ int init_wifi()
     ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
 
-	xTaskCreate(udp_server_task, "udp_server", 4096, (void*)AF_INET, 7, NULL);
-
-	txQueue = xQueueCreate(100, sizeof(struct wifi_pack));
+	txQueue = xQueueCreate(150, sizeof(struct wifi_pack));
 	rxQueue = xQueueCreate(10, sizeof(struct wifi_pack));
-	// xTaskCreatePinnedToCore(wifiTxTask, "wifi-tx", 2048 * 2, NULL, 5, NULL, 0);
-	xTaskCreate(wifi_rx_task, "wifi-rx", 2048 * 2, NULL, 6, NULL);
+
+	xTaskCreate(udp_server_task, "udp_server", 1024*3, (void*)AF_INET, 7, NULL);
+
+	xTaskCreatePinnedToCore(wifi_tx_task, "wifi-tx", 1024*3, NULL, 5,
+                        &wifi_tx_task_handle, 0);
+
+	const esp_timer_create_args_t wifi_tx_timer_args = {
+		.callback = &wifi_tx_timer_cb,
+		.arg = NULL,
+		.dispatch_method = ESP_TIMER_TASK,
+		.name = "wifi_tx_timer"
+	};
+
+	ESP_ERROR_CHECK(esp_timer_create(&wifi_tx_timer_args, &wifi_tx_timer));
+	ESP_ERROR_CHECK(esp_timer_start_periodic(wifi_tx_timer, 5000));
+
+	xTaskCreate(wifi_rx_task, "wifi-rx", 2048, NULL, 6, NULL);
 	return 0;
 }
 
@@ -251,34 +281,82 @@ void wifi_set_recv_handler(void (*handler)(unsigned char *data, int len))
 
 void wifi_send(unsigned char *data, int len)
 {
-	if (tx_buffer.tail+len<=WIFI_BUFFER_LEN) {
-		memcpy(tx_buffer.buf + tx_buffer.tail, data, len);
-		tx_buffer.tail += len;
-	} else {
-		if (wifi_flush()==0) {
-			memcpy(tx_buffer.buf + tx_buffer.tail, data, len);
-			tx_buffer.tail += len;
-		} else {
-			ESP_LOGI("Wifi", "buff full");
-		}
-		
-	}
-	if (tx_buffer.tail>WIFI_BUFFER_LEN*0.93) {
-		wifi_flush();
-	}
+    if (data == NULL || len <= 0 || txQueue == NULL) {
+        return;
+    }
+
+    if (len > WIFI_PACK_MAX_LEN) {
+        return;
+    }
+
+    struct wifi_pack p;
+    p.size = len;
+    memcpy(p.data, data, len);
+
+    if (xQueueSend(txQueue, &p, 0) != pdTRUE) {
+		ESP_LOGW(TAG, "txQueue full");
+        // When TX queue is full, then drop old data and put the new one
+        struct wifi_pack old;
+        xQueueReceive(txQueue, &old, 0);
+        xQueueSend(txQueue, &p, 0);
+    }
 }
 
-int wifi_flush()
+#define WIFI_TX_DATAGRAM_MAX 1024
+static unsigned char out[WIFI_TX_DATAGRAM_MAX];
+
+int wifi_flush(void)
 {
-	int error = 0;
-	if (tx_buffer.tail > 0)
-	{
-		error = sendto(sock, tx_buffer.buf, tx_buffer.tail, 0, (struct sockaddr *)&addr_board, sizeof(addr_board));
-		if (error<0) {
-			ESP_LOGI("Wifi", "%d", error);
-		} else {
-			tx_buffer.tail = 0;
-		}
+    if (!is_udp_init || sock < 0 || txQueue == NULL) {
+        return -1;
+    }
+    
+    int out_len = 0;
+    struct wifi_pack p;
+
+    while (xQueuePeek(txQueue, &p, 0) == pdTRUE) {
+        if (p.size <= 0 || p.size > WIFI_PACK_MAX_LEN) {
+            xQueueReceive(txQueue, &p, 0);
+            continue;
+        }
+
+        if (p.size > WIFI_TX_DATAGRAM_MAX) {
+            xQueueReceive(txQueue, &p, 0);
+            continue;
+        }
+
+        if (out_len > 0 && out_len + p.size > WIFI_TX_DATAGRAM_MAX) {
+            break;
+        }
+
+        xQueueReceive(txQueue, &p, 0);
+
+        memcpy(out + out_len, p.data, p.size);
+        out_len += p.size;
+
+        if (out_len >= WIFI_TX_DATAGRAM_MAX) {
+            break;
+        }
+    }
+
+    if (out_len == 0) {
+        return 0;
+    }
+
+	int ret = 0;
+	if (peer_valid) {
+		ret = sendto(sock, out, out_len, 0,
+                     (struct sockaddr *)&peer_addr,
+                     sizeof(peer_addr));
+	} else {
+		ret = sendto(sock, out, out_len, 0,
+                     (struct sockaddr *)&addr_board,
+                     sizeof(addr_board));
 	}
-	return error>0?0:error;
+    
+	if (ret<0) {
+		int err = errno;
+		ESP_LOGW(TAG, "%d %s", err, strerror(err));
+	}
+    return ret >= 0 ? 0 : ret;
 }

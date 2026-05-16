@@ -11,14 +11,12 @@
 #include "flight/flight.h"
 #include "task/task.h"
 #include "misc/config.h"
+#include "misc/util.h"
 #include "platform/drivers/wifi.h"
 #include "platform/drivers/anotc_wifi.h"
 #include "anotc/anotc_official_frame.h"
 
 QueueHandle_t sys_timer_queue;
-QueueHandle_t log_task_queue;
-struct timeval sys_timer_time;
-struct timeval finish_loop;
 
 int anotc_log(const char * format, va_list arg)
 {
@@ -40,29 +38,18 @@ void main_loop(void *p)
 {
 	int a;
 	int b = 0;
+	unsigned long long finish_time = 0;
 	for (;;)
 	{
 		if (xQueueReceive(sys_timer_queue, &(a), portMAX_DELAY)){
-			gettimeofday(&sys_timer_time, NULL);
+			flight.system_info.time = get_timestamp_us();
 			flight_read_data();
 			flight_update();
 			flight_control();
-			gettimeofday(&finish_loop, NULL);
-			flight.system_info.cpu_load = (unsigned char)((((float)finish_loop.tv_sec) + ((float)finish_loop.tv_usec) / 1000000.0 - ((float)sys_timer_time.tv_sec) - ((float)sys_timer_time.tv_usec) / 1000000.0) * ((float)(sys_timer_get()->freq)) * 100.0);
-			xQueueSend(log_task_queue, &a, 0);
-			b = ~b;
-		}
-	}
-}
-
-void log_t(void *p)
-{
-	int a;
-	for (;;)
-	{
-		if (xQueueReceive(log_task_queue, &(a), portMAX_DELAY)){
 			flight_log_task();
-			wifi_task();
+			finish_time = get_timestamp_us();
+			flight.system_info.cpu_load = (unsigned char)((float)(finish_time - flight.system_info.time) / 1000000.0f * (float)(sys_timer_get()->freq) * 100.0);
+			b = ~b;
 		}
 	}
 }
@@ -84,10 +71,7 @@ void app_main(void)
 	init_flight();
 
 	sys_timer_queue = xQueueCreate(5, sizeof( int ));
-	xTaskCreatePinnedToCore(main_loop, "main_loop", 1024*4, NULL, 20, NULL, 1);
-
-	log_task_queue = xQueueCreate(5, sizeof( int ));
-	xTaskCreatePinnedToCore(log_t, "log_task", 1024*4, NULL, 5, NULL, 0);
+	xTaskCreatePinnedToCore(main_loop, "main_loop", 1024*6, NULL, 20, NULL, 1);
 
 	sys_timer_start();
 }

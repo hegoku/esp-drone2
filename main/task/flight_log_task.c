@@ -3,6 +3,7 @@
 #include "anotc/anotc_custom_frame.h"
 #include "flight/flight.h"
 #include "task/task.h"
+#include "anotc/anotc_data_analysis.h"
 
 struct s_log_task {
 	unsigned int time;
@@ -63,7 +64,7 @@ static struct s_log_task log_task_list[] = {
 	{.time=5, .func=send_flight_attitude},
 	{.time=100, .func=send_system_info},
 	{.time=16, .func=send_motor},
-	{.time=5, .func=send_pid},
+	{.time=1, .func=send_pid},
 };
 
 static unsigned int log_task_timer = 0;
@@ -77,6 +78,9 @@ void flight_log_task()
 				log_task_list[i].func();
 			}
 		}
+		// if ((flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE) && log_task_timer%da_send_interval_ms==0) {
+		// 	anotc_send_data_analytics();
+		// }
 	}
 	log_task_timer++;
 }

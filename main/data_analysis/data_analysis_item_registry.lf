@@ -1,0 +1,13 @@
+[sections:data_analysis_item_ptr]
+entries:
+    .data_analysis_item_ptr+
+
+[scheme:data_analysis_item_ptr]
+entries:
+    data_analysis_item_ptr -> flash_rodata
+
+[mapping:main]
+archive: libmain.a
+entries:
+    * (data_analysis_item_ptr);
+        data_analysis_item_ptr -> flash_rodata KEEP() SORT() ALIGN(4) SURROUND(data_analysis_item)

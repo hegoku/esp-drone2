@@ -66,10 +66,10 @@ void mpu6500_init(struct bus_dev *dev, unsigned int id)
 	delay_ms(100);
 	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0x1);
 	delay_ms(15);
-	mpu6500_write_reg_byte(dev, MPU6050_REG_SMPLRT_DIV, 0x07);	// 陀螺采样, 1000HZ
-	mpu6500_write_reg_byte(dev, MPU6050_REG_CONFIG, 0x00);		// 低通滤波
+	mpu6500_write_reg_byte(dev, MPU6050_REG_SMPLRT_DIV, 0x00);	// 陀螺采样, 1000HZ
+	mpu6500_write_reg_byte(dev, MPU6050_REG_CONFIG, 0x01);		// 低通滤波
 	mpu6500_write_reg_byte(dev, MPU6050_REG_ACCEL_CONFIG, 0x18); // 加速度传感器 16g
-	mpu6500_write_reg_byte(dev, MPU6050_REG_ACCEL_CONFIG2, 0x00); // 加速度滤波
+	mpu6500_write_reg_byte(dev, MPU6050_REG_ACCEL_CONFIG2, 0x02); // 加速度滤波
 	mpu6500_write_reg_byte(dev, MPU6050_REG_GYRO_CONFIG, 0x18);	// 陀螺椅传感器 2000deg/s
 	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_2, 0x00);	// xyz不进入待机
 	mpu6500_write_reg_byte(dev, MPU6050_REG_INT_PIN_CFG, 0x90);	// 低电平触发

@@ -55,6 +55,7 @@ struct flight {
 	struct {
 		unsigned char drone_center_connect;
 		unsigned char cpu_load;
+		unsigned long long time;
 	} system_info;
 
 	enum flight_status status;
