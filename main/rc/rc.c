@@ -1,3 +1,4 @@
+#include <math.h>
 #include "rc/rc.h"
 #include "flight/flight.h"
 #include "misc/config.h"
@@ -12,6 +13,8 @@ struct rc_cmd {
 	unsigned short min;
 	unsigned short max;
 };
+
+static short rc_deadband = 5;
 
 void init_rc()
 {
@@ -34,6 +37,19 @@ void init_rc()
 
 #include "rc_cmd_list.c"
 
+inline static short apply_deadband(short rc, short deadband)
+{
+    if (abs(rc) < deadband) {
+        return 0;
+    }
+
+    if (rc > 0) {
+        return rc - deadband;
+    } else {
+        return rc + deadband;
+    }
+}
+
 void rc_input(struct rc *rc)
 {
 	rc->protocol->read(rc);
@@ -42,6 +58,10 @@ void rc_input(struct rc *rc)
 		rc->roll = constrain(flight.rc.channel[0] - 1500, -500, 500);
 		rc->pitch = constrain(flight.rc.channel[1] - 1500,-500, 500);
 		rc->yaw = constrain(flight.rc.channel[3] - 1500, -500, 500);
+
+		rc->roll = apply_deadband(rc->roll, rc_deadband);
+		rc->pitch = apply_deadband(rc->pitch, rc_deadband);
+		rc->yaw = apply_deadband(rc->yaw, rc_deadband);
 
 		for (int i = 0; i < sizeof(rc_cmd_list)/sizeof(struct rc_cmd);i++) {
 			if (rc->channel[rc_cmd_list[i].channel]>=rc_cmd_list[i].min && rc->channel[rc_cmd_list[i].channel]<=rc_cmd_list[i].max) {

@@ -1,39 +1,61 @@
 #include <string.h>
-#include "drivers/imu/mpu6050.h"
 #include "drivers/imu/mpu6500.h"
 #include "sensors/imu.h"
 #include "flight/flight.h"
 #include "misc/util.h"
 #include "bus/spi.h"
+#include "bus/i2c.h"
 #include <stdio.h>
 
-int mpu6500_write_reg_byte(struct bus_dev *dev, unsigned char reg, unsigned char byte)
+struct reg_io_ops {
+  	int (*read)(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int len);
+  	int (*write)(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int len);
+};
+
+static struct reg_io_ops mpu6500_i2c_ops = {
+	.read = i2c_read,
+	.write = i2c_write
+};
+
+static struct reg_io_ops mpu6500_spi_ops = {
+	.read = spi_read,
+	.write = spi_write
+};
+
+int mpu6500_write_reg_byte(struct bus_dev *dev, struct reg_io_ops *ops, unsigned char reg, unsigned char byte)
 {
 	unsigned char buf = byte;
-	return spi_write(dev, reg, &buf, 1);
+	return ops->write(dev, reg, &buf, 1);
+	// return spi_write(dev, reg, &buf, 1);
 }
 
-int mpu6500_read_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
+int mpu6500_read_reg(struct bus_dev *dev, struct reg_io_ops *ops, unsigned char reg, unsigned char *buf, int bytes)
 {
-	return spi_read(dev, reg, buf, bytes);
+	// return spi_read(dev, reg, buf, bytes);
+	return ops->read(dev, reg, buf, bytes);
 }
 
-int mpu6500_write_reg(struct bus_dev *dev, unsigned char reg, unsigned char *buf, int bytes)
+int mpu6500_write_reg(struct bus_dev *dev, struct reg_io_ops *ops, unsigned char reg, unsigned char *buf, int bytes)
 {
-	return spi_write(dev, reg, buf, bytes);
+	// return spi_write(dev, reg, buf, bytes);
+	return ops->write(dev, reg, buf, bytes);
 }
 
-unsigned char mpu6500_who_am_i(struct bus_dev *dev)
+unsigned char mpu6500_who_am_i(struct bus_dev *dev, struct reg_io_ops *ops)
 {
 	unsigned char buf;
-	mpu6500_read_reg(dev, MPU6050_REG_WHO_AM_I, &buf, 1);
+	mpu6500_read_reg(dev, ops, MPU6500_REG_WHO_AM_I, &buf, 1);
 	return buf;
 }
 
 int mpu6500_sensor_read(struct imu_sensor *sensor)
 {
 	unsigned char buf[14];
-	mpu6500_read_reg(sensor->dev, MPU6050_REG_ACCEL_XOUT_H, buf, 14);
+	if (sensor->priv==NULL) {
+		return -1;
+	}
+	struct reg_io_ops *ops = (struct reg_io_ops *)sensor->priv;
+	mpu6500_read_reg(sensor->dev, ops, MPU6500_REG_ACCEL_XOUT_H, buf, 14);
 	sensor->accel.raw.x = (((short)buf[0] << 8) | buf[1]);
 	sensor->accel.raw.y = (((short)buf[2] << 8) | buf[3]);
 	sensor->accel.raw.z = (((short)buf[4] << 8) | buf[5]);
@@ -44,52 +66,70 @@ int mpu6500_sensor_read(struct imu_sensor *sensor)
 
 	sensor->temperature.raw = (((short)buf[6] << 8) | buf[7]);
 
-	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / MPU6050_ACCEL_RESOLUTION_16;
-	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / MPU6050_ACCEL_RESOLUTION_16;
-	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / MPU6050_ACCEL_RESOLUTION_16;
+	sensor->accel.unfiltered.x = ((float)sensor->accel.raw.x) / MPU6500_ACCEL_RESOLUTION_16;
+	sensor->accel.unfiltered.y = ((float)sensor->accel.raw.y) / MPU6500_ACCEL_RESOLUTION_16;
+	sensor->accel.unfiltered.z = ((float)sensor->accel.raw.z) / MPU6500_ACCEL_RESOLUTION_16;
 
-	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / MPU6050_GYRO_RESOLUTION_2000;
-	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6050_GYRO_RESOLUTION_2000;
-	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6050_GYRO_RESOLUTION_2000;
+	sensor->gyro.unfiltered.x = ((float)sensor->gyro.raw.x) / MPU6500_GYRO_RESOLUTION_2000;
+	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6500_GYRO_RESOLUTION_2000;
+	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6500_GYRO_RESOLUTION_2000;
 
 	sensor->temperature.value = 21.0f + ((float)sensor->temperature.raw) / 333.87f;
 	return 0;
 }
 
-void mpu6500_init(struct bus_dev *dev, unsigned int id)
+void mpu6500_init(struct bus_dev *dev, unsigned int id, struct reg_io_ops *ops)
 {
-	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0x80);
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_PWR_MGMT_1, 0x80);
 	delay_ms(100);
-	mpu6500_write_reg_byte(dev, MPU6050_REG_SIGNAL_PATH_RESET, 0x7);
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_SIGNAL_PATH_RESET, 0x7);
 	delay_ms(100);
-	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0);
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_PWR_MGMT_1, 0);
 	delay_ms(100);
-	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_1, 0x1);
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_PWR_MGMT_1, 0x1);
 	delay_ms(15);
-	mpu6500_write_reg_byte(dev, MPU6050_REG_SMPLRT_DIV, 0x00);	// 陀螺采样, 1000HZ
-	mpu6500_write_reg_byte(dev, MPU6050_REG_CONFIG, 0x01);		// 低通滤波
-	mpu6500_write_reg_byte(dev, MPU6050_REG_ACCEL_CONFIG, 0x18); // 加速度传感器 16g
-	mpu6500_write_reg_byte(dev, MPU6050_REG_ACCEL_CONFIG2, 0x02); // 加速度滤波
-	mpu6500_write_reg_byte(dev, MPU6050_REG_GYRO_CONFIG, 0x18);	// 陀螺椅传感器 2000deg/s
-	mpu6500_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_2, 0x00);	// xyz不进入待机
-	mpu6500_write_reg_byte(dev, MPU6050_REG_INT_PIN_CFG, 0x90);	// 低电平触发
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_SMPLRT_DIV, 0x00);	// gyro sampling rate 1000HZ
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_CONFIG, 0x01);		// low pass filter
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_ACCEL_CONFIG, 0x18); // accel 16g
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_ACCEL_CONFIG2, 0x02); // accel filter
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_GYRO_CONFIG, 0x18);	// gyro 2000deg/s
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_PWR_MGMT_2, 0x00);	//not sleep
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_INT_PIN_CFG, 0x90);	//low level trigger
 	flight.imu.name = "MPU6500";
 	dev->name = "MPU6500";
 	flight.imu.dev = dev;
 	flight.imu.read = mpu6500_sensor_read;
+	flight.imu.priv = (void *)ops;
 
 	flight.imu.status = IMU_STATUS_ON;
 	flight.imu.freq = 1000;
-	mpu6500_write_reg_byte(dev, MPU6050_REG_INT_ENABLE, 0x01);	// 开中断
+	mpu6500_write_reg_byte(dev, ops, MPU6500_REG_INT_ENABLE, 0x01);
 }
 
 int mpu6500_spi_prob(struct bus_dev *dev)
 {
-	unsigned char id = mpu6500_who_am_i(dev);
+	unsigned char id = mpu6500_who_am_i(dev, &mpu6500_spi_ops);
 	if (id != MPU6500_WHOAMI_VALUE) {
 		return -1;
 	}
 
-	mpu6500_init(dev, id);
+	mpu6500_init(dev, id, &mpu6500_spi_ops);
 	return 0;
+}
+
+int mpu6500_i2c_prob(struct bus_dev *dev)
+{
+	unsigned char id;
+	for (int i = MPU6500_I2C_ADDRESS1; i <= MPU6500_I2C_ADDRESS2; i++)
+	{
+		dev->address = i<<1;
+		id = mpu6500_who_am_i(dev, &mpu6500_i2c_ops);
+		if (id != MPU6500_WHOAMI_VALUE)
+			continue;
+
+		mpu6500_init(dev, id, &mpu6500_i2c_ops);
+		return 0;
+	}
+
+	return -1;
 }
