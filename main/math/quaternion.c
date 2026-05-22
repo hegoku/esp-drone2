@@ -57,14 +57,18 @@ void quat_from_vector(float mat1[3], float mat2[3], struct quaternion *res)
 	res->q3 = sin_half_angle * cross[2];
 }
 
-void quat_product(struct quaternion *q1, struct quaternion *q2)
+void quat_product(struct quaternion *q1, struct quaternion *q2, struct quaternion *res)
 {
 	struct quaternion m;
 	m.q0 = q1->q0*q2->q0 - q1->q1*q2->q1 - q1->q2*q2->q2 - q1->q3*q2->q3;
 	m.q1 = q1->q1*q2->q0 + q1->q0*q2->q1 - q1->q3*q2->q2 + q1->q2*q2->q3;
 	m.q2 = q1->q2*q2->q0 + q1->q3*q2->q1 + q1->q0*q2->q2 - q1->q1*q2->q3;
 	m.q3 = q1->q3*q2->q0 - q1->q2*q2->q1 + q1->q1*q2->q2 + q1->q0*q2->q3;
-	memcpy(q1, &m, sizeof(struct quaternion));
+	if (res==0) {
+		memcpy(q1, &m, sizeof(struct quaternion));
+	} else {
+		memcpy(res, &m, sizeof(struct quaternion));
+	}
 }
 
 void quat_inverse(struct quaternion *q, struct quaternion *res)
@@ -117,8 +121,8 @@ void quat_rotate_vector(struct quaternion *q, struct quaternion *vector, struct 
 	res->q2 = q->q2;
 	res->q3 = q->q3;
 	quat_inverse(q, &q_inv);
-	quat_product(res, vector);
-	quat_product(res, &q_inv);
+	quat_product(res, vector, 0);
+	quat_product(res, &q_inv, 0);
 }
 
 void quat_rotate_vector_inverse(struct quaternion *q, struct quaternion *vector, struct quaternion *res)
@@ -129,6 +133,6 @@ void quat_rotate_vector_inverse(struct quaternion *q, struct quaternion *vector,
 	res->q1 = q_inv.q1;
 	res->q2 = q_inv.q2;
 	res->q3 = q_inv.q3;
-	quat_product(res, vector);
-	quat_product(res, q);
+	quat_product(res, vector, 0);
+	quat_product(res, q, 0);
 }

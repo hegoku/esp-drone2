@@ -1,7 +1,7 @@
 #ifndef FLIGHT_CONTROL_H
 #define FLIGHT_CONTROL_H
 
-#include "misc/pid.h"
+#include "controllers/pid.h"
 
 #define PID_ROLL 0
 #define PID_PITCH 1

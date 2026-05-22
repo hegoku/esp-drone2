@@ -1,6 +1,6 @@
 #include <math.h>
 #include "flight/control.h"
-#include "misc/pid.h"
+#include "controllers/pid.h"
 #include "misc/config.h"
 #include "clocksource/clocksource.h"
 #include "flight/flight.h"

@@ -18,10 +18,11 @@ idf_component_register(
 		"rc/rc.c" "rc/ibus.c" "rc/pc.c"
 		"flight/flight.c" "flight/attitude.c" "flight/altitude.c" "flight/control.c"
 		"attitude/MahonyAHRS.c"
+		"controllers/pid.c" "controllers/angle_q_pid.c"
 		"clocksource/clocksource.c"
 		"math/matrix.c" "math/math.c" "math/quaternion.c"
 		"anotc/anotc.c" "anotc/anotc_other_frame.c" "anotc/anotc_rec_frame.c" "anotc/anotc_decode.c" "anotc/anotc_flight_frame.c" "anotc/anotc_control_frame.c" "anotc/anotc_rec_cmd_frame.c" "anotc/anotc_config_frame.c" "anotc/anotc_custom_config.c" "anotc/anotc_custom_cmd.c" "anotc/anotc_custom_frame.c" "anotc/anotc_data_analysis.c"
-		"misc/low_pass_filter_2p.c" "misc/config.c" "misc/pid.c" "misc/notch_filter.c"
+		"misc/low_pass_filter_2p.c" "misc/config.c" "misc/notch_filter.c"
 		"task/flight_log_task.c"
 		"data_analysis/data_analysis.h"
 

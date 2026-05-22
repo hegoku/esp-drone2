@@ -1,5 +1,5 @@
 #include <math.h>
-#include "misc/pid.h"
+#include "controllers/pid.h"
 
 void pid_init(struct pid_data *tdata)
 {
