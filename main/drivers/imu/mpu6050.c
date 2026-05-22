@@ -1,4 +1,3 @@
-#include <string.h>
 #include "drivers/imu/mpu6050.h"
 #include "sensors/imu.h"
 #include "flight/flight.h"
@@ -50,11 +49,7 @@ int mpu6050_sensor_read(struct imu_sensor *sensor)
 	sensor->gyro.unfiltered.y = ((float)sensor->gyro.raw.y) / MPU6050_GYRO_RESOLUTION_2000;
 	sensor->gyro.unfiltered.z = ((float)sensor->gyro.raw.z) / MPU6050_GYRO_RESOLUTION_2000;
 
-	if (strcmp(sensor->name, "MPU6050")==0) {
-		sensor->temperature.value = 36.53f + ((float)sensor->temperature.raw) / 340.0f;
-	} else {
-		sensor->temperature.value = 21.0f + ((float)sensor->temperature.raw) / 333.87f;
-	}
+	sensor->temperature.value = 36.53f + ((float)sensor->temperature.raw) / 340.0f;
 	return 0;
 }
 
@@ -69,19 +64,14 @@ void mpu6050_init(struct bus_dev *dev, unsigned int id)
 	mpu6050_write_reg_byte(dev, MPU6050_REG_GYRO_CONFIG, 0x18);	// 陀螺椅传感器 2000deg/s
 	mpu6050_write_reg_byte(dev, MPU6050_REG_PWR_MGMT_2, 0x00);	// xyz不进入待机
 	mpu6050_write_reg_byte(dev, MPU6050_REG_INT_PIN_CFG, 0x92);	// 低电平触发
-	if (id==MPU6050_WHOAMI_VALUE) {
-		flight.imu.name = "MPU6050";
-		dev->name = "MPU6050";
-	} else {
-		flight.imu.name = "MPU6500";
-		dev->name = "MPU6500";
-	}
+	flight.imu.name = "MPU6050";
+	dev->name = "MPU6050";
 	flight.imu.dev = dev;
 	flight.imu.read = mpu6050_sensor_read;
 
 	flight.imu.status = IMU_STATUS_ON;
 	flight.imu.freq = 1000;
-	mpu6050_write_reg_byte(dev, MPU6050_REG_INT_ENABLE, 0x01);	// 开中断
+	mpu6050_write_reg_byte(dev, MPU6050_REG_INT_ENABLE, 0x01);
 }
 
 int mpu6050_i2c_prob(struct bus_dev *dev)
@@ -91,7 +81,7 @@ int mpu6050_i2c_prob(struct bus_dev *dev)
 	{
 		dev->address = i<<1;
 		id = mpu6050_who_am_i(dev);
-		if (id != MPU6050_WHOAMI_VALUE && id != MPU6500_WHOAMI_VALUE)
+		if (id != MPU6050_WHOAMI_VALUE)
 			continue;
 
 		mpu6050_init(dev, id);
