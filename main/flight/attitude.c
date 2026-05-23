@@ -41,21 +41,16 @@ void calculate_attitude()
 	// }
 	MahonyAHRSupdate(DEGREES_TO_RADIANS(flight.imu.gyro.value.x), DEGREES_TO_RADIANS(flight.imu.gyro.value.y), DEGREES_TO_RADIANS(flight.imu.gyro.value.z), flight.imu.accel.value.x, flight.imu.accel.value.y, flight.imu.accel.value.z, flight.compass.value.x, flight.compass.value.y, flight.compass.value.z, &mahony);
 
-	flight.attitude.q0 = mahony.q0;
-	flight.attitude.q1 = mahony.q1;
-	flight.attitude.q2 = mahony.q2;
-	flight.attitude.q3 = mahony.q3;
+	flight.attitude.q.q0 = mahony.q0;
+	flight.attitude.q.q1 = mahony.q1;
+	flight.attitude.q.q2 = mahony.q2;
+	flight.attitude.q.q3 = mahony.q3;
 
-	flight.attitude.q0 = mahony.q0;
-	flight.attitude.q1 = mahony.q1;
-	flight.attitude.q2 = mahony.q2;
-	flight.attitude.q3 = mahony.q3;
-
-	flight.attitude.roll = atan2f(2.0f*(flight.attitude.q0*flight.attitude.q1+ flight.attitude.q2*flight.attitude.q3), 1.0f- 2.0f * (flight.attitude.q1*flight.attitude.q1 + flight.attitude.q2*flight.attitude.q2));
+	flight.attitude.roll = atan2f(2.0f*(flight.attitude.q.q0*flight.attitude.q.q1+ flight.attitude.q.q2*flight.attitude.q.q3), 1.0f- 2.0f * (flight.attitude.q.q1*flight.attitude.q.q1 + flight.attitude.q.q2*flight.attitude.q.q2));
 	flight.attitude.roll = RADIANS_TO_DEGREES(flight.attitude.roll);
-	flight.attitude.pitch = -asinf(2.0f*(flight.attitude.q1*flight.attitude.q3 - flight.attitude.q0*flight.attitude.q2));
+	flight.attitude.pitch = -asinf(2.0f*(flight.attitude.q.q1*flight.attitude.q.q3 - flight.attitude.q.q0*flight.attitude.q.q2));
 	flight.attitude.pitch = RADIANS_TO_DEGREES(flight.attitude.pitch);
-	flight.attitude.yaw = atan2f(2.0f*(flight.attitude.q1*flight.attitude.q2 + flight.attitude.q0*flight.attitude.q3), 1.0f - 2.0f *(flight.attitude.q2*flight.attitude.q2 + flight.attitude.q3*flight.attitude.q3));
+	flight.attitude.yaw = atan2f(2.0f*(flight.attitude.q.q1*flight.attitude.q.q2 + flight.attitude.q.q0*flight.attitude.q.q3), 1.0f - 2.0f *(flight.attitude.q.q2*flight.attitude.q.q2 + flight.attitude.q.q3*flight.attitude.q.q3));
 	flight.attitude.yaw = RADIANS_TO_DEGREES(flight.attitude.yaw);
 	if (flight.compass.declination!=0.0f) {
 		flight.attitude.yaw += flight.compass.declination;

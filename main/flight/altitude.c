@@ -159,9 +159,8 @@ void calculate_altitude()
 {
 	if (!IS_BARO_ON(flight.baro))
 		return;
-	struct quaternion q = {flight.attitude.q0, flight.attitude.q1, flight.attitude.q2, flight.attitude.q3};
 	float dcm[3][3];
-	quat_2_dcm(&q, dcm);
+	quat_2_dcm(&flight.attitude.q, dcm);
 	flight.acceleration.x = flight.imu.accel.value.x * dcm[0][0] + flight.imu.accel.value.y * dcm[0][1] + flight.imu.accel.value.z * dcm[0][2];
 	flight.acceleration.y = flight.imu.accel.value.x * dcm[1][0] + flight.imu.accel.value.y * dcm[1][1] + flight.imu.accel.value.z * dcm[1][2];
 	flight.acceleration.z = flight.imu.accel.value.x * dcm[2][0] + flight.imu.accel.value.y * dcm[2][1] + flight.imu.accel.value.z * dcm[2][2];

@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_ATTITUDE_CONTROLLER_H
-#define CONTROLLER_ATTITUDE_CONTROLLER_H
+#ifndef CONTROLLERS_ANGLE_Q_PID_H
+#define CONTROLLERS_ANGLE_Q_PID_H
 
 #include "math/quaternion.h"
 
@@ -15,5 +15,5 @@ struct angle_q_pid_param {
 	float output_yaw;
 };
 
-void angle_q_pid(struct angle_q_pid_param *p);
+void angle_q_pid_compute(struct angle_q_pid_param *p);
 #endif

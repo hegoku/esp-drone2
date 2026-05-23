@@ -21,7 +21,7 @@ void anotc_send_data_analytics_count(unsigned short ms, unsigned short count)
 	_anotc_send_func((unsigned char *)&frame, ANOTC_V8_HEAD_SIZE + frame.len + 2);
 }
 
-void anotc_send_data_analytics_info(unsigned short index, enum DATA_ANALYSIS_ITEM_TYPE type, char *name, char *info)
+void anotc_send_data_analytics_info(unsigned short index, enum DATA_ANALYSIS_ITEM_TYPE type, const char *name, const char *info)
 {
 	struct anotc_frame frame;
 	PREPARE_ANOTC_FRAME(frame);
@@ -40,7 +40,7 @@ void anotc_send_data_analytics_info(unsigned short index, enum DATA_ANALYSIS_ITE
 void anotc_send_data_analytics()
 {
 	struct anotc_frame frame;
-	struct data_analysis_item *item;
+	const struct data_analysis_item *item;
 	PREPARE_ANOTC_FRAME(frame);
 	frame.fun = ANOTC_FRAME_DATA_ANALYSIS_LIST_CMD;
 
@@ -118,7 +118,7 @@ void anotc_data_analytics_frame_cmd_handler(union _un_anotc_v8_frame *frame, uns
 		break;
 	case ANOTC_CONFIG_DATA_ANALYSIS_LIST_ITEM_INFO:
 		unsigned short val = (data[1]<<8) | data[0];
-		struct data_analysis_item *item;
+		const struct data_analysis_item *item;
 		item = da_item_at(val);
 		if (item==NULL) return;
 		anotc_send_data_analytics_info(val, item->type, item->name, item->info);

@@ -79,7 +79,7 @@ static inline void anotc_add_double(struct anotc_frame *frame, double data)
 	frame->len += sizeof(double);
 }
 
-static inline void anotc_add_string(struct anotc_frame *frame, char *data)
+static inline void anotc_add_string(struct anotc_frame *frame, const char *data)
 {
 	strncpy((char *)&(frame->data[frame->len]), data, strlen(data));
 	frame->len += strlen(data);

@@ -1,3 +1,5 @@
+#include <math.h>
+#include "math/math.h"
 #include "misc/config.h"
 #include "flight/flight.h"
 #include "mixer/mixer.h"
@@ -33,4 +35,12 @@ void init_mixer()
 void mixer_output(struct mixer *mixer)
 {
 	mixer->esc_protocol->write(mixer);
+}
+
+void update_flight_mixer(float roll, float pitch, float yaw)
+{
+	flight.mixer.motor[0]->value = constrain((unsigned short)round((flight.throttle - roll + pitch + yaw)*1000.0f), FLIGHT_THROTTLE_MIN, FLIGHT_THROTTLE_MAX);
+	flight.mixer.motor[1]->value = constrain((unsigned short)round((flight.throttle - roll - pitch - yaw)*1000.0f), FLIGHT_THROTTLE_MIN, FLIGHT_THROTTLE_MAX);
+	flight.mixer.motor[2]->value = constrain((unsigned short)round((flight.throttle + roll + pitch - yaw)*1000.0f), FLIGHT_THROTTLE_MIN, FLIGHT_THROTTLE_MAX);
+	flight.mixer.motor[3]->value = constrain((unsigned short)round((flight.throttle + roll - pitch + yaw)*1000.0f), FLIGHT_THROTTLE_MIN, FLIGHT_THROTTLE_MAX);
 }

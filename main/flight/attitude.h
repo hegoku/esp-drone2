@@ -1,8 +1,10 @@
 #ifndef FLIGHT_ATTITUDE_H
 #define FLIGHT_ATTITUDE_H
 
+#include "math/quaternion.h"
+
 struct flight_attitude {
-	float q0,q1,q2,q3;
+	struct quaternion q;
 	float roll,pitch,yaw;
 };
 

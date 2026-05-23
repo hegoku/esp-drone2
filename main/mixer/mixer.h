@@ -33,6 +33,7 @@ struct mixer {
 
 void init_mixer();
 void mixer_output(struct mixer *mixer);
+void update_flight_mixer(float roll, float pitch, float yaw);
 
 extern struct mixer_moter __motors[4];
 

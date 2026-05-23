@@ -9,4 +9,15 @@ menu "esp-drone"
 		config ESP_DRONE_HW_VER_2
 			bool "Version 2"
 	endchoice
+
+	choice
+		prompt  "Angle PID Algorithm"
+		default  ANGLE_PID_ALGORITHM_EULER_PID
+
+		config ANGLE_PID_ALGORITHM_EULER_PID
+			bool "Euler PID"
+
+		config  ANGLE_PID_ALGORITHM_Q_PID
+			bool "Quaternion PID"
+	endchoice
 endmenu
