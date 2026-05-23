@@ -57,18 +57,6 @@ void anotc_send_pid()
 	anotc_add_ushort(&frame, flight.mixer.motor[2]->value);
 	anotc_add_ushort(&frame, flight.mixer.motor[3]->value);
 
-	anotc_add_float(&frame, angle_rate_pid[type].desired);
-
-	anotc_add_float(&frame, angle_rate_pid[type].P);
-	anotc_add_float(&frame, angle_rate_pid[type].I);
-	anotc_add_float(&frame, angle_rate_pid[type].D);
-	anotc_add_float(&frame, angle_rate_pid[type].output);
-
-	anotc_add_float(&frame, angle_pid[type].P);
-	anotc_add_float(&frame, angle_pid[type].I);
-	anotc_add_float(&frame, angle_pid[type].D);
-	anotc_add_float(&frame, angle_pid[type].output);
-
 	anotc_add_short(&frame, flight.imu.accel.raw.x);
 	anotc_add_short(&frame, flight.imu.accel.raw.y);
 	anotc_add_short(&frame, flight.imu.accel.raw.z);
@@ -76,6 +64,40 @@ void anotc_send_pid()
 	anotc_add_short(&frame, flight.imu.gyro.raw.x);
 	anotc_add_short(&frame, flight.imu.gyro.raw.y);
 	anotc_add_short(&frame, flight.imu.gyro.raw.z);
+
+	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].desired);
+	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].desired);
+	anotc_add_float(&frame, angle_rate_pid[PID_YAW].desired);
+
+	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].P);
+	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].I);
+	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].D);
+	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].output);
+
+	anotc_add_float(&frame, angle_pid[PID_ROLL].P);
+	anotc_add_float(&frame, angle_pid[PID_ROLL].I);
+	anotc_add_float(&frame, angle_pid[PID_ROLL].D);
+	anotc_add_float(&frame, angle_pid[PID_ROLL].output);
+
+	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].P);
+	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].I);
+	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].D);
+	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].output);
+
+	anotc_add_float(&frame, angle_pid[PID_PITCH].P);
+	anotc_add_float(&frame, angle_pid[PID_PITCH].I);
+	anotc_add_float(&frame, angle_pid[PID_PITCH].D);
+	anotc_add_float(&frame, angle_pid[PID_PITCH].output);
+
+	anotc_add_float(&frame, angle_rate_pid[PID_YAW].P);
+	anotc_add_float(&frame, angle_rate_pid[PID_YAW].I);
+	anotc_add_float(&frame, angle_rate_pid[PID_YAW].D);
+	anotc_add_float(&frame, angle_rate_pid[PID_YAW].output);
+
+	anotc_add_float(&frame, angle_pid[PID_YAW].P);
+	anotc_add_float(&frame, angle_pid[PID_YAW].I);
+	anotc_add_float(&frame, angle_pid[PID_YAW].D);
+	anotc_add_float(&frame, angle_pid[PID_YAW].output);
 
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);

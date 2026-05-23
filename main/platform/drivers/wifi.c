@@ -302,7 +302,7 @@ void wifi_send(unsigned char *data, int len)
     }
 }
 
-#define WIFI_TX_DATAGRAM_MAX 1024
+#define WIFI_TX_DATAGRAM_MAX 1200
 static unsigned char out[WIFI_TX_DATAGRAM_MAX];
 
 int wifi_flush(void)
