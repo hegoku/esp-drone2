@@ -8,7 +8,7 @@ struct angle_q_pid_param {
 	struct quaternion q_current_b_2_w;
 	float K_roll;
 	float K_pitch;
-	float k_yaw;
+	float K_yaw;
 	struct quaternion q_error_b;
 	float output_roll;
 	float output_pitch;

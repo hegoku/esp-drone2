@@ -3,6 +3,7 @@
 #include "flight/flight.h"
 #include "misc/util.h"
 #include "flight/control.h"
+#include "sdkconfig.h"
 
 unsigned char pid_log_type = 0;
 
@@ -74,30 +75,48 @@ void anotc_send_pid()
 	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].D);
 	anotc_add_float(&frame, angle_rate_pid[PID_ROLL].output);
 
-	anotc_add_float(&frame, angle_pid[PID_ROLL].P);
-	anotc_add_float(&frame, angle_pid[PID_ROLL].I);
-	anotc_add_float(&frame, angle_pid[PID_ROLL].D);
-	anotc_add_float(&frame, angle_pid[PID_ROLL].output);
-
 	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].P);
 	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].I);
 	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].D);
 	anotc_add_float(&frame, angle_rate_pid[PID_PITCH].output);
-
-	anotc_add_float(&frame, angle_pid[PID_PITCH].P);
-	anotc_add_float(&frame, angle_pid[PID_PITCH].I);
-	anotc_add_float(&frame, angle_pid[PID_PITCH].D);
-	anotc_add_float(&frame, angle_pid[PID_PITCH].output);
 
 	anotc_add_float(&frame, angle_rate_pid[PID_YAW].P);
 	anotc_add_float(&frame, angle_rate_pid[PID_YAW].I);
 	anotc_add_float(&frame, angle_rate_pid[PID_YAW].D);
 	anotc_add_float(&frame, angle_rate_pid[PID_YAW].output);
 
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
+	anotc_add_float(&frame, angle_pid[PID_ROLL].P);
+	anotc_add_float(&frame, angle_pid[PID_ROLL].I);
+	anotc_add_float(&frame, angle_pid[PID_ROLL].D);
+	anotc_add_float(&frame, angle_pid[PID_ROLL].output);
+
+	anotc_add_float(&frame, angle_pid[PID_PITCH].P);
+	anotc_add_float(&frame, angle_pid[PID_PITCH].I);
+	anotc_add_float(&frame, angle_pid[PID_PITCH].D);
+	anotc_add_float(&frame, angle_pid[PID_PITCH].output);
+
 	anotc_add_float(&frame, angle_pid[PID_YAW].P);
 	anotc_add_float(&frame, angle_pid[PID_YAW].I);
 	anotc_add_float(&frame, angle_pid[PID_YAW].D);
 	anotc_add_float(&frame, angle_pid[PID_YAW].output);
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, angle_q_pid.output_roll);
+
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, angle_q_pid.output_pitch);
+
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, 0);
+	anotc_add_float(&frame, angle_q_pid.output_yaw);
+#endif
+
 
 	anotc_add_checksum(&frame);
 	_anotc_send_func((unsigned char*)(&frame), ANOTC_V8_HEAD_SIZE + frame.len + 2);

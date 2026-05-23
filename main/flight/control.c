@@ -16,7 +16,7 @@ void init_control()
 #ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	init_attitude_euler_controller();
 #elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
-	init_attitude_q_controller()
+	init_attitude_q_controller();
 #endif
 }
 
