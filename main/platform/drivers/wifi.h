@@ -1,7 +1,7 @@
 #ifndef PLATFORM_DRIVERS_WIFI_H
 #define PLATFORM_DRIVERS_WIFI_H
 
-#define WIFI_PACK_MAX_LEN 200
+#define WIFI_PACK_MAX_LEN 220
 
 struct wifi_pack{
 	unsigned char data[WIFI_PACK_MAX_LEN];
