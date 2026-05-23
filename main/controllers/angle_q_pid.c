@@ -30,5 +30,5 @@ void angle_q_pid_compute(struct angle_q_pid_param *p)
 
 	p->output_roll = p->K_roll * att_error_x;
 	p->output_pitch = p->K_pitch * att_error_y;
-	p->output_yaw = p->k_yaw * att_error_z;
+	p->output_yaw = p->K_yaw * att_error_z;
 }

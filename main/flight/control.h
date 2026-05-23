@@ -2,6 +2,7 @@
 #define FLIGHT_CONTROL_H
 
 #include "controllers/pid.h"
+#include "controllers/angle_q_pid.h"
 
 #define PID_ROLL 0
 #define PID_PITCH 1

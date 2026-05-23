@@ -51,7 +51,7 @@ void init_attitude_q_controller()
 
 	config_read_float("rol_pid.p", &angle_q_pid.K_roll);
 	config_read_float("pit_pid.p", &angle_q_pid.K_pitch);
-	config_read_float("yaw_pid.p", &angle_q_pid.k_yaw);
+	config_read_float("yaw_pid.p", &angle_q_pid.K_yaw);
 }
 
 void attitude_q_controller_update()

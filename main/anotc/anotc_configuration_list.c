@@ -4,6 +4,7 @@
 #include "flight/flight.h"
 #include "flight/control.h"
 #include "anotc/anotc_custom_frame.h"
+#include "sdkconfig.h"
 
 enum ANOTC_CONFIG_INFO_PAR_ID {
 	ANOTC_CONFIG_PAR_WIFI_NAME,
@@ -438,12 +439,21 @@ char* set_motor_mapping(void *value)
 
 void* get_pid_roll_p()
 {
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	return (void*)(&angle_pid[PID_ROLL].kp);
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	return (void*)(&angle_q_pid.K_roll);
+#endif
 }
 char* set_pid_roll_p(void *value)
 {
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	angle_pid[PID_ROLL].kp = *((float*)value);
 	config_write_float("rol_pid.p", angle_pid[PID_ROLL].kp);
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	angle_q_pid.K_roll = *((float*)value);
+	config_write_float("rol_pid.p", angle_q_pid.K_roll);
+#endif
 	return 0;
 }
 
@@ -482,12 +492,21 @@ char* set_pid_roll_d_f(void *value)
 
 void* get_pid_pitch_p()
 {
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	return (void*)&(angle_pid[PID_PITCH].kp);
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	return (void*)(&angle_q_pid.K_pitch);
+#endif
 }
 char* set_pid_pitch_p(void *value)
 {
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	angle_pid[PID_PITCH].kp = *((float*)value);
 	config_write_float("pit_pid.p", angle_pid[PID_PITCH].kp);
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	angle_q_pid.K_pitch = *((float*)value);
+	config_write_float("pit_pid.p", angle_q_pid.K_pitch);
+#endif
 	return 0;
 }
 
@@ -526,12 +545,21 @@ char* set_pid_pitch_d_f(void *value)
 
 void* get_pid_yaw_p()
 {
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	return (void*)&angle_pid[PID_YAW].kp;
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	return (void*)(&angle_q_pid.K_yaw);
+#endif
 }
 char* set_pid_yaw_p(void *value)
 {
+#ifdef CONFIG_ANGLE_PID_ALGORITHM_EULER_PID
 	angle_pid[PID_YAW].kp = *((float*)value);
 	config_write_float("yaw_pid.p", angle_pid[PID_YAW].kp);
+#elif defined(CONFIG_ANGLE_PID_ALGORITHM_Q_PID)
+	angle_q_pid.K_yaw = *((float*)value);
+	config_write_float("yaw_pid.p", angle_q_pid.K_yaw);
+#endif
 	return 0;
 }
 
