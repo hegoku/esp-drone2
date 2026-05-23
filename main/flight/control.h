@@ -12,5 +12,6 @@ void control_update();
 
 extern struct pid_data angle_rate_pid[3];
 extern struct pid_data angle_pid[3];
+extern struct angle_q_pid_param angle_q_pid;
 
 #endif

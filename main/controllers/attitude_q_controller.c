@@ -86,6 +86,7 @@ void attitude_q_controller_update()
 	if (flight.throttle>0.2f) {
 		if (flight.status==FLIGHT_STATUS_ANGLE_MODE) {
 			euler_2_quat(flight.setpoints.roll, flight.setpoints.pitch, flight.attitude.yaw, &angle_q_pid.q_desired_b_2_w);
+			angle_q_pid_compute(&angle_q_pid);
 			_desired_roll_rate = angle_q_pid.output_roll;
 			_desired_pitch_rate = angle_q_pid.output_pitch;
 			_desired_yaw_rate = angle_q_pid.output_yaw;
