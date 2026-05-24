@@ -1,11 +1,11 @@
-#include "sensors/compass.h"
+#include "sensors/magnetometer.h"
 #include "misc/low_pass_filter_2p.h"
 #include "misc/config.h"
 #include "sensors/sensor_rotation.h"
 
-static struct low_pass_filter_2p_param compass_iir[3];
+static struct low_pass_filter_2p_param magnetometer_iir[3];
 
-void init_compass(struct compass_sensor *sensor)
+void init_magnetometer(struct magnetometer_sensor *sensor)
 {
 	sensor->rotation = ROTATION_NONE;
 	sensor->declination = 0.0f;
@@ -34,20 +34,20 @@ void init_compass(struct compass_sensor *sensor)
 	config_read_float("mag_offset.y", &(sensor->calibration.y_offset));
 	config_read_float("mag_offset.z", &(sensor->calibration.z_offset));
 
-	if (sensor->status != COMPASS_STATUS_ON)
+	if (sensor->status != MAGNETOMETER_STATUS_ON)
 		return;
 
 	for (int i = 0; i < 3; i++)
 	{
-		compass_iir[i].cut_off_freq = 5;
-		compass_iir[i].freq = sensor->freq;
-		low_pass_filter_2p_init(&compass_iir[i]);
+		magnetometer_iir[i].cut_off_freq = 5;
+		magnetometer_iir[i].freq = sensor->freq;
+		low_pass_filter_2p_init(&magnetometer_iir[i]);
 	}
 }
 
-void compass_filter(struct compass_sensor *sensor)
+void magnetometer_filter(struct magnetometer_sensor *sensor)
 {
-	if (!IS_COMPASS_DTRY(*sensor)) return;
+	if (!IS_MAGNETOMETER_DTRY(*sensor)) return;
 	float hx,hy,hz;
 	hx = sensor->value.x - sensor->calibration.x_offset;
 	hy = sensor->value.y - sensor->calibration.y_offset;
@@ -55,9 +55,9 @@ void compass_filter(struct compass_sensor *sensor)
 	sensor->value.x = sensor->calibration.x_k[0] * hx + sensor->calibration.x_k[1] * hy + sensor->calibration.x_k[2] * hz;
 	sensor->value.y = sensor->calibration.y_k[0] * hx + sensor->calibration.y_k[1] * hy + sensor->calibration.y_k[2] * hz;
 	sensor->value.z = sensor->calibration.z_k[0] * hx + sensor->calibration.z_k[1] * hy + sensor->calibration.z_k[2] * hz;
-	sensor->value.x = low_pass_filter_2p(&compass_iir[0], sensor->value.x);
-	sensor->value.y = low_pass_filter_2p(&compass_iir[1], sensor->value.y);
-	sensor->value.z = low_pass_filter_2p(&compass_iir[2], sensor->value.z);
+	sensor->value.x = low_pass_filter_2p(&magnetometer_iir[0], sensor->value.x);
+	sensor->value.y = low_pass_filter_2p(&magnetometer_iir[1], sensor->value.y);
+	sensor->value.z = low_pass_filter_2p(&magnetometer_iir[2], sensor->value.z);
 
 	sensor_rotate_3f(sensor->rotation, &(sensor->value.x), &(sensor->value.y), &(sensor->value.z));
 }

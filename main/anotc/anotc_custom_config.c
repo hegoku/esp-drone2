@@ -41,7 +41,7 @@ void anotc_config_frame_read_cmd_handler(union _un_anotc_v8_frame *frame, unsign
 			if (flight.imu.status==IMU_STATUS_ON) {
 				sensor_status = 1;
 			}
-			if (IS_COMPASS_ON(flight.compass)) {
+			if (IS_MAGNETOMETER_ON(flight.magnetometer)) {
 				sensor_status |= 0x2;
 			}
 			if (IS_BARO_ON(flight.baro)) {

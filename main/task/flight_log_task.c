@@ -20,13 +20,13 @@ void send_flight_attitude()
 	}
 }
 
-void send_flight_compass()
+void send_flight_magnetometer()
 {
 	if (flight.status==FLIGHT_STATUS_ANGLE_MODE || flight.status==FLIGHT_STATUS_ANGLE_RATE_MODE)
 		return;
-	if (IS_COMPASS_DTRY(flight.compass))
+	if (IS_MAGNETOMETER_DTRY(flight.magnetometer))
 	{
-		anotc_send_mag((short)(flight.compass.value.x * 100.0), (short)(flight.compass.value.y * 100.0), (short)(flight.compass.value.z * 100.0), flight.compass.temperature.value, IS_COMPASS_ON(flight.compass));
+		anotc_send_mag((short)(flight.magnetometer.value.x * 100.0), (short)(flight.magnetometer.value.y * 100.0), (short)(flight.magnetometer.value.z * 100.0), flight.magnetometer.temperature.value, IS_MAGNETOMETER_ON(flight.magnetometer));
 	}
 	if (IS_BARO_READYTOUSE(flight.baro)) {
 		anotc_send_alt((int)flight.baro.altitude, 0, (int)flight.altitude, 0);
@@ -60,7 +60,7 @@ void send_pid()
 }
 
 static struct s_log_task log_task_list[] = {
-	{.time=1, .func=send_flight_compass},
+	{.time=1, .func=send_flight_magnetometer},
 	{.time=5, .func=send_flight_attitude},
 	{.time=100, .func=send_system_info},
 	{.time=16, .func=send_motor},

@@ -249,155 +249,155 @@ char* set_gyro_calibration_z_offset(void *value)
 
 void* get_mag_rotation()
 {
-	return (void*)&(flight.compass.rotation);
+	return (void*)&(flight.magnetometer.rotation);
 }
 char* set_mag_rotation(void *value)
 {
-	flight.compass.rotation = *((unsigned char*)value);
-	config_write_uchar("mag.rotation", flight.compass.rotation);
+	flight.magnetometer.rotation = *((unsigned char*)value);
+	config_write_uchar("mag.rotation", flight.magnetometer.rotation);
 	return 0;
 }
 
 void* get_mag_declination()
 {
-	return (void*)&(flight.compass.declination);
+	return (void*)&(flight.magnetometer.declination);
 }
 char* set_mag_declination(void *value)
 {
-	flight.compass.declination = *((float*)value);
-	config_write_float("mag.decl", flight.compass.declination);
+	flight.magnetometer.declination = *((float*)value);
+	config_write_float("mag.decl", flight.magnetometer.declination);
 	return 0;
 }
 
 void* get_mag_calibration_x_k1()
 {
-	return (void*)&(flight.compass.calibration.x_k[0]);
+	return (void*)&(flight.magnetometer.calibration.x_k[0]);
 }
 char* set_mag_calibration_x_k1(void *value)
 {
-	flight.compass.calibration.x_k[0] = *((float*)value);
-	config_write_float("mag_k.x1", flight.compass.calibration.x_k[0]);
+	flight.magnetometer.calibration.x_k[0] = *((float*)value);
+	config_write_float("mag_k.x1", flight.magnetometer.calibration.x_k[0]);
 	return 0;
 }
 
 void* get_mag_calibration_x_k2()
 {
-	return (void*)&(flight.compass.calibration.x_k[1]);
+	return (void*)&(flight.magnetometer.calibration.x_k[1]);
 }
 char* set_mag_calibration_x_k2(void *value)
 {
-	flight.compass.calibration.x_k[1] = *((float*)value);
-	config_write_float("mag_k.x2", flight.compass.calibration.x_k[1]);
+	flight.magnetometer.calibration.x_k[1] = *((float*)value);
+	config_write_float("mag_k.x2", flight.magnetometer.calibration.x_k[1]);
 	return 0;
 }
 
 void* get_mag_calibration_x_k3()
 {
-	return (void*)&(flight.compass.calibration.x_k[2]);
+	return (void*)&(flight.magnetometer.calibration.x_k[2]);
 }
 char* set_mag_calibration_x_k3(void *value)
 {
-	flight.compass.calibration.x_k[2] = *((float*)value);
-	config_write_float("mag_k.x3", flight.compass.calibration.x_k[2]);
+	flight.magnetometer.calibration.x_k[2] = *((float*)value);
+	config_write_float("mag_k.x3", flight.magnetometer.calibration.x_k[2]);
 	return 0;
 }
 
 void* get_mag_calibration_y_k1()
 {
-	return (void*)&(flight.compass.calibration.y_k[0]);
+	return (void*)&(flight.magnetometer.calibration.y_k[0]);
 }
 char* set_mag_calibration_y_k1(void *value)
 {
-	flight.compass.calibration.y_k[0] = *((float*)value);
-	config_write_float("mag_k.y1", flight.compass.calibration.y_k[0]);
+	flight.magnetometer.calibration.y_k[0] = *((float*)value);
+	config_write_float("mag_k.y1", flight.magnetometer.calibration.y_k[0]);
 	return 0;
 }
 
 void* get_mag_calibration_y_k2()
 {
-	return (void*)&(flight.compass.calibration.y_k[1]);
+	return (void*)&(flight.magnetometer.calibration.y_k[1]);
 }
 char* set_mag_calibration_y_k2(void *value)
 {
-	flight.compass.calibration.y_k[1] = *((float*)value);
-	config_write_float("mag_k.y2", flight.compass.calibration.y_k[1]);
+	flight.magnetometer.calibration.y_k[1] = *((float*)value);
+	config_write_float("mag_k.y2", flight.magnetometer.calibration.y_k[1]);
 	return 0;
 }
 
 void* get_mag_calibration_y_k3()
 {
-	return (void*)&(flight.compass.calibration.y_k[2]);
+	return (void*)&(flight.magnetometer.calibration.y_k[2]);
 }
 char* set_mag_calibration_y_k3(void *value)
 {
-	flight.compass.calibration.y_k[2] = *((float*)value);
-	config_write_float("mag_k.y3", flight.compass.calibration.y_k[2]);
+	flight.magnetometer.calibration.y_k[2] = *((float*)value);
+	config_write_float("mag_k.y3", flight.magnetometer.calibration.y_k[2]);
 	return 0;
 }
 
 void* get_mag_calibration_z_k1()
 {
-	return (void*)&(flight.compass.calibration.z_k[0]);
+	return (void*)&(flight.magnetometer.calibration.z_k[0]);
 }
 char* set_mag_calibration_z_k1(void *value)
 {
-	flight.compass.calibration.z_k[0] = *((float*)value);
-	config_write_float("mag_k.z1", flight.compass.calibration.z_k[0]);
+	flight.magnetometer.calibration.z_k[0] = *((float*)value);
+	config_write_float("mag_k.z1", flight.magnetometer.calibration.z_k[0]);
 	return 0;
 }
 
 void* get_mag_calibration_z_k2()
 {
-	return (void*)&(flight.compass.calibration.z_k[1]);
+	return (void*)&(flight.magnetometer.calibration.z_k[1]);
 }
 char* set_mag_calibration_z_k2(void *value)
 {
-	flight.compass.calibration.z_k[1] = *((float*)value);
-	config_write_float("mag_k.z2", flight.compass.calibration.z_k[1]);
+	flight.magnetometer.calibration.z_k[1] = *((float*)value);
+	config_write_float("mag_k.z2", flight.magnetometer.calibration.z_k[1]);
 	return 0;
 }
 
 void* get_mag_calibration_z_k3()
 {
-	return (void*)&(flight.compass.calibration.z_k[2]);
+	return (void*)&(flight.magnetometer.calibration.z_k[2]);
 }
 char* set_mag_calibration_z_k3(void *value)
 {
-	flight.compass.calibration.z_k[2] = *((float*)value);
-	config_write_float("mag_k.z3", flight.compass.calibration.z_k[2]);
+	flight.magnetometer.calibration.z_k[2] = *((float*)value);
+	config_write_float("mag_k.z3", flight.magnetometer.calibration.z_k[2]);
 	return 0;
 }
 
 void* get_mag_calibration_x_offset()
 {
-	return (void*)&(flight.compass.calibration.x_offset);
+	return (void*)&(flight.magnetometer.calibration.x_offset);
 }
 char* set_mag_calibration_x_offset(void *value)
 {
-	flight.compass.calibration.x_offset = *((float*)value);
-	config_write_float("mag_offset.x", flight.compass.calibration.x_offset);
+	flight.magnetometer.calibration.x_offset = *((float*)value);
+	config_write_float("mag_offset.x", flight.magnetometer.calibration.x_offset);
 	return 0;
 }
 
 void* get_mag_calibration_y_offset()
 {
-	return (void*)&(flight.compass.calibration.y_offset);
+	return (void*)&(flight.magnetometer.calibration.y_offset);
 }
 char* set_mag_calibration_y_offset(void *value)
 {
-	flight.compass.calibration.y_offset = *((float*)value);
-	config_write_float("mag_offset.y", flight.compass.calibration.y_offset);
+	flight.magnetometer.calibration.y_offset = *((float*)value);
+	config_write_float("mag_offset.y", flight.magnetometer.calibration.y_offset);
 	return 0;
 }
 
 void* get_mag_calibration_z_offset()
 {
-	return (void*)&(flight.compass.calibration.z_offset);
+	return (void*)&(flight.magnetometer.calibration.z_offset);
 }
 char* set_mag_calibration_z_offset(void *value)
 {
-	flight.compass.calibration.z_offset = *((float*)value);
-	config_write_float("mag_offset.z", flight.compass.calibration.z_offset);
+	flight.magnetometer.calibration.z_offset = *((float*)value);
+	config_write_float("mag_offset.z", flight.magnetometer.calibration.z_offset);
 	return 0;
 }
 

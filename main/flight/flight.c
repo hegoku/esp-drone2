@@ -14,7 +14,7 @@ void init_flight()
 	init_mixer();
 	init_imu(&flight.imu);
 	init_baro(&flight.baro);
-	init_compass(&flight.compass);
+	init_magnetometer(&flight.magnetometer);
 	init_attitude();
 	init_control();
 	init_rc();
@@ -28,9 +28,9 @@ void flight_read_data()
 		imu_calibration(&flight.imu);
 		imu_filter(&flight.imu);
 	}
-	if (IS_COMPASS_ON(flight.compass)) {
-		flight.compass.read(&flight.compass);
-		compass_filter(&flight.compass);
+	if (IS_MAGNETOMETER_ON(flight.magnetometer)) {
+		flight.magnetometer.read(&flight.magnetometer);
+		magnetometer_filter(&flight.magnetometer);
 	}
 	if (IS_BARO_ON(flight.baro)) {
 		flight.baro.read(&flight.baro);
@@ -48,7 +48,7 @@ void flight_update()
 void flight_control()
 {
 	rc_input(&flight.rc);
-	if (!IS_BARO_DTRY(flight.baro) && !IS_COMPASS_DTRY(flight.compass)) {
+	if (!IS_BARO_DTRY(flight.baro) && !IS_MAGNETOMETER_DTRY(flight.magnetometer)) {
 		voltagemeter_read(&flight.battery.voltage);
 	}
 	control_update();

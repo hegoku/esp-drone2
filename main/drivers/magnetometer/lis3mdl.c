@@ -1,5 +1,5 @@
-#include "drivers/compass/lis3mdl.h"
-#include "sensors/compass.h"
+#include "drivers/magnetometer/lis3mdl.h"
+#include "sensors/magnetometer.h"
 #include "bus/spi.h"
 #include "flight/flight.h"
 #include <stdio.h>
@@ -22,7 +22,7 @@ unsigned char lis3mdl_who_am_i(struct bus_dev *dev)
 	return buf;
 }
 
-int lis3mdl_sensor_read(struct compass_sensor *sensor)
+int lis3mdl_sensor_read(struct magnetometer_sensor *sensor)
 {
 	unsigned char buf[6];
 	lis3mdl_read_reg(sensor->dev, LIS3MDL_REG_STATUS_REG, &buf[0], 1);
@@ -40,9 +40,9 @@ int lis3mdl_sensor_read(struct compass_sensor *sensor)
 		sensor->temperature.raw = (((short)buf[1] << 8) | buf[0]);
 		sensor->temperature.value = ((float)sensor->temperature.raw) / 8.0f + 25.0f;
 
-		sensor->status |= COMPASS_STATUS_DTRY;
+		sensor->status |= MAGNETOMETER_STATUS_DTRY;
 	} else {
-		sensor->status &= (~COMPASS_STATUS_DTRY);
+		sensor->status &= (~MAGNETOMETER_STATUS_DTRY);
 	}
 	
 	return 0;
@@ -61,11 +61,11 @@ int lis3mdl_prob(struct bus_dev *dev)
 	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG4, 0xC);
 	lis3mdl_write_reg(dev, LIS3MDL_REG_CTRL_REG4, 0x0);
 	
-	flight.compass.name = "LIS3MDL";
-	flight.compass.dev = dev;
-	flight.compass.read = lis3mdl_sensor_read;
-	flight.compass.status |= COMPASS_STATUS_ON;
-	flight.compass.freq = 80;
+	flight.magnetometer.name = "LIS3MDL";
+	flight.magnetometer.dev = dev;
+	flight.magnetometer.read = lis3mdl_sensor_read;
+	flight.magnetometer.status |= MAGNETOMETER_STATUS_ON;
+	flight.magnetometer.freq = 80;
 
 	return 0;
 }

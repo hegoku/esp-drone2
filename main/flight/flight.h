@@ -3,7 +3,7 @@
 
 #include "sensors/imu.h"
 #include "sensors/barometer.h"
-#include "sensors/compass.h"
+#include "sensors/magnetometer.h"
 #include "flight/attitude.h"
 #include "mixer/mixer.h"
 #include "rc/rc.h"
@@ -24,7 +24,7 @@ enum flight_status {
 	FLIGHT_STATUS_CALIBRATION_ACCEL_LEFT,
 	FLIGHT_STATUS_CALIBRATION_ACCEL_RIGHT,
 	FLIGHT_STATUS_CALIBRATION_GYRO,
-	FLIGHT_STATUS_CALIBRATION_COMPASS,
+	FLIGHT_STATUS_CALIBRATION_MAGNETOMETER,
 	FLIGHT_STATUS_MOTOR_TEST,
 	FLIGHT_STATUS_SELFTEST_FAILED
 };
@@ -32,7 +32,7 @@ enum flight_status {
 struct flight {
 	struct imu_sensor imu;
 	struct barometer_sensor baro;
-	struct compass_sensor compass;
+	struct magnetometer_sensor magnetometer;
 
 	struct {
 		float voltage;
